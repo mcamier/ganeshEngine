@@ -13,3 +13,4 @@ endif(WIN32)
 
 add_subdirectory(ganeshEngineCore)
 add_subdirectory(ganeshEngineDemo)
+add_subdirectory(ganeshEngineTest)

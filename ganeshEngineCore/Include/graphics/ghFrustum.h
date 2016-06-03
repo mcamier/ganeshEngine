@@ -32,7 +32,7 @@ private:
 	vec3 mNears[4];
 	vec3 mFars[4];
 
-	Plane* planes[6];
+	Plane* mPlanes[6];
 
 public:
 

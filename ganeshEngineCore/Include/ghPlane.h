@@ -20,17 +20,17 @@ enum PlaneCorner {
 class Plane : public ICollider {
 
 private:
-	vec3 mCorners[4];
+	vec3 mCorners[3];
 	vec3 mNormal;
 
-	Plane(const vec3 topLeft, const vec3 topRight, const vec3 bottomRight, const vec3 bottomLeft);
-
 public:
+	Plane(const vec3 pt1, const vec3 pt2, const vec3 pt3);
+
 	~Plane();
 
-	static Plane* make(const vec3 pt1, const vec3 pt2, const vec3 pt3, const vec3 pt4);
+	bool isToward(const vec3 &point) const;
 
-	static Plane* make(const vec3 pt1, const vec3 pt2, const vec3 pt3);
+	bool isToward(const vec3 &point, const F32 &radius) const;
 
 	bool vIsColliding(const vec3 &point) const override;
 

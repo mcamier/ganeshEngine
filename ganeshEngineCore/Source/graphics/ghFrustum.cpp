@@ -1,5 +1,6 @@
 #include "graphics/ghFrustum.h"
 #include "math.h"
+#include "math.h"
 
 namespace ganeshEngine {
 
@@ -14,8 +15,13 @@ Frustum::Frustum(F32 aspectRatio, U16 fov, F32 nearClipDistance, F32 farClipDist
 Frustum::~Frustum() {}
 
 bool Frustum::vIsColliding(const vec3 &point) const {
-	// TODO implement this
-	return false;
+	for(int i = 0 ; i<6; i++) {
+		auto dotProduct = dot(mPlanes[i]->getNormal(), point);
+		if(dotProduct < 0.0f) {
+			return false;
+		}
+	}
+	return true;
 }
 
 bool Frustum::vIsColliding(const vec3 &point, const F32& radius) const {
@@ -47,12 +53,12 @@ void Frustum::updateInternal() {
 	mFars[PlaneCorner::BOTTOM_LEFT] = (forward * mFarClipDistance) - farRight - farUp;
 
 	// TODO check if planes' normals are well oriented
-	planes[FrustumPlane::TOP] = Plane::make(mNears[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_RIGHT], mNears[PlaneCorner::TOP_RIGHT]);
-	planes[FrustumPlane::BOTTOM] = Plane::make(mNears[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_LEFT], mNears[PlaneCorner::BOTTOM_LEFT]);
-	planes[FrustumPlane::NEAR] = Plane::make(mNears[PlaneCorner::TOP_RIGHT], mNears[PlaneCorner::BOTTOM_RIGHT], mNears[PlaneCorner::BOTTOM_LEFT], mNears[PlaneCorner::TOP_LEFT]);
-	planes[FrustumPlane::FAR] = Plane::make(mFars[PlaneCorner::TOP_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_LEFT], mFars[PlaneCorner::TOP_LEFT]);
-	planes[FrustumPlane::LEFT] = Plane::make(mNears[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::BOTTOM_LEFT], mNears[PlaneCorner::BOTTOM_LEFT]);
-	planes[FrustumPlane::RIGHT] = Plane::make(mNears[PlaneCorner::TOP_RIGHT], mNears[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::TOP_RIGHT]);
+	mPlanes[FrustumPlane::TOP] = new Plane(mNears[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_RIGHT]);
+	mPlanes[FrustumPlane::BOTTOM] = new Plane(mNears[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_LEFT]);
+	mPlanes[FrustumPlane::NEAR] = new Plane(mNears[PlaneCorner::BOTTOM_RIGHT], mNears[PlaneCorner::TOP_RIGHT], mNears[PlaneCorner::TOP_LEFT]);
+	mPlanes[FrustumPlane::FAR] = new Plane(mFars[PlaneCorner::TOP_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_LEFT]);
+	mPlanes[FrustumPlane::LEFT] = new Plane(mNears[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::BOTTOM_LEFT]);
+	mPlanes[FrustumPlane::RIGHT] = new Plane(mNears[PlaneCorner::TOP_RIGHT], mNears[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT]);
 }
 
 const F32 Frustum::getAspectRatio() const {
@@ -62,6 +68,7 @@ const F32 Frustum::getAspectRatio() const {
 const U16 Frustum::getFieldOfView() const {
 	return mFieldOfView;
 }
+
 
 const F32 Frustum::getNearClipDistance() const {
 	return mNearClipDistance;

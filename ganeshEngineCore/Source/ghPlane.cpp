@@ -2,33 +2,28 @@
 
 namespace ganeshEngine {
 
-Plane::Plane(const vec3 pt1, const vec3 pt2, const vec3 pt3, const vec3 pt4) {
+Plane::Plane(const vec3 pt1, const vec3 pt2, const vec3 pt3) {
 	mCorners[0] = pt1;
 	mCorners[1] = pt2;
 	mCorners[2] = pt3;
-	mCorners[3] = pt4;
 	vec3 pt1pt2{pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z};
-	vec3 pt1pt3{pt3.x - pt1.x, pt3.y - pt1.y, pt3.z - pt1.z};
-	mNormal = normalize(cross(pt1pt2, pt1pt3));
+	vec3 pt2pt3{pt3.x - pt2.x, pt3.y - pt2.y, pt3.z - pt2.z};
+	mNormal = normalize(cross(pt1pt2, pt2pt3));
 }
 
 Plane::~Plane() { }
 
-Plane* Plane::make(const vec3 pt1, const vec3 pt2, const vec3 pt3, const vec3 pt4) {
-	vec3 pt1pt2{pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z};
-	vec3 pt1pt3{pt3.x - pt1.x, pt3.y - pt1.y, pt3.z - pt1.z};
-	vec3 pt1pt4{pt4.x - pt1.x, pt4.y - pt1.y, pt4.z - pt1.z};
-
-	auto dotResult = dot(pt1pt2, cross(pt1pt3, pt1pt4));
-	if(dotResult != 0.0f) {
-		throw std::exception();
-	}
-
-	return new Plane(pt1, pt2, pt3, pt4);
+bool Plane::isToward(const vec3 &point) const {
+	float dotResult = dot(mNormal, point);
+	std::cout << "dotResult : " << dotResult << std::endl;
+	std::cout << (float)mNormal.x << ", " << (float)mNormal.y << ", " << (float)mNormal.z << std::endl;
+	std::cout << (float)point.x << ", " << (float)point.y << ", " << (float)point.z << std::endl;
+	return (dotResult >= 0.0f);
 }
 
-Plane* Plane::make(const vec3 pt1, const vec3 pt2, const vec3 pt3) {
-	return new Plane(pt1, pt2, pt3, pt3);
+bool Plane::isToward(const vec3 &point, const F32 &radius) const {
+	// TODO implement this
+	return false;
 }
 
 bool Plane::vIsColliding(const vec3 &point) const {
