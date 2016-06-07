@@ -6,6 +6,7 @@
 #include "ghApplication.h"
 #include "ghProfilerManager.h"
 #include "ghSimulation.h"
+#include "ghLoggerManager.h"
 #include "ghGLRendererManager.h"
 
 using namespace std::chrono;
@@ -54,6 +55,7 @@ void Application::run() {
 void Application::vInitialize() {
     std::cout << "CPU : "<< std::endl;
     std::cout << "\t " << Platform::getCpuCoreAmount() << " cores" << std::endl;
+    LoggerManager::Initialize();
     ProfilerManager::Initialize();
     RendererManager::Initialize();
     Simulation::Initialize();
@@ -63,6 +65,7 @@ void Application::vDestroy() {
     Simulation::Destroy();
     RendererManager::Destroy();
     ProfilerManager::Destroy();
+    LoggerManager::Destroy();
 }
 
 }

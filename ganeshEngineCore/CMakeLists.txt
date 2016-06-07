@@ -15,6 +15,7 @@ set(EngineSources
         "Source/ghProfiler.cpp"
         "Source/ghPlane.cpp"
         "Source/ghSimulation.cpp"
+        "Source/ghLoggerManager.cpp"
         "Source/graphics/ghGLShader.cpp"
         "Source/graphics/ghGLProgram.cpp"
         "Source/graphics/ghFrustum.cpp")
