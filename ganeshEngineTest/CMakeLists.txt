@@ -5,6 +5,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGTEST_OS_CYGWIN=1")
 
 set(EngineTestSources
         "Tests/ghPlaneTest.cpp"
+        "Tests/ghMemoryTest.cpp"
         "Tests/ghFrustumTest.cpp"
         "Tests/main.cpp")
 

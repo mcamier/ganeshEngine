@@ -44,12 +44,13 @@ public:
     static void Initialize(Args... args) {
         static_assert(std::is_base_of<System, T>::value, "Type T must be derivated from System");
 
-        ASSERT(_instance() == nullptr);
-        ASSERT_FLAG(_state(), UNINITIALIZED);
+        if( (_state() & UNINITIALIZED) == UNINITIALIZED ) {
+            ASSERT(_instance() == nullptr);
 
-        _instance() = new T(std::forward<Args>(args)...);
-        ((System*) _instance())->vInitialize();
-        _state() = INITIALIZED;
+            _instance() = new T(std::forward<Args>(args)...);
+            ((System*) _instance())->vInitialize();
+            _state() = INITIALIZED;
+        }
     }
 
     /** Destroy the specific system and release its memory

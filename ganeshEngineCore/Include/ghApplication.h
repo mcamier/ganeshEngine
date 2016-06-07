@@ -28,6 +28,10 @@ public:
      */
     static void RunLoop();
 
+    /** shutdown the main loop
+     */
+    void shutdown();
+
 protected:
     /** Responsible of the initialization of all subsystems
      */
@@ -40,10 +44,9 @@ protected:
     /** the main loop logic
      */
     void run();
-
-
 };
 
+extern Application&(*gApp)();
 }
 
 

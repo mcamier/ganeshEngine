@@ -16,9 +16,9 @@ protected:
 };
 
 TEST_F(FrustumTest, pointShouldBeInsideFrustum) {
-	EXPECT_EQ(frustum->vIsColliding(vec3(0.0f, 0.0f, 50.0f)), true);
+	EXPECT_EQ(frustum->vIsColliding(vec3(-4.0f, 2.0f, 2.0f)), true);
 }
 
 TEST_F(FrustumTest, pointShouldBeOutsideFrustum) {
-	EXPECT_EQ(frustum->vIsColliding(vec3(-999.0f, -999.0f, -999.0f)), false);
+	EXPECT_EQ(frustum->vIsColliding(vec3(9999.0f, 9999.0f, 9999.0f)), false);
 }

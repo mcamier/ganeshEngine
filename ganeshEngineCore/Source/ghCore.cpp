@@ -1,5 +1,8 @@
 #include "ghCore.h"
 #include <iostream>
+#include "ghLoggerManager.h"
+
+
 namespace ganeshEngine {
 
 void gAssertFailure(const char *expr, const char *file, U32 line) {
@@ -9,6 +12,10 @@ void gAssertFailure(const char *expr, const char *file, U32 line) {
 U32 gRandr(unsigned int min, unsigned int max) {
     double scaled = (double)rand()/RAND_MAX;
     return (max - min +1)*scaled + min;
+}
+
+void callLogMgr(LOG_LEVEL logLevel, const char* file, int line, std::string &string) {
+    gLogger().log(logLevel, file, line, string);
 }
 
 }

@@ -3,32 +3,34 @@
 
 #include "ghHeaders.h"
 #include "ghSystem.h"
+#include "ghILogger.h"
 
 namespace ganeshEngine {
 
 using namespace std;
 
-class LoggerManager : public System<LoggerManager>, public ILogger {
+
+class LoggerManager : public System<LoggerManager> {
     friend class System<LoggerManager>;
 
 private:
-    List<ILogger> mLoggers;
+    list<ILogger*> mLoggers;
 
 public:
+    LoggerManager() {}
     LoggerManager(const LoggerManager&) = delete;
     LoggerManager& operator=(const LoggerManager&) = delete;
     ~LoggerManager() {}
 
     void addLogger(ILogger* logger);
 
-    void vLog(LOG_LEVEL lvl, const char* file, int line, std::string &message);
+    void log(LOG_LEVEL lvl, const char* file, int line, std::string &message);
 
 protected:
     void vInitialize() override;
     void vDestroy() override;
 };
 
-void callLogMgr(LOG_LEVEL logLevel, const char* file, int line, std::string &string);
 
 extern LoggerManager&(*gLogger)();
 }

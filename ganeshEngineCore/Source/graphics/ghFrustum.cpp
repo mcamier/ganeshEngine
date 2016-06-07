@@ -17,7 +17,7 @@ Frustum::~Frustum() {}
 bool Frustum::vIsColliding(const vec3 &point) const {
 	for(int i = 0 ; i<6; i++) {
 		auto dotProduct = dot(mPlanes[i]->getNormal(), point);
-		if(dotProduct < 0.0f) {
+		if(dotProduct <= 0.0f) {
 			return false;
 		}
 	}
@@ -52,13 +52,12 @@ void Frustum::updateInternal() {
 	mFars[PlaneCorner::BOTTOM_RIGHT] = (forward * mFarClipDistance) + farRight - farUp;
 	mFars[PlaneCorner::BOTTOM_LEFT] = (forward * mFarClipDistance) - farRight - farUp;
 
-	// TODO check if planes' normals are well oriented
-	mPlanes[FrustumPlane::TOP] = new Plane(mNears[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_RIGHT]);
-	mPlanes[FrustumPlane::BOTTOM] = new Plane(mNears[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_LEFT]);
-	mPlanes[FrustumPlane::NEAR] = new Plane(mNears[PlaneCorner::BOTTOM_RIGHT], mNears[PlaneCorner::TOP_RIGHT], mNears[PlaneCorner::TOP_LEFT]);
-	mPlanes[FrustumPlane::FAR] = new Plane(mFars[PlaneCorner::TOP_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_LEFT]);
-	mPlanes[FrustumPlane::LEFT] = new Plane(mNears[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::BOTTOM_LEFT]);
-	mPlanes[FrustumPlane::RIGHT] = new Plane(mNears[PlaneCorner::TOP_RIGHT], mNears[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT]);
+	mPlanes[FrustumPlane::TOP] = new Plane(mNears[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_RIGHT]); //ok
+	mPlanes[FrustumPlane::BOTTOM] = new Plane(mNears[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::BOTTOM_LEFT]); //ok
+	mPlanes[FrustumPlane::NEAR] = new Plane(mNears[PlaneCorner::BOTTOM_RIGHT], mNears[PlaneCorner::TOP_RIGHT], mNears[PlaneCorner::TOP_LEFT]); //ok
+	mPlanes[FrustumPlane::FAR] = new Plane(mFars[PlaneCorner::BOTTOM_RIGHT], mFars[PlaneCorner::TOP_RIGHT], mFars[PlaneCorner::TOP_LEFT]); //ok
+	mPlanes[FrustumPlane::LEFT] = new Plane(mNears[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::TOP_LEFT], mFars[PlaneCorner::BOTTOM_LEFT]); //ok
+	mPlanes[FrustumPlane::RIGHT] = new Plane(mFars[PlaneCorner::BOTTOM_RIGHT], mNears[PlaneCorner::BOTTOM_RIGHT], mNears[PlaneCorner::TOP_RIGHT]); //ok
 }
 
 const F32 Frustum::getAspectRatio() const {

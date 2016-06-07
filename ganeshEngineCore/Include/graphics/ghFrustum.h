@@ -16,10 +16,10 @@ using namespace glm;
 enum FrustumPlane {
 	NEAR = 0,
 	FAR = 1,
-	RIGHT = 2,
-	LEFT = 3,
-	TOP = 4,
-	BOTTOM = 5
+	BOTTOM = 2,
+	TOP = 3,
+	LEFT = 4,
+	RIGHT = 5
 };
 
 class Frustum : public ICollider{

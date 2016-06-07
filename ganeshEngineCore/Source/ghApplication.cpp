@@ -53,12 +53,13 @@ void Application::run() {
 }
 
 void Application::vInitialize() {
-    std::cout << "CPU : "<< std::endl;
-    std::cout << "\t " << Platform::getCpuCoreAmount() << " cores" << std::endl;
     LoggerManager::Initialize();
     ProfilerManager::Initialize();
     RendererManager::Initialize();
     Simulation::Initialize();
+
+    _TRACE("CPU : ");
+    _TRACE("\t " << Platform::getCpuCoreAmount() << " cores");
 }
 
 void Application::vDestroy() {
@@ -67,5 +68,11 @@ void Application::vDestroy() {
     ProfilerManager::Destroy();
     LoggerManager::Destroy();
 }
+
+void Application::shutdown() {
+    mIsExiting = true;
+}
+
+Application&(*gApp)() = &Application::get;
 
 }

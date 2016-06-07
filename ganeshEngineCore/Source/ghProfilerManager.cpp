@@ -1,4 +1,5 @@
 #include "ghProfilerManager.h"
+#include "ghHeaders.h"
 
 namespace ganeshEngine {
 
@@ -36,9 +37,9 @@ void ProfilerManager::registerSample(std::string &name, F32 durationMs) {
 }
 
 void ProfilerManager::vDestroy() {
-    std::cout << "ProfilesManager details " << std::endl;
+    _INFO("ProfilesManager details");
     for(auto entry : mGlobalSamplesMap) {
-        std::cout << entry.first << " [avg : " << entry.second.mAverageDurationMs << "] [min : " << entry.second.mMinDurationMs << "] [max : " << entry.second.mMaxDurationMs << "]" << std::endl;
+        _INFO("\t" << entry.first << " [avg : " << entry.second.mAverageDurationMs << "] [min : " << entry.second.mMinDurationMs << "] [max : " << entry.second.mMaxDurationMs << "]");
     }
 }
 

@@ -4,13 +4,15 @@
 #include "ghHeaders.h"
 #include "ghSystem.h"
 
+#include "graphics/ghGLModel.h"
+
 class GLFWwindow;
 
 namespace ganeshEngine {
 
 class RendererManager : public System<RendererManager> {
 private:
-    GLFWwindow* mWpWindow;
+    GLFWwindow* mpWindow;
 
 public:
     void update();

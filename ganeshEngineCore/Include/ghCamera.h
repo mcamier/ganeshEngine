@@ -2,6 +2,8 @@
 #define GANESHENGINE_GHCAMERA_H
 
 #include "ghHeaders.h"
+#include "graphics/ghFrustum.h"
+#include "ghProjection.h"
 
 namespace ganeshEngine {
 
@@ -25,7 +27,16 @@ private:
 
 
 class Camera : public SceneObject {
+private:
+	Frustum* mpFrustum;
+	IProjection* mpProjection;
 
+public:
+	Camera() {
+		mpFrustum = new Frustum(4.0f/3.0f, 80, 1.0f, 1000.0f);
+		mpProjection = new PerspectiveProjection();
+	}
+	~Camera() {}
 };
 
 

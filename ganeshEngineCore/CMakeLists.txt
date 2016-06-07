@@ -7,18 +7,22 @@ include_directories(${EngineInclude})
 
 set(EngineSources
         "Source/ghApplication.cpp"
-        "Source/ghPlatform.cpp"
         "Source/ghClock.cpp"
         "Source/ghCore.cpp"
-        "Source/ghProfilerManager.cpp"
+        "Source/ghDoubleBufferedStackAllocator.cpp"
+        "Source/ghFileLogger.cpp"
         "Source/ghGLRendererManager.cpp"
-        "Source/ghProfiler.cpp"
-        "Source/ghPlane.cpp"
-        "Source/ghSimulation.cpp"
         "Source/ghLoggerManager.cpp"
-        "Source/graphics/ghGLShader.cpp"
+        "Source/ghPlane.cpp"
+        "Source/ghPlatform.cpp"
+        "Source/ghPoolAllocator.cpp"
+        "Source/ghProfiler.cpp"
+        "Source/ghProfilerManager.cpp"
+        "Source/ghSimulation.cpp"
+        "Source/ghStackAllocator.cpp"
+        "Source/graphics/ghFrustum.cpp"
         "Source/graphics/ghGLProgram.cpp"
-        "Source/graphics/ghFrustum.cpp")
+        "Source/graphics/ghGLShader.cpp")
 
 
 find_package(GLM REQUIRED)

@@ -21,21 +21,6 @@ enum DirtyFlag{
 /**
  *
  */
-class vector3f {
-public:
-    setX(float x);
-    setY(float y);
-    setZ(float z);
-
-    float getX();
-    float getY();
-    float getZ();
-};
-
-
-/**
- *
- */
 class SceneObject {
 
 private:

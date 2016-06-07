@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <cstdio>
-
+#include "ghILogger.h"
 
 #ifdef DEBUG_ASSERTION_ENABLED
     #include <stdio.h>
@@ -74,6 +74,8 @@ void gAssertFailure(const char *expr, const char *file, U32 line) ;
  *  \return random number generated as U32
  */
 U32 gRandr(unsigned int min, unsigned int max);
+
+void callLogMgr(LOG_LEVEL logLevel, const char* file, int line, std::string &string);
 
 }
 #endif //GANESHENGINE_GLCORE_H

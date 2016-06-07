@@ -3,7 +3,7 @@
 
 #include "ghHeaders.h"
 
-#ifdef ENABLE_PROFILING
+#ifdef PROFILING_ENABLED
     #define PROFILE(name, op) { \
         { \
         AutoProfiler profiler(name); \
