@@ -1,11 +1,26 @@
 #include <ghGLRendererManager.h>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+
 #include <time.h>
 #include "ghApplication.h"
 
 namespace ganeshEngine {
+
+vector<tuple<GLenum, string>> gGLContextParams = {
+    make_tuple<GLenum, string>(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS"),
+    make_tuple<GLenum, string>(GL_MAX_CUBE_MAP_TEXTURE_SIZE, "GL_MAX_CUBE_MAP_TEXTURE_SIZE"),
+    make_tuple<GLenum, string>(GL_MAX_DRAW_BUFFERS, "GL_MAX_DRAW_BUFFERS"),
+    make_tuple<GLenum, string>(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, "GL_MAX_FRAGMENT_UNIFORM_COMPONENTS"),
+    make_tuple<GLenum, string>(GL_MAX_TEXTURE_IMAGE_UNITS, "GL_MAX_TEXTURE_IMAGE_UNITS"),
+    make_tuple<GLenum, string>(GL_MAX_TEXTURE_SIZE, "GL_MAX_TEXTURE_SIZE"),
+    make_tuple<GLenum, string>(GL_MAX_VARYING_FLOATS, "GL_MAX_VARYING_FLOATS"),
+    make_tuple<GLenum, string>(GL_MAX_VERTEX_ATTRIBS, "GL_MAX_VERTEX_ATTRIBS"),
+    make_tuple<GLenum, string>(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, "GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS"),
+    make_tuple<GLenum, string>(GL_MAX_VERTEX_UNIFORM_COMPONENTS, "GL_MAX_VERTEX_UNIFORM_COMPONENTS"),
+    make_tuple<GLenum, string>(GL_MAX_VERTEX_ATTRIBS, "GL_MAX_VERTEX_ATTRIBS"),
+    make_tuple<GLenum, string>(GL_MAX_VIEWPORT_DIMS, "GL_MAX_VIEWPORT_DIMS"),
+    make_tuple<GLenum, string>(GL_STEREO, "GL_STEREO")
+};
 
 void RendererManager::vInitialize() {
     if( glfwInit() ) {
@@ -16,6 +31,7 @@ void RendererManager::vInitialize() {
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
         mpWindow = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
+        glfwSetErrorCallback(gGlfwErrorCallback);
 
         if( mpWindow ) {
             glfwMakeContextCurrent(mpWindow);
@@ -27,10 +43,16 @@ void RendererManager::vInitialize() {
 
                 const GLubyte *renderer = glGetString(GL_RENDERER);
                 const GLubyte *version = glGetString(GL_VERSION);
-                _TRACE("RendererManager init : ");
-                _TRACE("\t renderer : " << renderer);
-                _TRACE("\t version : " << version);
+                _INFO("RendererManager init : ");
+                _INFO("\t renderer : " << renderer);
+                _INFO("\t version : " << version);
 
+                _INFO("GL Context param :");
+                for(tuple<GLenum, string> param : gGLContextParams) {
+                    int value = 0;
+                    glGetIntegerv(std::get<0>(param), &value);
+                    _INFO("\t" << std::get<1>(param) << " : " << value);
+                }
             } else {
                 _FATAL("failed to initialize GLEW");
             }
@@ -40,10 +62,8 @@ void RendererManager::vInitialize() {
     } else {
         _FATAL("ERROR ON GLFW INIT");
     }
-
-
-
 }
+
 
 void RendererManager::update() {
     timespec t;
@@ -65,6 +85,10 @@ void RendererManager::update() {
 
 void RendererManager::vDestroy() {
     glfwTerminate();
+}
+
+void gGlfwErrorCallback(int error, const char *message) {
+    _ERROR("GLFW ERROR : code " << error << " message : ");
 }
 
 RendererManager&(*gRenderer)() = &RendererManager::get;

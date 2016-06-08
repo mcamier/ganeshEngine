@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <utility>
+#include <tuple>
 #include <type_traits>
 #include <cstdint>
 #include <cstdio>

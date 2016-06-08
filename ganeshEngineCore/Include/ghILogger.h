@@ -47,6 +47,7 @@ public:
 	ILogger(LOG_LEVEL logLevel) : mLogLevel(logLevel) {}
     virtual void vLog(LOG_LEVEL lvl, const char* file, int line, std::string &message) = 0;
 
+	virtual void vInitialize(void) {}
 	virtual void vDestroy(void) {}
 };
 

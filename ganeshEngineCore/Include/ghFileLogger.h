@@ -35,7 +35,13 @@ public:
 
     void vLog(LOG_LEVEL lvl, const char* file, int line, std::string &message) override;
 
+    void vInitialize(void) override;
     void vDestroy(void) override;
+
+private:
+    void writePendingLogsIntroFileAndSwap();
+    void appendLogEntry(LOG_LEVEL lvl, const char* file, int line, std::string &message);
+
 };
 
 }

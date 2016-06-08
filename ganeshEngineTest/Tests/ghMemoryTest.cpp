@@ -1,17 +1,21 @@
 #include <gtest/gtest.h>
 #include <ghStackAllocator.h>
 
+
 class MemoryTest : public ::testing::Test {
+
+using namespace ganeshEngine;
+
 protected:
     StackAllocator *allocator;
 
     virtual void SetUp() {
         allocator = new StackAllocator(32);
-        allocator->v_initialize();
+        allocator->initialize();
     }
 
     virtual void TearDown() {
-        allocator->v_destroy();
+        allocator->destroy();
     }
 };
 
@@ -27,7 +31,7 @@ public:
 
 
 TEST_F(MemoryTest, allocationArea) {
-        EXPECT_EQ(allocator->m_pLastAddr, allocator->m_pFirstAddr + (32 * sizeof(char)));
+    EXPECT_EQ(allocator->mpLastAddr, allocator->mpFirstAddr + (32 * sizeof(char)));
 }
 
 TEST_F(MemoryTest, allocationShouldBeContiguous) {
