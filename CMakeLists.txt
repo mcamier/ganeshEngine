@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(ganeshEngine)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${ganeshEngine_SOURCE_DIR}/cmake")
 
 add_definitions(-DDEBUG_ASSERTION_ENABLED)

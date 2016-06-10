@@ -1,9 +1,35 @@
 project(ganeshEngineCore)
 set(LibName "ganeshEngineCore")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(EngineInclude
     "Include")
 include_directories(${EngineInclude})
+
+set(EngineIncludes
+        "Include/ghCamera.h"
+        "Include/ghClock.h"
+        "Include/ghConsoleLogger.h"
+        "Include/ghCore.h"
+        "Include/ghDoubleBufferedStackAllocator.h"
+        "Include/ghFileLogger.h"
+        "Include/ghGLRendererManager.h"
+        "Include/ghHeaders.h"
+        "Include/ghICollider.h"
+        "Include/ghILogger.h"
+        "Include/ghLoggerManager.h"
+        "Include/ghPlane.h"
+        "Include/ghPlatform.h"
+        "Include/ghPoolAllocator.h"
+        "Include/ghProfiler.h"
+        "Include/ghProfilerManager.h"
+        "Include/ghProjection.h"
+        "Include/ghScene.h"
+        "Include/ghSimulation.h"
+        "Include/ghStackAllocator.h"
+        "Include/graphics/ghFrustum.h"
+        "Include/graphics/ghGLProgram.h"
+        "Include/graphics/ghGLModel.h"
+        "Include/graphics/ghGLShader.h")
+
 
 set(EngineSources
         "Source/ghApplication.cpp"
@@ -45,3 +71,30 @@ if(WIN32)
 else(WIN32)
     target_link_libraries(${LibName} glfw GL X11 Xxf86vm Xrandr pthread Xi Xinerama dl rt Xcursor)
 endif(WIN32)
+
+
+
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_INPUT doxygen.cfg)
+    set(DOXYGEN_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doc)
+
+    add_custom_command(
+            OUTPUT ${DOXYGEN_OUTPUT}
+            COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT}
+            COMMAND ${CMAKE_COMMAND} -E echo "Done."
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            DEPENDS ${DOXYGEN_INPUT}
+    )
+
+    add_custom_target(apidoc ALL DEPENDS ${DOXYGEN_OUTPUT})
+
+    add_custom_target(apidoc_forced
+            COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT}
+            COMMAND ${CMAKE_COMMAND} -E echo "Done."
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            )
+endif(DOXYGEN_FOUND)
