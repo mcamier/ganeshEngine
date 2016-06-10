@@ -28,43 +28,43 @@
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::callLogMgr(LOG_LEVEL, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL, __FILE__, __LINE__, message);\
     }
 	#define _TRACE(MESSAGE) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::callLogMgr(LOG_LEVEL::TRACE, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::TRACE, __FILE__, __LINE__, message);\
     }
 	#define _INFO(MESSAGE) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::callLogMgr(LOG_LEVEL::INFO, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::INFO, __FILE__, __LINE__, message);\
     }
 	#define _DEBUG(MESSAGE) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::callLogMgr(LOG_LEVEL::DEBUG, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::DEBUG, __FILE__, __LINE__, message);\
     }
 	#define _WARNING(MESSAGE) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::callLogMgr(LOG_LEVEL::WARNING, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::WARNING, __FILE__, __LINE__, message);\
     }
 	#define _ERROR(MESSAGE) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::callLogMgr(LOG_LEVEL::ERROR, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::ERROR, __FILE__, __LINE__, message);\
     }
 	#define _FATAL(MESSAGE) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::callLogMgr(LOG_LEVEL::FATAL, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::FATAL, __FILE__, __LINE__, message);\
         gApp().shutdown();\
     }
 #else

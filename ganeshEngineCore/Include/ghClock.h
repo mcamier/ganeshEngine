@@ -7,8 +7,23 @@ namespace ganeshEngine {
 
 class Clock {
 private:
+
+	/**
+	 * Total nanoseconds elapsed
+	 */
     U64 mTotalNanoSeconds;
+
+	/**
+	 * Define how time elapsed
+	 * Value of 1.0f will let time elapsed normally
+	 * Value of 2.0f will make things happens two times quicker
+	 * Value of 0.5f will make things happens two times lower
+	 */
     F32 mScale;
+
+	/**
+	 * True will stop the time counting
+	 */
     bool mIsPaused;
 
 public:
@@ -17,23 +32,31 @@ public:
     Clock& operator=(const Clock&) = delete;
     ~Clock() {}
 
-    /** One tick update clock
+    /**
+     * One tick update
+     *
+     * @param dtNanoSecond amount of time to append to the clock's total elapsed time
      */
     void tick(U32 dtNanoSecond);
 
-    /** One tick update clock
+    /**
+     * One fixed time step update
+     *
+     * @param force True will force the stop to be took even if the clock is paused
      */
     void singleStep(bool force);
 
-    /** Getter of pause status
+    /**
+     * Getter of pause status
      *
-     * \param[in] Boolean to determine the status of the clock
+     * @return True if the clock is paused, false otherwise
      */
     bool isPaused();
 
-    /** Setter of pause status
+    /**
+     * Setter of pause status
      *
-     * \return True if the clock is paused, False otherwise
+     * @param value True to pause the clock, false otherwise
      */
     void setPause(bool value);
 };

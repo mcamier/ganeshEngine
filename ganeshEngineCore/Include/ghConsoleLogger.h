@@ -6,6 +6,10 @@
 
 namespace ganeshEngine {
 
+
+/**
+ * Basic ILogger forwarding all logs to the stdout
+ */
 class ConsoleLogger : public ILogger {
 
 public:
@@ -13,11 +17,15 @@ public:
 	ConsoleLogger(const ConsoleLogger&) = delete;
 	ConsoleLogger& operator=(const ConsoleLogger&) = delete;
 
-    void vLog(LOG_LEVEL lvl, const char* file, int line, std::string &message) override {
-        if(lvl >= mLogLevel) {
-            printf("[%7s] %s (%s at line: %d)\n", LOG_LEVELS[lvl].c_str(), message.c_str(), file, line);
-        }
-    }
+	/**
+	 * Put a log into the stdout
+	 *
+	 * @param lvl log level of the given message
+	 * @param file origin file where comes the log from
+	 * @param line line of code where comes the log from
+	 * @param message message to log
+	 */
+    void vLog(LOG_LEVEL lvl, const char* file, int line, std::string &message) override;
 };
 
 }

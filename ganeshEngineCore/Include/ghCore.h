@@ -59,23 +59,34 @@ using I64 = std::int64_t;
 using F32 = float;
 using F64 = double;
 
-/** Print an error message and break the program execution where the assertion failed
+/**
+ * Print an error message and break the program execution where the assertion failed
  *
- * \param[in] boolean expression that make assert fails
- * \param[in] filename where the failing statement is located
- * \param[in] line in the file of the failing statement
+ * @param expr expression that make assert fails
+ * @param file where the failing statement is located
+ * @param line in the file of the failing statement
  */
 void gAssertFailure(const char *expr, const char *file, U32 line) ;
 
-/** Generate random number within the given range
+/**
+ * Generate random number within the given range
  *
- *  \param[in] the lowest bound
- *  \param[in] the larger bound
- *  \return random number generated as U32
+ * @param min the lowest bound
+ * @param max the larger bound
+ * @return random number generated as U32
  */
 U32 gRandr(unsigned int min, unsigned int max);
 
-void callLogMgr(LOG_LEVEL logLevel, const char* file, int line, std::string &string);
+
+/**
+ *
+ *
+ * @param logLevel
+ * @param file
+ * @param line
+ * @param string
+ */
+void gLog(LOG_LEVEL logLevel, const char *file, int line, std::string &string);
 
 }
 #endif //GANESHENGINE_GLCORE_H

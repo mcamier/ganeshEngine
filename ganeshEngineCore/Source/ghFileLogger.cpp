@@ -8,7 +8,6 @@ void FileLogger::vLog(LOG_LEVEL lvl, const char* file, int line, std::string &me
 			appendLogEntry(lvl, file, line, message);
 		} else {
 			writePendingLogsIntroFileAndSwap();
-			currentAmount = 0;
 			appendLogEntry(lvl, file, line, message);
 		}
 	}
@@ -52,6 +51,7 @@ void FileLogger::writePendingLogsIntroFileAndSwap() {
 	mCurrentEntries = temp;
 
 	mPendingEntries.clear();
+	currentAmount = 0;
 }
 
 void FileLogger::appendLogEntry(LOG_LEVEL lvl, const char* file, int line, std::string &message) {

@@ -34,6 +34,7 @@ set(EngineIncludes
 set(EngineSources
         "Source/ghApplication.cpp"
         "Source/ghClock.cpp"
+        "Source/ghConsoleLogger.cpp"
         "Source/ghCore.cpp"
         "Source/ghDoubleBufferedStackAllocator.cpp"
         "Source/ghFileLogger.cpp"
