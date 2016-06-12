@@ -2,6 +2,85 @@
 
 namespace ganeshEngine {
 
+const char* GL_type_to_string(GLenum type) {
+	switch (type) {
+		case GL_BOOL: return "bool";
+		case GL_INT: return "int";
+		case GL_FLOAT: return "float";
+		case GL_FLOAT_VEC2: return "vec2";
+		case GL_FLOAT_VEC3: return "vec3";
+		case GL_FLOAT_VEC4: return "vec4";
+		case GL_FLOAT_MAT2: return "mat2";
+		case GL_FLOAT_MAT3: return "mat3";
+		case GL_FLOAT_MAT4: return "mat4";
+		case GL_SAMPLER_2D: return "sample2d";
+		case GL_SAMPLER_3D: return "sample3d";
+		case GL_SAMPLER_CUBE: return "sampleCube";
+		case GL_SAMPLER_2D_SHADOW: return "sample2dShadow";
+		default:break;
+	}
+	return "other";
+
+}
+
+void GLProgram::logProgramInfo() {
+	_INFO("Shader program infos : " << mInternalId);
+	int params = -1;
+
+	glGetProgramiv(mInternalId, GL_LINK_STATUS, &params);
+	_INFO("\tGL_LINK_STATUS : " << params);
+
+	glGetProgramiv(mInternalId, GL_ATTACHED_SHADERS, &params);
+	_INFO("\tGL_ATTACHED_SHADERS : " << params);
+
+	glGetProgramiv(mInternalId, GL_ACTIVE_ATTRIBUTES, &params);
+	_INFO("\tGL_ACTIVE_ATTRIBUTES : " << params);
+	for(GLuint i = 0 ; i < (GLuint)params; i++) {
+		char name[64];
+		int maxLenght = 64;
+		int currentLenght = 0;
+		int size = 0;
+		GLenum type;
+
+		glGetActiveAttrib(mInternalId, i, maxLenght, &currentLenght, &size, &type, name);
+		if(size > 1) {
+			for(int j = 0 ; j < size; j++) {
+				char long_name[64];
+				sprintf(long_name, "%s[%i]", name, j);
+				int location = glGetAttribLocation(mInternalId, long_name);
+				_INFO("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location);
+			}
+		} else {
+			int location = glGetAttribLocation(mInternalId, name);
+			_INFO("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location);
+		}
+	}
+
+	glGetProgramiv(mInternalId, GL_ACTIVE_UNIFORMS, &params);
+	_INFO("\tGL_ACTIVE_UNIFORMS : " << params);
+	for(GLuint i = 0 ; i < (GLuint)params; i++) {
+		char name[64];
+		int maxLenght = 64;
+		int currentLenght = 0;
+		int size = 0;
+		GLenum type;
+
+		glGetActiveUniform(mInternalId, i, maxLenght, &currentLenght, &size, &type, name);
+		if(size > 1) {
+			for(int j = 0 ; j < size; j++) {
+				char long_name[64];
+				sprintf(long_name, "%s[%i]", name, j);
+				int location = glGetUniformLocation(mInternalId, long_name);
+				_INFO("\t\t"<<i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location);
+			}
+		} else {
+			int location = glGetUniformLocation(mInternalId, name);
+			_INFO("\t\t"<<i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location);
+		}
+	}
+
+}
+
 GLProgram GLProgram::create(GLProgram& program) {
 	glLinkProgram(program.mInternalId);
 
@@ -21,6 +100,19 @@ GLProgram GLProgram::create(GLProgram& program) {
 		delete[] strInfoLog;
 		program.mStatus = GLProgramStatus::FAILED;
 	}
+	int isValid = -1;
+	glValidateProgram(program.mInternalId);
+	glGetProgramiv(program.mInternalId, GL_VALIDATE_STATUS, &isValid);
+	if(GL_TRUE != isValid) {
+		program.mStatus = GLProgramStatus::FAILED;
+		int maxLength = 2048;
+		int currentLength = 0;
+		char log[maxLength];
+		glGetProgramInfoLog(program.mInternalId, maxLength, &currentLength, log);
+		_ERROR("Shader program failed to validate : " << log);
+	}
+
+	program.logProgramInfo();
 	return program;
 }
 

@@ -24,6 +24,13 @@ enum class DrawMode : GLenum {
 	TRIANGLE_FAN    = GL_TRIANGLE_FAN
 };
 
+enum class AttribPointer : U32 {
+	VERTEX  = 0,
+	COLOR   = 1,
+	UV      = 2,
+	NORMAL  = 3
+
+};
 
 enum class VertexInfo : U32 {
 	X  = 1,
@@ -46,6 +53,8 @@ class Vertex {
 
 public:
 	F32 x, y, z;
+	F32 r, g, b;
+
 	//F32 nx, ny, nz;
 	//F32 u, v;
 
@@ -55,7 +64,8 @@ public:
 			u(_u), v(_v) {}*/
 
 	Vertex(F32 _x, F32 _y, F32 _z, F32 _u, F32 _v, F32 _nx, F32 _ny, F32 _nz) :
-			x(_x), y(_y), z(_z) {}
+			x(_x), y(_y), z(_z),
+			r(0.3f), g(0.3f), b(1.0f) {}
 };
 
 
@@ -64,13 +74,6 @@ public:
  */
 class GLTexture {
 public:
-	/**
-	 * @return
-	 */
-	bool isLoaded() const {
-		return true;
-	}
-
 	void sendToGC() {}
 };
 
@@ -79,20 +82,18 @@ public:
  *
  */
 class GLMesh {
+	friend class GLModel;
+
 	vector<Vertex> mVertices;
 	GLuint mVBO;
 	DrawMode mDrawMode;
 
 public:
-	GLMesh(vector<Vertex> vertices, DrawMode drawMode) : mVertices(vertices), mDrawMode(drawMode) {}
+	GLMesh(vector<Vertex> vertices, DrawMode drawMode) :
+		mVertices(vertices),
+		mDrawMode(drawMode),
+		mVBO(-1) {}
 	~GLMesh() {}
-
-	/**
-	 * @return
-	 */
-	bool isLoaded() const {
-		return mVBO >= 0;
-	}
 
 	void sendToGC() {
 		glGenBuffers(1, &mVBO);
@@ -104,7 +105,6 @@ public:
 			GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-
 };
 
 
@@ -126,30 +126,25 @@ public:
 		mpTexture(texture) {}
 	~GLModel() {}
 
-	/**
-	 *
-	 * @return
-	 */
-	bool isLoaded() const {
-		return true;
-	}
-
 	void sendToGC() {
-		if (!mpMesh->isLoaded()) mpMesh->sendToGC();
-		if (!mpTexture->isLoaded()) mpTexture->sendToGC();
+		mpMesh->sendToGC();
+		mpTexture->sendToGC();
 
 		glGenVertexArrays(1, &mVAO);
 		glBindVertexArray(mVAO);
-		GLint vert = glGetAttribLocation(mpProgram->mInternalId, "vert");
-		glEnableVertexAttribArray(vert);
-		glVertexAttribPointer(vert, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+		glBindBuffer(GL_ARRAY_BUFFER, mpMesh->mVBO);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, x));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, r));
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
 		glBindVertexArray(0);
 
 	}
 
 	void draw() {
+		glUseProgram(mpProgram->mInternalId);
 		glBindVertexArray(mVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays((GLenum) mpMesh->mDrawMode, 0, (int) mpMesh->mVertices.size());
 		glBindVertexArray(0);
 	}
 };

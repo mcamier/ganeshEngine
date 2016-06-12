@@ -40,6 +40,9 @@ void RendererManager::vInitialize() {
             if(err == GLEW_OK) {
                 glEnable(GL_DEPTH_TEST);
                 glDepthFunc(GL_LESS);
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK);
+                glFrontFace(GL_CW);
 
                 const GLubyte *renderer = glGetString(GL_RENDERER);
                 const GLubyte *version = glGetString(GL_VERSION);

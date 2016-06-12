@@ -31,11 +31,11 @@ void FileLogger::writePendingLogsIntroFileAndSwap() {
 		     iter != mCurrentEntries.end(); ++iter) {
 			fprintf(
 					fp,
-					"[%7s] %s (%s at line: %d)\n",
+					"[%7s] %35s:%d\t%s\n",
 					LOG_LEVELS[(*iter)->lvl].c_str(),
-					(*iter)->message,
 					(*iter)->file,
-					(*iter)->line);
+					(*iter)->line,
+					(*iter)->message);
 		}
 		fclose(fp);
 	}

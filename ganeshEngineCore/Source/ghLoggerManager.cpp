@@ -9,7 +9,21 @@ void LoggerManager::addLogger(ILogger *logger) {
 
 void LoggerManager::log(LOG_LEVEL lvl, const char* file, int line, std::string &message) {
     for(auto logger : mLoggers) {
-        logger->vLog(lvl, file, line, message);
+
+        int index = 0;
+        int indexLastSlash = -1;
+        while(file[index] != '\0') {
+            if(file[index] == '/' || file[index] == '\\') {
+                indexLastSlash = index;
+            }
+            index++;
+        }
+        if(indexLastSlash != -1) {
+            std::string filename{file};
+            logger->vLog(lvl, filename.substr(indexLastSlash+1).c_str(), line, message);
+        } else {
+            logger->vLog(lvl, file, line, message);
+        }
     }
 }
 

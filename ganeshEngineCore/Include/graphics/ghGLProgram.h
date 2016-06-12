@@ -42,6 +42,8 @@ public:
 		return GLProgram::create(program, shaderType, first, rest...);
 	}
 
+	void logProgramInfo();
+
 private:
 	template<typename... S>
 	static GLProgram create(GLProgram& program, GLShader& shader, S&... rest) {
