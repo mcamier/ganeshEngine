@@ -57,13 +57,13 @@ void RendererManager::vInitialize() {
                     _INFO("\t" << std::get<1>(param) << " : " << value);
                 }
 
-				vector<Vertex> vertices;
-				vertices.push_back(Vertex(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-				vertices.push_back(Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-				vertices.push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
+                unique_ptr<vector<Vertex>> vertices = make_unique<vector<Vertex>>();
+				vertices->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
+				vertices->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
+				vertices->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
 
                 tex = new GLTexture();
-                mesh = new GLMesh(vertices, DrawMode::TRIANGLES);
+                mesh = new GLMesh(move(vertices), DrawMode::TRIANGLES);
                 program = GLProgram::create(ShaderType::VERTEX, "/home/mcamier/Workspace/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl", ShaderType::FRAGMENT, "/home/mcamier/Workspace/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
 
                 model = new GLModel(&program, mesh, tex);

@@ -1,11 +1,13 @@
 #version 430 core
 
-layout(location = 0) in vec3 vert;
-layout(location = 1) in vec3 color;
+layout(location = 0) in vec3 ghVertex;
+layout(location = 1) in vec3 ghColor;
+layout(location = 2) in vec2 ghUV;
+layout(location = 3) in vec3 ghNormal;
 
 out vec3 colorToFrag;
 
 void main() {
-    colorToFrag = color;
-    gl_Position = vec4(vert, 1);
+    colorToFrag = ghColor;
+    gl_Position = vec4(ghVertex, 1);
 }

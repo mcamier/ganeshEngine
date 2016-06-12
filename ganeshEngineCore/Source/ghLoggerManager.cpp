@@ -9,7 +9,6 @@ void LoggerManager::addLogger(ILogger *logger) {
 
 void LoggerManager::log(LOG_LEVEL lvl, const char* file, int line, std::string &message) {
     for(auto logger : mLoggers) {
-
         int index = 0;
         int indexLastSlash = -1;
         while(file[index] != '\0') {

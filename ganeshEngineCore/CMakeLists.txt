@@ -48,6 +48,9 @@ set(EngineSources
         "Source/ghSimulation.cpp"
         "Source/ghStackAllocator.cpp"
         "Source/graphics/ghFrustum.cpp"
+        "Source/graphics/ghGLMesh.cpp"
+        "Source/graphics/ghGLModel.cpp"
+        "Source/graphics/ghGLTexture.cpp"
         "Source/graphics/ghGLProgram.cpp"
         "Source/graphics/ghGLShader.cpp")
 
