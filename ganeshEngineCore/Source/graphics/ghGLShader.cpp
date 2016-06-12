@@ -2,7 +2,7 @@
 
 #include "graphics/ghGLProgram.h"
 #include <fstream>
-#include <streambuf>
+#include <ghLoggerManager.h>
 
 namespace ganeshEngine {
 
@@ -34,7 +34,7 @@ void GLShader::doCompile() {
 		glGetShaderInfoLog(shaderId, maxLength, nullptr, strInfoLog);
 		strInfoLog[maxLength] = '\0';
 		glDeleteShader(shaderId);
-		std::cerr << strInfoLog << std::endl;
+		_ERROR(strInfoLog);
 		delete[] strInfoLog;
 		mStatus = ShaderStatus::FAILED;
 	} else if (isCompiled == GL_TRUE) {

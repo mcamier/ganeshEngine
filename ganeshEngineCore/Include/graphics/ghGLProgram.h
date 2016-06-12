@@ -8,7 +8,7 @@ namespace ganeshEngine {
 
 using namespace std;
 
-enum class GLProgramStatus {
+enum GLProgramStatus {
 	NONE        = 0x01,
 	COMPILED    = 0x02,
 	FAILED      = 0x04,
@@ -78,6 +78,7 @@ private:
 	}
 
 	static GLProgram create(GLProgram& program);
+
 };
 
 }

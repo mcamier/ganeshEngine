@@ -66,6 +66,10 @@ protected:
     void run();
 };
 
+/**
+ * Global getter of reference to the Application
+ * @return reference to the Application
+ */
 extern Application&(*gApp)();
 }
 

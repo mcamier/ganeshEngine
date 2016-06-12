@@ -17,7 +17,7 @@ GLProgram GLProgram::create(GLProgram& program) {
 		glGetProgramInfoLog(program.mInternalId, maxLength, nullptr, strInfoLog);
 		strInfoLog[maxLength] = '\0';
 		glDeleteProgram(program.mInternalId);
-		std::cerr << strInfoLog << std::endl;
+		_ERROR(strInfoLog);
 		delete[] strInfoLog;
 		program.mStatus = GLProgramStatus::FAILED;
 	}

@@ -13,6 +13,10 @@ public:
     void tick(U32 deltaNanosecond);
 };
 
+/**
+ * Global getter of reference to the Simulation
+ * @return reference to the Simulation
+ */
 extern Simulation&(*gSimulation)();
 }
 

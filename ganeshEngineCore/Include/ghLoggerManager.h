@@ -25,8 +25,9 @@ private:
 	 */
     list<ILogger*> mLoggers;
 
-public:
     LoggerManager() {}
+
+public:
     LoggerManager(const LoggerManager&) = delete;
     LoggerManager& operator=(const LoggerManager&) = delete;
     ~LoggerManager() {}
@@ -60,7 +61,10 @@ protected:
     void vDestroy() override;
 };
 
-
+/**
+ * Global getter of reference to the LoggerManager
+ * @return
+ */
 extern LoggerManager&(*gLogger)();
 }
 
