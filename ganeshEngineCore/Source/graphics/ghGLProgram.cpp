@@ -1,5 +1,7 @@
 #include "graphics/ghGLProgram.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace ganeshEngine {
 
 const char* GL_type_to_string(GLenum type) {
@@ -21,6 +23,34 @@ const char* GL_type_to_string(GLenum type) {
 	}
 	return "other";
 
+}
+
+void GLProgram::setUniform(const char *name, mat4 value) {
+	GLint id = glGetUniformLocation(this->mInternalId, name);
+	if(id != -1 && inUse()) {
+		glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(value));
+	}
+}
+
+void GLProgram::setUniform(const char *name, mat3 value) {
+	GLint id = glGetUniformLocation(this->mInternalId, name);
+	if(id != -1 && inUse()) {
+		glUniformMatrix3fv(id, 1, GL_FALSE, glm::value_ptr(value));
+	}
+}
+
+void GLProgram::setUniform(const char *name, vec3 value) {
+	GLint id = glGetUniformLocation(this->mInternalId, name);
+	if(id != -1 && inUse()) {
+		glUniform3fv(id, 1, glm::value_ptr(value));
+	}
+}
+
+void GLProgram::setUniform(const char *name, vec4 value) {
+	GLint id = glGetUniformLocation(this->mInternalId, name);
+	if(id != -1 && inUse()) {
+		glUniform4fv(id, 1, glm::value_ptr(value));
+	}
 }
 
 void GLProgram::logProgramInfo() {
@@ -114,6 +144,25 @@ GLProgram GLProgram::create(GLProgram& program) {
 
 	program.logProgramInfo();
 	return program;
+}
+
+void GLProgram::use() {
+	glUseProgram(mInternalId);
+}
+
+bool GLProgram::inUse() {
+	GLint param = -1;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &param);
+	return ((GLint)mInternalId  == param);
+}
+
+void GLProgram::stopUsing() {
+	GLint param = -1;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &param);
+	if((GLint)mInternalId  == param) {
+		glUseProgram(0);
+	}
+
 }
 
 }

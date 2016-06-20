@@ -22,7 +22,6 @@
 
 #include "ghCore.h"
 
-
 #ifdef LOGGING_ENABLED
 	#define _LOG(LOG_LEVEL, MESSAGE) {\
         std::ostringstream internalLogStream;\

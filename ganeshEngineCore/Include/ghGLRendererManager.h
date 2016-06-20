@@ -3,6 +3,7 @@
 
 #include "ghHeaders.h"
 #include "ghSystem.h"
+#include "ghScene.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -12,6 +13,8 @@
 class GLFWwindow;
 
 namespace ganeshEngine {
+
+class SceneObject;
 
 using namespace std;
 
@@ -30,12 +33,6 @@ private:
 	 */
     GLFWwindow* mpWindow;
 
-
-	GLTexture *tex;
-	GLMesh *mesh;
-	GLProgram program;
-	GLModel *model;
-
 	RendererManager() {}
 
 public:
@@ -43,11 +40,11 @@ public:
 	RendererManager& operator=(const RendererManager&) = delete;
 	~RendererManager() {}
 
-	/**
-	 * This will clear the screen, then draw everything that needs to be drawn
-	 * and finish by swapping the buffers
-	 */
-    void update();
+    void preRender();
+    void render(Scene &scene);
+    void postRender();
+
+
 
 protected:
 	/**

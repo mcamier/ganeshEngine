@@ -45,6 +45,9 @@ public:
 
 	Vertex(F32 _x, F32 _y, F32 _z, F32 _u, F32 _v, F32 _nx, F32 _ny, F32 _nz) :
 			x(_x), y(_y), z(_z), r(1.0f), g(1.0f), b(1.0f), u(0.0f), v(0.0f), nx(_nx), ny(ny), nz(_nz) {}
+
+	Vertex(F32 _x, F32 _y, F32 _z, F32 _r, F32 _g, F32 _b, F32 _u, F32 _v, F32 _nx, F32 _ny, F32 _nz) :
+			x(_x), y(_y), z(_z), r(_r), g(_g), b(_b), u(0.0f), v(0.0f), nx(_nx), ny(ny), nz(_nz) {}
 };
 
 }

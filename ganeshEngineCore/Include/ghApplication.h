@@ -3,6 +3,8 @@
 
 #include "ghHeaders.h"
 #include "ghSystem.h"
+#include "ghScene.h"
+#include "ghSceneObject.h"
 #include "ghClock.h"
 
 namespace ganeshEngine {
@@ -13,8 +15,15 @@ namespace ganeshEngine {
  * api, etc
  */
 class Application : public System<Application> {
-
     friend class System<Application>;
+
+    /**
+     * By the time the scene is unique and stored directly within the
+     * Application class
+     * Later, game could handle several scenes and they should be
+     * managed by a SceneManager class
+     */
+     Scene mMainScene;
 
 	/**
 	 * The main game clock, will be incremented even if the gameplay
@@ -27,6 +36,19 @@ class Application : public System<Application> {
      * cause to extinction of the game
      */
     bool mIsExiting;
+
+
+
+
+    GLTexture *tex;
+    GLMesh *mesh;
+    GLMesh *mesh2;
+    GLProgram program;
+    GLModel *model;
+    GLModel *model2;
+    SceneObject *obj;
+
+
 
     Application() : mIsExiting(false) {}
 

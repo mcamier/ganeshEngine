@@ -2,21 +2,17 @@
 
 namespace ganeshEngine {
 
-    void SceneObject::cleanDirtyFlag() {
-        mDirty = DirtyFlag.NONE;
-    }
+void Scene::setRoot(SceneObject *newRoot) {
+	mRoot = newRoot;
+}
 
-    void SceneObject::setDirty(DirtyFlag flag) {
-        mDirty |= flag;
-        if(mChildren.size() > 0) {
-            for(auto child : mChildren) {
-                child->setDirty(flag);
-            }
-        }
-    }
+SceneObject* Scene::getRoot() {
+	return mRoot;
+}
 
-    bool SceneObject::isDirty() {
-        return (mDirty() & DirtyFlag.NONE) != DirtyFlag.NONE;
-    }
+
+void Scene::draw() {
+	mRoot->draw();
+}
 
 }

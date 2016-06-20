@@ -18,10 +18,24 @@ using namespace glm;
  */
 class GLModel {
 private:
+	/**
+	 * The shader program used to draw the geometry
+	 */
 	GLProgram *mpProgram;
+
+	/**
+	 * The mesh to draw
+	 */
 	GLMesh *mpMesh;
+
+	/**
+	 * Optional texture to apply on the mesh
+	 */
 	GLTexture *mpTexture;
 
+	/**
+	 * The id of Vertex Array Object
+	 */
 	GLuint mVAO;
 
 public:
@@ -29,9 +43,19 @@ public:
 		mpProgram(program), mpMesh(mesh), mpTexture(texture) {}
 	~GLModel() {}
 
+	/**
+	 * Load the model into the GC memory to use it during the drawing
+	 */
 	void sendToGC();
 
-	void draw();
+	GLProgram* getProgram();
+
+	void preRender();
+
+	void render();
+
+	void postRender();
+
 };
 
 }

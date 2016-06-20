@@ -14,39 +14,16 @@ class SceneObject {
 private:
 	SceneObject* mpParent;
 	vector<SceneObject*> mpChildren;
-
-	SceneObject() {}
+	
+	SceneObject() : mpParent(nullptr) {}
 	~SceneObject() {}
 	SceneObject(const SceneObject&) = delete;
 	SceneObject& operator=(const SceneObject&) = delete;
 
-	void appendChild(SceneObject*);
-
-	void setParent(SceneObject*);
-};
-
-
-class Camera : public SceneObject {
-private:
-	Frustum* mpFrustum;
-	IProjection* mpProjection;
+	void setParent(SceneObject* object);
 
 public:
-	Camera() {
-		mpFrustum = new Frustum(4.0f/3.0f, 80, 1.0f, 1000.0f);
-		mpProjection = new PerspectiveProjection();
-	}
-	~Camera() {}
-};
-
-
-class Actor: public SceneObject {
-
-};
-
-
-class Light: public SceneObject {
-
+	void appendChild(SceneObject* object);
 };
 
 }

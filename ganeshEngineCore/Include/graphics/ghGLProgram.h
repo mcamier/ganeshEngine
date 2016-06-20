@@ -1,6 +1,7 @@
 #ifndef GANESHENGINE_GHGLPROGRAM_H
 #define GANESHENGINE_GHGLPROGRAM_H
 
+#include "ghHeaders.h"
 #include <initializer_list>
 #include <graphics/ghGLShader.h>
 
@@ -44,6 +45,11 @@ public:
 
 	void logProgramInfo();
 
+	void setUniform(const char* name, vec3 value);
+	void setUniform(const char* name, vec4 value);
+	void setUniform(const char* name, mat3 value);
+	void setUniform(const char* name, mat4 value);
+
 private:
 	template<typename... S>
 	static GLProgram create(GLProgram& program, GLShader& shader, S&... rest) {
@@ -81,6 +87,11 @@ private:
 
 	static GLProgram create(GLProgram& program);
 
+	void use();
+
+	bool inUse();
+
+	void stopUsing();
 };
 
 }

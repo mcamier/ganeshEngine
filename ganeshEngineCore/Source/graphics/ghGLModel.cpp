@@ -2,19 +2,6 @@
 
 namespace ganeshEngine {
 
-void GLTexture::sendToGC() {}
-
-void GLMesh::sendToGC() {
-	glGenBuffers(1, &mVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-	glBufferData(
-			GL_ARRAY_BUFFER,
-			mVertices->size() * sizeof(Vertex),
-			&mVertices->front(),
-			GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
 void GLModel::sendToGC() {
 	mpMesh->sendToGC();
 	mpTexture->sendToGC();
@@ -34,10 +21,22 @@ void GLModel::sendToGC() {
 
 }
 
-void GLModel::draw() {
-	glUseProgram(mpProgram->mInternalId);
+GLProgram* GLModel::getProgram() {
+	return mpProgram;
+}
+
+void GLModel::preRender() {
+	mpProgram->use();
 	glBindVertexArray(mVAO);
-	glDrawArrays((GLenum) mpMesh->mDrawMode, 0, (int) mpMesh->mVertices->size());
+
+}
+
+void GLModel::postRender() {
 	glBindVertexArray(0);
+	mpProgram->stopUsing();
+}
+
+void GLModel::render() {
+	glDrawArrays((GLenum) mpMesh->mDrawMode, 0, (int) mpMesh->mVertices->size());
 }
 }

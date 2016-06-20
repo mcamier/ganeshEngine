@@ -2,6 +2,7 @@
 
 
 #include <time.h>
+#include "ghSceneObject.h"
 #include "ghApplication.h"
 
 namespace ganeshEngine {
@@ -56,19 +57,6 @@ void RendererManager::vInitialize() {
                     glGetIntegerv(std::get<0>(param), &value);
                     _INFO("\t" << std::get<1>(param) << " : " << value);
                 }
-
-                unique_ptr<vector<Vertex>> vertices = make_unique<vector<Vertex>>();
-				vertices->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-				vertices->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-				vertices->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-
-                tex = new GLTexture();
-                mesh = new GLMesh(move(vertices), DrawMode::TRIANGLES);
-                program = GLProgram::create(ShaderType::VERTEX, "/home/mcamier/Workspace/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl", ShaderType::FRAGMENT, "/home/mcamier/Workspace/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
-
-                model = new GLModel(&program, mesh, tex);
-                model->sendToGC();
-
             } else {
                 _FATAL("failed to initialize GLEW");
             }
@@ -81,7 +69,7 @@ void RendererManager::vInitialize() {
 }
 
 
-void RendererManager::update() {
+void RendererManager::preRender() {
     timespec t;
     t.tv_sec = 0;
     t.tv_nsec = gRandr(15,20)*500000;
@@ -89,9 +77,13 @@ void RendererManager::update() {
 
     glClearColor(0.2, 0.2, 0.2, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
-	model->draw();
+void RendererManager::render(Scene &scene) {
+    scene.draw();
+}
 
+void RendererManager::postRender() {
     glfwSwapBuffers(mpWindow);
 
     /* TODO this statements have to be relocated outside of the RendererManager*/
