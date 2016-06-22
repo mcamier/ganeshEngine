@@ -142,7 +142,7 @@ GLProgram GLProgram::create(GLProgram& program) {
 		_ERROR("Shader program failed to validate : " << log);
 	}
 
-	program.logProgramInfo();
+	//program.logProgramInfo();
 	return program;
 }
 

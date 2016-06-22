@@ -14,8 +14,6 @@ class GLFWwindow;
 
 namespace ganeshEngine {
 
-class SceneObject;
-
 using namespace std;
 
 /**

@@ -2,96 +2,38 @@
 #define GANESHENGINE_GHSCENEOBJECT_H
 
 #include "ghHeaders.h"
-#include "graphics/ghGLModel.h"
 
 namespace ganeshEngine {
 
-enum class SceneObjectType : U32 {
-    DYNAMIC,
-    STATIC,
-    LIGHT,
+using namespace glm;
+using namespace std;
+
+class Scene;
+
+enum class SceneObjectType {
+	ACTOR,
+	CAMERA,
+	LIGHT,
     SKYBOX
 };
 
-
-
-class IComponent {};
-
-
-
-class CameraComponent : public IComponent {
-private:
-    //P*rojection projection
-
-    SceneObject *mParent;
-    vec3 mForward;
-    vec3 mUp;
-    vec3 mRight;
-    mat4 mViewMatrix;
-
-public:
-    CameraComponent() {};
-    ~CameraComponent() {}
-
-    /**
-     * Based on the position of the sceneObject bound
-     *
-     * @param target Where the camera must look at in the 3d space
-     * @param up Up vector of the camera
-     */
-    void lookAt(vec3 target, vec3 up) {
-        mat4 translation, rotation;
-        translation[3][0] = -mParent->getX();
-        translation[3][1] = -mParent->getY();
-        translation[3][2] = -mParent->getZ();
-        vec3 mForward = target - mParent->getPosition();
-        mForward.normalize();
-
-        mRight = mForward * up; // cross product here
-        mUp = mRight * mForward; // cross product here
-
-        rotation[0][0] = mRight.x;
-        rotation[1][0] = mRight.y;
-        rotation[2][0] = mRight.z;
-        rotation[0][1] = mUp.x;
-        rotation[1][1] = mUp.y;
-        rotation[2][1] = mUp.z;
-        rotation[0][2] = -mForward.x;
-        rotation[1][2] = -mForward.y;
-        rotation[2][2] = -mForward.z;
-
-        mViewMatrix = rotation * translation;
-    }
-
-    /**
-     * TODO
-     */
-    const mat4 getProjection() const {
-        return mat4();
-    }
-
-    /**
-     * Returns the matrix used to transform positions into position relative to the camera
-     * position and rotation
-     *
-     * @return mat4 the transform matrix
-     */
-    const mat4 getViewMatrix() const {
-        return mViewMatrix;
-    }
-};
-
-
+/**
+ *
+ */
 class SceneObject {
+	friend class Scene;
 
-private:
+/*TODO limit the scope to private for some or all members */
+protected:
 	static U32 sLastId;
 
+	const SceneObjectType mType;
+
     U32 mId;
-    vector<SceneObject> mChildren;
+    vector<SceneObject*> mChildren;
     SceneObject *mParent {nullptr};
-    
-	GLModel *mModel {nullptr};
+
+    Scene* mOwner {nullptr};
 
     vec3 mPosition;
     vec3 mRotation;
@@ -105,18 +47,31 @@ private:
 	void cleanDirtyFlag();
 
 public:
-	SceneObject() :
+	SceneObject(SceneObjectType type) :
 		mId(sLastId++),
+		mType(type),
 		mDirty(true),
 		mPosition(vec3(0.0f, 0.0f, 0.0f)),
 		mRotation(vec3(0.0f, 0.0f, 0.0f)),
 		mScale(vec3(1.0f, 1.0f, 1.0f)) {}
-	~SceneObject() {}
+	virtual ~SceneObject() {}
 
-	void setModel(GLModel* model);
+	const mat4 getTransform();
+	bool isDirty();
 
-	GLModel* getModel() const;
+	/**
+	 * Recursive method setting dirty flag for itself and all of its
+	 * children SceneObjects
+	 *
+	 * @param flag Flag to set
+	 */
+	void setDirty();
 
+	virtual void preRender();
+	virtual void render();
+	virtual void postRender();
+
+	void appendChild(SceneObject *obj);
 
     vec3 getPosition() const;
     vec3 getRotation() const;
@@ -151,21 +106,9 @@ public:
     float getScaleX() const;
     float getScaleY() const;
     float getScaleZ() const;
-
-    const mat4 getTransform();
-    bool isDirty();
-
-    /**
-     * Recursive method setting dirty flag for itself and all of its
-     * children SceneObjects
-     *
-     * @param flag Flag to set
-     */
-    void setDirty();
-
-    void draw();
-
-	void appendChild(SceneObject obj);
+    
+private:
+    void setOwner(Scene* owner);
 };
 
 }

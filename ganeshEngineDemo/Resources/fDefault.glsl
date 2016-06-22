@@ -1,7 +1,7 @@
-#version 430 core
+#version 330 core
 
 in vec3 colorToFrag;
-in vec3 uvToFrag;
+in vec2 uvToFrag;
 
 out vec4 finalColor;
 

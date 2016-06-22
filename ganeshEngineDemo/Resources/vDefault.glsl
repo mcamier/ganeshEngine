@@ -1,7 +1,8 @@
-#version 430 core
+#version 330 core
 
 uniform mat4 gh_u_modelview_mat;
-uniform mat4 gh_u_camera_mat;
+uniform mat4 gh_u_projection_mat;
+uniform mat4 gh_u_eye_mat;
 
 layout(location = 0) in vec3 ghVertex;
 layout(location = 1) in vec3 ghColor;

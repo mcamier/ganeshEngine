@@ -5,6 +5,8 @@ set(EngineInclude
 include_directories(${EngineInclude})
 
 set(EngineIncludes
+        "Include/ghActor.h"
+        "Include/ghApplication.h"
         "Include/ghCamera.h"
         "Include/ghClock.h"
         "Include/ghConsoleLogger.h"
@@ -21,9 +23,9 @@ set(EngineIncludes
         "Include/ghPoolAllocator.h"
         "Include/ghProfiler.h"
         "Include/ghProfilerManager.h"
-        "Include/ghProjection.h"
         "Include/ghScene.h"
         "Include/ghSceneObject.h"
+        "Include/ghSkybox.h"
         "Include/ghSimulation.h"
         "Include/ghStackAllocator.h"
         "Include/graphics/ghFrustum.h"
@@ -33,7 +35,9 @@ set(EngineIncludes
 
 
 set(EngineSources
+        "Source/ghActor.cpp"
         "Source/ghApplication.cpp"
+        "Source/ghCamera.cpp"
         "Source/ghClock.cpp"
         "Source/ghConsoleLogger.cpp"
         "Source/ghCore.cpp"
@@ -48,6 +52,7 @@ set(EngineSources
         "Source/ghProfilerManager.cpp"
         "Source/ghScene.cpp"
         "Source/ghSceneObject.cpp"
+        "Source/ghSkybox.cpp"
         "Source/ghSimulation.cpp"
         "Source/ghStackAllocator.cpp"
         "Source/graphics/ghFrustum.cpp"

@@ -4,8 +4,14 @@
 #include "ghHeaders.h"
 #include "ghSystem.h"
 #include "ghScene.h"
-#include "ghSceneObject.h"
+#include "ghActor.h"
 #include "ghClock.h"
+
+
+#include "graphics/ghGLProgram.h"
+#include "graphics/ghGLTexture.h"
+#include "graphics/ghGLMesh.h"
+#include "graphics/ghGLModel.h"
 
 namespace ganeshEngine {
 
@@ -23,7 +29,7 @@ class Application : public System<Application> {
      * Later, game could handle several scenes and they should be
      * managed by a SceneManager class
      */
-     Scene mMainScene;
+    Scene mMainScene;
 
 	/**
 	 * The main game clock, will be incremented even if the gameplay
@@ -38,16 +44,13 @@ class Application : public System<Application> {
     bool mIsExiting;
 
 
-
-
+    GLProgram program;
     GLTexture *tex;
     GLMesh *mesh;
     GLMesh *mesh2;
-    GLProgram program;
     GLModel *model;
     GLModel *model2;
-    SceneObject *obj;
-
+    Actor *obj;
 
 
     Application() : mIsExiting(false) {}

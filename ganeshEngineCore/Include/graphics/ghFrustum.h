@@ -12,7 +12,9 @@ namespace ganeshEngine {
 using namespace std;
 using namespace glm;
 
-
+/**
+ *
+ */
 enum FrustumPlane {
 	NEAR = 0,
 	FAR = 1,
@@ -22,17 +24,21 @@ enum FrustumPlane {
 	RIGHT = 5
 };
 
+
+/**
+ *
+ */
 class Frustum : public ICollider{
 private:
-	F32 mAspectRatio;
 	U16 mFieldOfView;
+	F32 mAspectRatio;
 	F32 mNearClipDistance;
 	F32 mFarClipDistance;
-
 	vec3 mNears[4];
 	vec3 mFars[4];
-
 	Plane* mPlanes[6];
+	mat4 mProjectionMatrix;
+	bool mDirty {true};
 
 public:
 
@@ -46,21 +52,24 @@ public:
 
 	void updateInternal();
 
-	const F32 getAspectRatio() const;
+	const F32 getAspectRatio();
 
-	const U16 getFieldOfView() const;
+	const U16 getFieldOfView();
 
-	const F32 getNearClipDistance() const;
+	const F32 getNearClipDistance();
 
-	const F32 getFarClipDistance() const;
+	const F32 getFarClipDistance();
 
-	void getAspectRatio(F32 newValue);
+	mat4 getProjectionMatrix();
 
-	void getFieldOfView(U16 newValue);
+	void setAspectRatio(F32 newValue);
 
-	void getNearClipDistance(F32 newValue);
+	void setFieldOfView(U16 newValue);
 
-	void getFarClipDistance(F32 newValue);
+	void setNearClipDistance(F32 newValue);
+
+	void setFarClipDistance(F32 newValue);
+
 };
 
 }

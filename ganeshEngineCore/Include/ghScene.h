@@ -3,11 +3,12 @@
 
 #include "ghHeaders.h"
 #include "ghSceneObject.h"
+#include "ghCamera.h"
+#include "ghSkybox.h"
 
 namespace ganeshEngine {
 
 using namespace std;
-
 
 /**
  * Scene graph data structure
@@ -15,18 +16,35 @@ using namespace std;
 class Scene {
 
 private:
+	/**
+	 * Scene graph root node
+	 */
 	SceneObject *mRoot;
 
+	/**
+	 * Skybox used by the scene, might be nullptr
+	 */
+	 unique_ptr<Skybox> mSkybox;
+
+	/**
+	 * Main camera used to draw the scene
+	 * the camera should belong to the scene graph
+	 */
+	 shared_ptr<Camera> mCamera;
+
+
 public:
-	Scene() {}
+	Scene() {
+		mCamera = make_shared<Camera>(4.0f/3.0f, 80, 1, 100);
+	}
 	Scene(SceneObject *root) : mRoot(root) {}
 	~Scene() {}
 
 	void setRoot(SceneObject *newRoot);
-
+    shared_ptr<Camera> getCamera();
+	void setCamera(shared_ptr<Camera> camera);
 	SceneObject* getRoot();
-
-	void draw();
+	void render();
 };
 
 }

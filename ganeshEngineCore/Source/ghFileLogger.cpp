@@ -15,8 +15,10 @@ void FileLogger::vLog(LOG_LEVEL lvl, const char* file, int line, std::string &me
 
 void FileLogger::vInitialize(void) {
 	FILE *fp = fopen(mFilename, "w");
-	fprintf(fp, "");
-	fclose(fp);
+	if(fp != nullptr) {
+		fprintf(fp, "");
+		fclose(fp);
+	}
 }
 
 void FileLogger::vDestroy(void) {

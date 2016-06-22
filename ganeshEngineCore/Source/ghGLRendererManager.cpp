@@ -17,10 +17,7 @@ vector<tuple<GLenum, string>> gGLContextParams = {
     make_tuple<GLenum, string>(GL_MAX_VARYING_FLOATS, "GL_MAX_VARYING_FLOATS"),
     make_tuple<GLenum, string>(GL_MAX_VERTEX_ATTRIBS, "GL_MAX_VERTEX_ATTRIBS"),
     make_tuple<GLenum, string>(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, "GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS"),
-    make_tuple<GLenum, string>(GL_MAX_VERTEX_UNIFORM_COMPONENTS, "GL_MAX_VERTEX_UNIFORM_COMPONENTS"),
-    make_tuple<GLenum, string>(GL_MAX_VERTEX_ATTRIBS, "GL_MAX_VERTEX_ATTRIBS"),
-    make_tuple<GLenum, string>(GL_MAX_VIEWPORT_DIMS, "GL_MAX_VIEWPORT_DIMS"),
-    make_tuple<GLenum, string>(GL_STEREO, "GL_STEREO")
+    make_tuple<GLenum, string>(GL_MAX_VERTEX_UNIFORM_COMPONENTS, "GL_MAX_VERTEX_UNIFORM_COMPONENTS")
 };
 
 void RendererManager::vInitialize() {
@@ -80,7 +77,7 @@ void RendererManager::preRender() {
 }
 
 void RendererManager::render(Scene &scene) {
-    scene.draw();
+    scene.render();
 }
 
 void RendererManager::postRender() {
