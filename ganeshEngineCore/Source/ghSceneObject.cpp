@@ -168,6 +168,30 @@ namespace ganeshEngine {
     float SceneObject::getScaleY() const { return mScale.y; }
     float SceneObject::getScaleZ() const { return mScale.z; }
 
+
+    vec3 getPosition() const {
+        return mPosition;
+    }
+
+    vec3 getRotation() const {
+        return mRotation;
+    }
+
+    vec3 getScale() const {
+        return mScale;
+    }
+
+    void setPosition(const vec3 newPosition) {
+        mPosition = newPosition;
+    }
+    void setRotation(const vec3 newRotation) {
+        mRotation = newRotation;
+    }
+
+    void setScale(const vec3 newScale) {
+        mRotation = newRotation;
+    }
+
     void SceneObject::appendChild(SceneObject obj) {
         obj.mParent = this;
         mChildren.push_back(obj);
