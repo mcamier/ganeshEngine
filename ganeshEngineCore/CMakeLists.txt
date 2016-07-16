@@ -46,6 +46,7 @@ set(EngineSources
         "Source/ghDoubleBufferedStackAllocator.cpp"
         "Source/ghFileLogger.cpp"
         "Source/ghInputManager.cpp"
+        "Source/ghInputContext.cpp"
         "Source/ghGLRendererManager.cpp"
         "Source/ghLoggerManager.cpp"
         "Source/ghPlane.cpp"

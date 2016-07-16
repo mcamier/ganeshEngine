@@ -4,11 +4,11 @@
 #include "ghHeaders.h"
 #include "ghSystem.h"
 #include "ghInputUtils.h"
+#include "ghInputContext.h"
 
 #include <vector>
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <map>
+#include <memory>
 
 namespace ganeshEngine{
 
@@ -19,13 +19,16 @@ class InputManager : public System<InputManager> {
 
 private:
     vector<rawInput> rawInputs;
+    map<int, unique_ptr<InputContext>> inputContexts;
 
 protected:
     void vInitialize() override;
     void vDestroy() override;
 
 public:
-    void registerInput(rawInput input);
+    void activeContext(int id, bool active);
+    void submitInput(rawInput input);
+    void registerInputContext(unique_ptr<InputContext> inputContext);
     void update();
 };
 

@@ -2,7 +2,6 @@
 #include "ghApplication.h"
 #include "ghPlatform.h"
 
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 namespace ganeshEngine {
@@ -11,49 +10,80 @@ namespace ganeshEngine {
         if( glfwInit() ) {
             glfwSetKeyCallback(gPlatform().getWindow(), [](GLFWwindow *window, int key, int scancde, int action, int mods) {
                 rawInput input;
-                input.source = rawInputSource::KEYBOARD;
-                input.type = rawInputType::PRESS;
-                input.type = rawInputType::RELEASE;
+                input.idx = 0;
                 input.timestamp = 0;
-                input.data.keyboard.action = action;
-                input.data.keyboard.key = key;
-                input.data.keyboard.scancode = scancde;
-                input.data.keyboard.mods = mods;
-                gInput().registerInput(input);
+                input.source = rawInputSource::KEYBOARD;
+
+                if(action == GLFW_PRESS) {
+                    input.type = rawInputType::PRESS;
+                }else{
+                    input.type = rawInputType::RELEASE;
+                }
+                input.data.button.key = key;
+                input.data.button.scancode = scancde;
+                input.data.button.mods = mods;
+
+                gInput().submitInput(input);
                 //_TRACE("callback keyboard");
             });
 
             glfwSetCursorPosCallback(gPlatform().getWindow(), [](GLFWwindow *window, double xpos, double ypos) {
                 rawInput input;
+                input.idx = 0;
+                input.timestamp = 0;
                 input.source = rawInputSource::MOUSE;
                 input.type = rawInputType::MOVE;
-                input.timestamp = 0;
-                input.data.mouse.x = xpos;
-                input.data.mouse.y = ypos;
-                gInput().registerInput(input);
-                //_TRACE("callback mouse cursor");
+                input.data.move.x = xpos;
+                input.data.move.y = ypos;
+
+                gInput().submitInput(input);
             });
 
             glfwSetMouseButtonCallback(gPlatform().getWindow(), [](GLFWwindow *window, int button, int action, int mods) {
                 rawInput input;
-                input.source = rawInputSource::MOUSE;
-                input.type = rawInputType::PRESS;
-                input.type = rawInputType::RELEASE;
+                input.idx = 0;
                 input.timestamp = 0;
-                input.data.button.button = button;
-                input.data.button.action = action;
+                input.source = rawInputSource::MOUSE;
+
+                if(action == GLFW_PRESS) {
+                    input.type = rawInputType::PRESS;
+                }else{
+                    input.type = rawInputType::RELEASE;
+                }
+                input.data.button.key = button;
+                input.data.button.scancode = button;
                 input.data.button.mods = mods;
-                gInput().registerInput(input);
-                //_TRACE("callback mouse button");
+
+                gInput().submitInput(input);
             });
             _INFO("InputManager initialized");
+
+            unique_ptr<InputContext> inputContext = make_unique<InputContext>();
+            int id = inputContext->getId();
+            unique_ptr<InputMatch> inputMatch = make_unique<InputMatch>();;
+            inputMatch->source = rawInputSource::KEYBOARD;
+            inputMatch->type= rawInputType::PRESS;
+            inputMatch->idx = 0;
+            inputMatch->key = GLFW_KEY_ESCAPE;
+
+            inputContext->registerMatch(move(inputMatch));
+            this->registerInputContext(move(inputContext));
+            this->activeContext(id, true);
         }
         else {
             _FATAL("ERROR ON GLFW INIT DURING InputManager INIT");
         }
     }
 
-    void InputManager::registerInput(rawInput input) {
+    void InputManager::activeContext(int id, bool active) {
+        auto iter = inputContexts.find(id);
+        if(iter != inputContexts.end()) {
+            _ERROR("Cannot active the inputContext with the give id : " << id);
+        }
+        iter->second->setActive(active);
+    }
+
+    void InputManager::submitInput(rawInput input) {
         rawInputs.push_back(input);
     }
 
@@ -61,27 +91,31 @@ namespace ganeshEngine {
         _INFO("InputManager destroyed");
     }
 
+    void InputManager::registerInputContext(unique_ptr<InputContext> inputContext) {
+        auto iter = inputContexts.find(inputContext->getId());
+        if(iter != inputContexts.end()) {
+            _ERROR("Cannot add an inputContext already present in the InputManager");
+        }
+        inputContexts.insert(make_pair(inputContext->getId(), move(inputContext)));
+    }
+
     void InputManager::update() {
         glfwPollEvents();
         _DEBUG("get " << rawInputs.size() << " inputs this frame");
         for(rawInput &input : rawInputs) {
-            /*switch(input.source) {
-                case rawInputSource::KEYBOARD:
-                _DEBUG("\t keyboard");
-                    break;
-                case rawInputSource::MOUSE:
-                _DEBUG("\t mouse move");
-                    break;
-                case rawInputSource::MOUSE_BUTTON:
-                _DEBUG("\t mouse button");
-                    break;
-            }*/
+
+            for(auto const &entry : inputContexts) {
+                InputContext &context = (*entry.second);
+                if(context.isActive() && context.contains(input)) {
+
+                    // TODO trigger callback or something else
+                    // temporary piece of code
+                    _DEBUG("INPUT MATCH TRIGERRED");
+                    gApp().shutdown();
+                }
+            }
         }
         rawInputs.clear();
-
-        if(GLFW_PRESS == glfwGetKey(gPlatform().getWindow(), GLFW_KEY_ESCAPE)) {
-            gApp().shutdown();
-        }
     }
 
     InputManager&(*gInput)() = &InputManager::get;
