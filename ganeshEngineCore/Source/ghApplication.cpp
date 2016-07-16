@@ -6,6 +6,7 @@
 #include "ghApplication.h"
 #include "ghProfilerManager.h"
 #include "ghSimulation.h"
+#include "ghInputManager.h"
 #include "ghLoggerManager.h"
 #include "ghGLRendererManager.h"
 #include "ghSkybox.h"
@@ -41,6 +42,7 @@ void Application::run() {
         accumulator += elapsedLastFrame.count();
 
         while(accumulator >= dt) {
+            gInput().update();
             PROFILE("simulation", gSimulation().tick(dt));
 
             obj->addY( (F32)((2.0f * cos(totalTime)) * 0.005f));
@@ -60,17 +62,13 @@ void Application::run() {
 
 void Application::vInitialize() {
     LoggerManager::Initialize();
+    Platform::Initialize();
     ProfilerManager::Initialize();
+    InputManager::Initialize();
     RendererManager::Initialize();
     Simulation::Initialize();
 
-    _TRACE("CPU : ");
-    _TRACE("\t " << Platform::getCpuCoreAmount() << " cores");
-
-
-    program = GLProgram::create(
-            ShaderType::VERTEX, "/home/mcamier/workspaces/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl",
-            ShaderType::FRAGMENT, "/home/mcamier/workspaces/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
+    program = GLProgram::create(ShaderType::VERTEX, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl", ShaderType::FRAGMENT, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
     tex = new GLTexture();
 
     unique_ptr<vector<Vertex>> vertices = make_unique<vector<Vertex>>();
@@ -106,13 +104,15 @@ void Application::vInitialize() {
     root->appendChild(cam);
     root->appendChild(obj);
     mMainScene.setRoot(root);
-    mMainScene.setCamera(shared_ptr<Camera>(cam));
+    //mMainScene.setCamera(shared_ptr<Camera>(cam));
 }
 
 void Application::vDestroy() {
     Simulation::Destroy();
     RendererManager::Destroy();
+    InputManager::Destroy();
     ProfilerManager::Destroy();
+    Platform::Destroy();
     LoggerManager::Destroy();
 }
 

@@ -7,7 +7,6 @@
 #include "ghActor.h"
 #include "ghClock.h"
 
-
 #include "graphics/ghGLProgram.h"
 #include "graphics/ghGLTexture.h"
 #include "graphics/ghGLMesh.h"
@@ -23,6 +22,7 @@ namespace ganeshEngine {
 class Application : public System<Application> {
     friend class System<Application>;
 
+private:
     /**
      * By the time the scene is unique and stored directly within the
      * Application class
@@ -41,20 +41,18 @@ class Application : public System<Application> {
      * Default value is false, assigning true to this variable will
      * cause to extinction of the game
      */
-    bool mIsExiting;
+    bool mIsExiting = false;
 
 
     GLProgram program;
-    GLTexture *tex;
-    GLMesh *mesh;
-    GLMesh *mesh2;
-    GLModel *model;
-    GLModel *model2;
-    Actor *obj;
+    GLTexture *tex {nullptr};
+    GLMesh *mesh {nullptr};
+    GLMesh *mesh2 {nullptr};
+    GLModel *model {nullptr};
+    GLModel *model2 {nullptr};
+    Actor *obj {nullptr};
 
-
-    Application() : mIsExiting(false) {}
-
+    Application() {}
 public:
     Application(const Application&) = delete;
     Application& operator=(const Application&) = delete;

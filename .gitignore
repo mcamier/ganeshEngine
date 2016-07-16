@@ -2,4 +2,6 @@
 bin
 doc
 logs
-**.log
+libs/glew*
+libs/glfw*
+libs/glm*

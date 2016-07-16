@@ -4,6 +4,8 @@ set(EngineInclude
     "Include")
 include_directories(${EngineInclude})
 
+find_package(OpenGL REQUIRED)
+
 set(EngineIncludes
         "Include/ghActor.h"
         "Include/ghApplication.h"
@@ -43,6 +45,7 @@ set(EngineSources
         "Source/ghCore.cpp"
         "Source/ghDoubleBufferedStackAllocator.cpp"
         "Source/ghFileLogger.cpp"
+        "Source/ghInputManager.cpp"
         "Source/ghGLRendererManager.cpp"
         "Source/ghLoggerManager.cpp"
         "Source/ghPlane.cpp"
@@ -62,29 +65,23 @@ set(EngineSources
         "Source/graphics/ghGLProgram.cpp"
         "Source/graphics/ghGLShader.cpp")
 
-
-find_package(GLM REQUIRED)
-if (GLM_FOUND)
-    include_directories(${GLM_INCLUDE_DIR})
-endif()
+SET_SOURCE_FILES_PROPERTIES( ${EngineSources} PROPERTIES LANGUAGE CXX )
 
 
-find_package(GLEW REQUIRED)
-if (GLEW_FOUND)
-    include_directories(${GLEW_INCLUDE_DIRS})
-    link_libraries(${GLEW_LIBRARIES})
-endif()
+include_directories(
+        ../ganeshEngineCore/Include
+        ../libs/glm
+        ../libs/glew/include
+        ../libs/glfw/include
+        )
 
+set(GL_LIBS
+        ${OPENGL_LIBRARY}
+        glfw
+        GLEW_1130)
 
 add_library(${LibName} ${EngineSources})
-
-if(WIN32)
-    target_link_libraries(${LibName} glfw kernel32 user32 gdi32 comdlg32 advapi32 shell32 ole32 oleaut32 odbc32 winspool uuid odbccp32)
-else(WIN32)
-    target_link_libraries(${LibName} glfw GL X11 Xxf86vm Xrandr pthread Xi Xinerama dl rt Xcursor)
-endif(WIN32)
-
-
+target_link_libraries(${LibName} ${GL_LIBS})
 
 find_package(Doxygen)
 

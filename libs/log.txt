@@ -1,0 +1,28 @@
+install -d -m 0755 "/usr/include/GL"
+install -m 0644 include/GL/wglew.h "/usr/include/GL/"
+install -m 0644 include/GL/glew.h "/usr/include/GL/"
+install -m 0644 include/GL/glxew.h "/usr/include/GL/"
+gcc -DGLEW_NO_GLU -DGLEW_BUILD -O2 -Wall -W -Iinclude   -o tmp/mingw/default/shared/glew.o -c src/glew.c
+gcc -shared -Wl,-soname,libglew32.dll -Wl,--out-implib,lib/libglew32.dll.a    -o lib/glew32.dll tmp/mingw/default/shared/glew.o -L/mingw/lib -lopengl32 -lgdi32 -luser32 -lkernel32 
+strip -x lib/glew32.dll
+gcc -DGLEW_NO_GLU -DGLEW_STATIC -O2 -Wall -W -Iinclude   -o tmp/mingw/default/static/glew.o -c src/glew.c
+ar cr lib/libglew32.a tmp/mingw/default/static/glew.o
+strip -x lib/libglew32.a
+sed \
+		-e "s|@prefix@|/usr|g" \
+		-e "s|@libdir@|/usr/lib|g" \
+		-e "s|@exec_prefix@|/usr/bin|g" \
+		-e "s|@includedir@|/usr/include/GL|g" \
+		-e "s|@version@|1.12.0|g" \
+		-e "s|@cflags@||g" \
+		-e "s|@libname@|glew32|g" \
+		-e "s|@requireslib@|glu|g" \
+		< glew.pc.in > glew.pc
+install -d -m 0755 "/usr/lib"
+install -d -m 0755 "/usr/bin"
+install -m 0755 lib/glew32.dll "/usr/bin/"
+install -m 0644 lib/libglew32.dll.a    "/usr/lib/"
+install -m 0644 lib/libglew32.a        "/usr/lib/"
+install -d -m 0755 "/usr/lib"
+install -d -m 0755 "/usr/lib/pkgconfig"
+install -m 0644 glew.pc "/usr/lib/pkgconfig/"

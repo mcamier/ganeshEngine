@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+//#include <gtest/gtest.h>
 #include "ghPlane.h"
 #include <glm/glm.hpp>
 #include <iostream>

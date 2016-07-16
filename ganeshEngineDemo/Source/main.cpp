@@ -13,7 +13,7 @@ using namespace ganeshEngine;
 int main() {
 	LoggerManager::Initialize();
 	gLogger().addLogger(new ConsoleLogger(LOG_LEVEL::TRACE));
-	gLogger().addLogger(new FileLogger(LOG_LEVEL::TRACE, "/home/mcamier/workspaces/ganeshEngine/ganeshEngineDemo/error.log"));
+	gLogger().addLogger(new FileLogger(LOG_LEVEL::TRACE, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/error.log"));
 
 	Application::Initialize();
 	/** After application initialization all singletons used by the engine

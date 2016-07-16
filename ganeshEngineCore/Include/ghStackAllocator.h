@@ -3,13 +3,14 @@
 
 #include "ghHeaders.h"
 #include <iostream>
-#include <gtest/gtest_prod.h>
+//#include <gtest/gtest_prod.h>
 
 namespace ganeshEngine {
 
 class StackAllocator {
     friend class DoubleBufferedStackAllocator;
-    FRIEND_TEST(MemoryTest, allocationArea);
+    //FRIEND_TEST(MemoryTest, allocationArea);
+
 
 private:
     unsigned long mByteSize;

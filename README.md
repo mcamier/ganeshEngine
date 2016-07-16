@@ -45,6 +45,13 @@ Here are the third-party tools used by ganeshEngine :
 ## Installation
 > to do
 
+## Knowledge base
+
+During compilation if an error occurs about VULKAN draw image, just append this line : 
+'NV/draw_vulkan_image.txt'
+
+to the file libs/glew/auto/blacklist, then do "make clean %% make" within libs/glew/auto
+
 License
 ----
 

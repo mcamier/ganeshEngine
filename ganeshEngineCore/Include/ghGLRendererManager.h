@@ -26,11 +26,6 @@ class RendererManager : public System<RendererManager> {
 	friend class System<RendererManager>;
 
 private:
-	/**
-	 * Window used to render the game
-	 */
-    GLFWwindow* mpWindow;
-
 	RendererManager() {}
 
 public:
@@ -41,8 +36,6 @@ public:
     void preRender();
     void render(Scene &scene);
     void postRender();
-
-
 
 protected:
 	/**
@@ -56,14 +49,6 @@ protected:
      */
     void vDestroy() override;
 };
-
-/**
- * Triggered when GLFW throw an error, basically it will call the LoggerManager to log and error
- *
- * @param error GLFW specific error code
- * @param message description of the error
- */
-void gGlfwErrorCallback(int error, const char *message);
 
 /**
  * Global getter of reference to the RendererManager

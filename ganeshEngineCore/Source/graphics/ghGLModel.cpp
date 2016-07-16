@@ -1,12 +1,16 @@
 #include "graphics/ghGLModel.h"
 
+#include <GL/gl.h>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 namespace ganeshEngine {
 
-void GLModel::sendToGC() {
+    void GLModel::sendToGC() {
 	mpMesh->sendToGC();
 	mpTexture->sendToGC();
 
-	glGenVertexArrays(1, &mVAO);
+    glGenVertexArrays(1, &mVAO);
 	glBindVertexArray(mVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, mpMesh->mVBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, x));

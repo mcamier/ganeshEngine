@@ -40,11 +40,24 @@ public:
 	Scene(SceneObject *root) : mRoot(root) {}
 	~Scene() {}
 
+	/**
+	 * @param SceneObject*
+	 */
 	void setRoot(SceneObject *newRoot);
     shared_ptr<Camera> getCamera();
 	void setCamera(shared_ptr<Camera> camera);
+
 	SceneObject* getRoot();
+
+	/**
+	 * @param SceneObject*
+	 */
 	void render();
+
+	/**
+	 *
+	 */
+	virtual void update() {}
 };
 
 }

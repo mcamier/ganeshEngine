@@ -4,21 +4,25 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(DemoInclude
     "Include"
     "../ganeshEngineCore/Include")
-include_directories (${DemoInclude})
+
+include_directories (
+    ${DemoInclude}
+    ../libs/glm/
+    ../libs/glew/include
+    ../libs/glfw/include
+)
+
+find_package(OpenGL REQUIRED)
+
+set(GL_LIBS
+        ${OPENGL_LIBRARY}
+        glfw
+        GLEW_1130)
 
 set(SOURCE_FILES
     "Source/main.cpp")
 
-find_package(GLEW REQUIRED)
-if (GLEW_FOUND)
-    include_directories(${GLEW_INCLUDE_DIRS})
-    link_libraries(${GLEW_LIBRARIES})
-endif()
+SET_SOURCE_FILES_PROPERTIES( ${SOURCE_FILES} PROPERTIES LANGUAGE CXX )
+add_executable(${ExeName} ${SOURCE_FILES})
 
-if(WIN32)
-    add_executable(${ExeName} WIN32 ${SOURCE_FILES})
-else(WIN32)
-    add_executable(${ExeName} ${SOURCE_FILES})
-endif(WIN32)
-
-target_link_libraries(${ExeName} ganeshEngineCore glfw GL X11 Xxf86vm Xrandr pthread Xi Xinerama dl rt Xcursor)
+target_link_libraries(${ExeName} ${GL_LIBS} ganeshEngineCore)
