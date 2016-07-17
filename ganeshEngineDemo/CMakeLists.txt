@@ -10,6 +10,7 @@ include_directories (
     ../libs/glm/
     ../libs/glew/include
     ../libs/glfw/include
+    ../libs/rapidjson/include
 )
 
 find_package(OpenGL REQUIRED)

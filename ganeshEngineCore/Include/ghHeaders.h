@@ -17,6 +17,7 @@
 #include <memory>
 #include <stdlib.h>
 #include <assert.h>
+#include <functional>
 
 #include <glm/glm.hpp>
 

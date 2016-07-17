@@ -1,6 +1,8 @@
 #include "ghInputContext.h"
 
 #include "ghInputManager.h"
+#include <functional>
+
 
 namespace ganeshEngine {
 
@@ -13,7 +15,7 @@ InputContext::InputContext() {
 
 InputContext::~InputContext() {}
 
-bool InputContext::contains(rawInput &rawInput) const {
+int InputContext::contains(rawInput &rawInput) const {
     for(auto const &match : m_inputMatches) {
         if(rawInput.type == rawInputType::PRESS ||
            rawInput.type == rawInputType::RELEASE ||
@@ -21,23 +23,23 @@ bool InputContext::contains(rawInput &rawInput) const {
 
             if(match->type == rawInput.type &&
                match->source == rawInput.source &&
-               match->idx == rawInput.idx &&
                match->key == rawInput.data.button.key &&
                match->mods == rawInput.data.button.mods ){
-                return true;
+                return match->getId();
             }
         } else {
             if(match->type == rawInput.type &&
                match->source == rawInput.source &&
-               match->idx == rawInput.idx) {
-                return true;
+               match->key == rawInput.data.button.key) {
+                return match->getId();
             }
         }
     }
-    return false;
+    return -1;
 }
 
-void InputContext::registerMatch(unique_ptr<InputMatch> inputMatch) {
+void InputContext::registerMatch(unique_ptr<InputMatch> inputMatch, function<void(void)> callback) {
+    m_inputCallbacks.insert(make_pair(inputMatch->getId(), callback));
     m_inputMatches.push_back(move(inputMatch));
 }
 

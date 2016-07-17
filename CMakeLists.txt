@@ -33,16 +33,22 @@ add_definitions(
 
 set(LIB_DIR "${PROJECT_SOURCE_DIR}/libs")
 
+set(RAPIDJSON_URL "https://github.com/miloyip/rapidjson.git")
+set(RAPIDJSON_TAG "v1.0.2")
+set(RAPIDJSON_DIR "${LIB_DIR}/rapidjson")
+
 set(GLFW_URL "https://github.com/glfw/glfw.git")
 set(GLFW_TAG "3.1.2")
+set(GLFW_DIR "${LIB_DIR}/glfw")
+
 set(GLEW_URL "https://github.com/nigels-com/glew.git")
 set(GLEW_TAG "glew-1.12.0")
+set(GLEW_DIR "${LIB_DIR}/glew")
+
 set(GLM_URL "https://github.com/g-truc/glm.git")
 set(GLM_TAG "0.9.7")
-
-set(GLFW_DIR "${LIB_DIR}/glfw")
-set(GLEW_DIR "${LIB_DIR}/glew")
 set(GLM_DIR "${LIB_DIR}/glm")
+
 
 if(NOT EXISTS "${LIB_DIR}")
     file(MAKE_DIRECTORY "${LIB_DIR}")
@@ -57,6 +63,7 @@ if(${CMAKE_SYSTEM} MATCHES "Windows")
     endif()
 endif()
 
+get_lib_from_github(${RAPIDJSON_DIR} ${RAPIDJSON_URL} ${RAPIDJSON_TAG})
 get_lib_from_github(${GLFW_DIR} ${GLFW_URL} ${GLFW_TAG})
 get_lib_from_github(${GLM_DIR} ${GLM_URL} ${GLM_TAG})
 get_lib_from_github(${GLEW_DIR} ${GLEW_URL} ${GLEW_TAG})

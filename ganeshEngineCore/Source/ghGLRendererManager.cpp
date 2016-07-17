@@ -11,11 +11,6 @@ void RendererManager::vInitialize() {}
 void RendererManager::vDestroy() { }
 
 void RendererManager::preRender() {
-    timespec t;
-    t.tv_sec = 0;
-    t.tv_nsec = gRandr(15,20)*500000;
-    //nanosleep(&t, nullptr);
-
     glClearColor(0.2, 0.2, 0.2, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

@@ -47,6 +47,7 @@ set(EngineSources
         "Source/ghFileLogger.cpp"
         "Source/ghInputManager.cpp"
         "Source/ghInputContext.cpp"
+        "Source/ghInputUtils.cpp"
         "Source/ghGLRendererManager.cpp"
         "Source/ghLoggerManager.cpp"
         "Source/ghPlane.cpp"
@@ -74,6 +75,7 @@ include_directories(
         ../libs/glm
         ../libs/glew/include
         ../libs/glfw/include
+        ../libs/rapidjson/include
         )
 
 set(GL_LIBS

@@ -42,7 +42,7 @@ void Application::run() {
         accumulator += elapsedLastFrame.count();
 
         while(accumulator >= dt) {
-            gInput().update();
+            PROFILE("input", gInput().update());
             PROFILE("simulation", gSimulation().tick(dt));
 
             obj->addY( (F32)((2.0f * cos(totalTime)) * 0.005f));

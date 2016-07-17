@@ -14,6 +14,10 @@ add_definitions(
 add_subdirectory (glm)
 include_directories(glm)
 
+### RAPIDJSON ###
+add_subdirectory (rapidjson)
+include_directories(rapidjson/include)
+
 ### GLFW ###
 add_subdirectory (glew)
 include_directories(glew/include/)

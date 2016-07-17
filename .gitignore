@@ -2,6 +2,7 @@
 bin
 doc
 logs
-libs/glew*
-libs/glfw*
-libs/glm*
+libs/glew
+libs/glfw
+libs/glm
+libs/rapidjon
