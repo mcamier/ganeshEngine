@@ -12,8 +12,13 @@
 using namespace std;
 using namespace ganeshEngine;
 
+enum test {
+	retest = GH_HASH("TOTO")
+};
+
 
 int main() {
+	auto r = test::retest;
 	LoggerManager::Initialize();
 	gLogger().addLogger(new ConsoleLogger(LOG_LEVEL::TRACE));
 	gLogger().addLogger(new FileLogger(LOG_LEVEL::TRACE, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/error.log"));

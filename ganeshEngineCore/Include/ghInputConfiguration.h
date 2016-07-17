@@ -37,10 +37,10 @@ public:
 
         if(a.HasMember("chord")) {
             const Value& chord= a["chord"];
-            assert(chord.IsObject());
+            ASSERT(chord.IsObject());
 
             if(chord.HasMember("threshold_detection_ms")) {
-                assert(chord["threshold_detection_ms"].IsInt());
+                ASSERT(chord["threshold_detection_ms"].IsInt());
                 conf->m_chordThresholdDetectionMs = chord["threshold_detection_ms"].GetInt();
                 _INFO("\tthreshold_detection_ms : " << conf->m_chordThresholdDetectionMs);
             }
@@ -48,11 +48,22 @@ public:
 
         if(a.HasMember("context")) {
             const Value& context = a["context"];
-            assert(context.IsArray());
+            ASSERT(context.IsArray());
             _INFO("\tInput Matches : ");
 
             for (SizeType i = 0; i < context.Size(); i++) {
-                assert(context[i].IsObject());
+                const Value& match = context[i];
+                ASSERT(match.IsObject());
+                ASSERT(match.HasMember("source"));
+                ASSERT(match["source"].IsString());
+                ASSERT(match.HasMember("type"));
+                ASSERT(match["type"].IsString());
+                ASSERT(match.HasMember("identifier"));
+                ASSERT(match["identifier"].IsString());
+                ASSERT(match.HasMember("action_id"))
+                ASSERT(match["actions_id"].IsString());
+
+
             }
         }
 

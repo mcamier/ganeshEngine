@@ -19,6 +19,9 @@ set(EngineIncludes
         "Include/ghHeaders.h"
         "Include/ghICollider.h"
         "Include/ghILogger.h"
+        "Include/ghInputManager.h"
+        "Include/ghInputContext.h"
+        "Include/ghInputUtils.h"
         "Include/ghLoggerManager.h"
         "Include/ghPlane.h"
         "Include/ghPlatform.h"
@@ -34,7 +37,6 @@ set(EngineIncludes
         "Include/graphics/ghGLProgram.h"
         "Include/graphics/ghGLModel.h"
         "Include/graphics/ghGLShader.h")
-
 
 set(EngineSources
         "Source/ghActor.cpp"
@@ -68,7 +70,6 @@ set(EngineSources
         "Source/graphics/ghGLShader.cpp")
 
 SET_SOURCE_FILES_PROPERTIES( ${EngineSources} PROPERTIES LANGUAGE CXX )
-
 
 include_directories(
         ../ganeshEngineCore/Include

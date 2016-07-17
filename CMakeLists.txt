@@ -4,7 +4,7 @@ project(ganeshEngine)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${ganeshEngine_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows")
 
 # git 1.8.5.2
 find_package(Git REQUIRED)

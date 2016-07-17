@@ -7,13 +7,13 @@
       "source": "MOUSE",
       "type": "PRESS",
       "identifier": "GH_BUTTON_MOUSE_RIGHT",
-      "action_id": 1
+      "action_id": "ACTION_1"
     },
     {
       "source": "MOUSE",
       "type": "HOLD",
       "identifier": "GH_BUTTON_MOUSE_RIGHT",
-      "action_id": 2
+      "action_id": "ACTION_2"
     }
   ]
 }
