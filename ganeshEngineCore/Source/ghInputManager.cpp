@@ -11,12 +11,12 @@ namespace ganeshEngine {
             rawInput input;
             input.idx = 0;
             input.timestamp = 0;
-            input.source = rawInputSource::KEYBOARD;
+            input.source = RawInput::SOURCE::KEYBOARD;
 
             if(action == GLFW_PRESS) {
-                input.type = rawInputType::PRESS;
+                input.type = RawInput::TYPE::PRESS;
             }else{
-                input.type = rawInputType::RELEASE;
+                input.type = RawInput::TYPE::RELEASE;
             }
             input.data.button.key = key;
             input.data.button.scancode = scancde;
@@ -30,8 +30,8 @@ namespace ganeshEngine {
             rawInput input;
             input.idx = 0;
             input.timestamp = 0;
-            input.source = rawInputSource::MOUSE;
-            input.type = rawInputType::MOVE;
+            input.source = RawInput::SOURCE::MOUSE;
+            input.type = RawInput::TYPE::MOVE;
             input.data.move.x = xpos;
             input.data.move.y = ypos;
 
@@ -42,12 +42,12 @@ namespace ganeshEngine {
             rawInput input;
             input.idx = 0;
             input.timestamp = 0;
-            input.source = rawInputSource::MOUSE;
+            input.source = RawInput::SOURCE::MOUSE;
 
             if(action == GLFW_PRESS) {
-                input.type = rawInputType::PRESS;
+                input.type = RawInput::TYPE::PRESS;
             }else{
-                input.type = rawInputType::RELEASE;
+                input.type = RawInput::TYPE::RELEASE;
             }
             input.data.button.key = button;
             input.data.button.scancode = button;
@@ -59,13 +59,19 @@ namespace ganeshEngine {
         unique_ptr<InputContext> inputContext = make_unique<InputContext>();
         int id = inputContext->getId();
         unique_ptr<InputMatch> inputMatch = make_unique<InputMatch>();
-        inputMatch->source = rawInputSource::KEYBOARD;
-        inputMatch->type= rawInputType::PRESS;
-        inputMatch->key = GLFW_KEY_ESCAPE;
+        inputMatch->source = RawInput::SOURCE::KEYBOARD;
+        inputMatch->type= RawInput::TYPE::PRESS;
+        inputMatch->key = (RawInput::KEY)GH_BUTTON_KEY_ESCAPE;
+        inputMatch->callbackNameHash = GH_HASH("GH_ESCAPE_GAME");
+        inputContext->registerMatch(move(inputMatch));
 
-        inputContext->registerMatch(move(inputMatch), []() {
+        this->registerInputCallback(GH_HASH("GH_ESCAPE_GAME"), []() {
             gApp().shutdown();
         });
+
+        /*, []() {
+            gApp().shutdown();
+        });*/
         this->registerInputContext(move(inputContext));
         this->activeContext(id, true);
 
@@ -73,6 +79,11 @@ namespace ganeshEngine {
 
         }
         _INFO("InputManager initialized");
+    }
+
+
+    void InputManager::vDestroy() {
+        _INFO("InputManager destroyed");
     }
 
     void InputManager::activeContext(int id, bool active) {
@@ -88,16 +99,16 @@ namespace ganeshEngine {
         rawInputs.push_back(input);
     }
 
-    void InputManager::vDestroy() {
-        _INFO("InputManager destroyed");
-    }
-
     void InputManager::registerInputContext(unique_ptr<InputContext> inputContext) {
         auto iter = inputContexts.find(inputContext->getId());
         if(iter != inputContexts.end()) {
             _ERROR("Cannot add an inputContext already present in the InputManager");
         }
         inputContexts.insert(make_pair(inputContext->getId(), move(inputContext)));
+    }
+
+    void InputManager::registerInputCallback(U32 callbackHash, function<void(void)> callback) {
+        m_inputCallbacks.insert(make_pair(callbackHash, callback));
     }
 
     void InputManager::update() {
@@ -108,10 +119,14 @@ namespace ganeshEngine {
                 InputContext &context = (*entry.second);
                 if(context.isActive()){
 
-                    int matchFound = context.contains(input);
-                    if(matchFound > -1) {
-                        auto iter = context.m_inputCallbacks.find(matchFound);
-                        if(iter != context.m_inputCallbacks.end()){
+                    int callbackId = context.contains(input);
+                    /*
+                     * TODO this check is really really unsafe because i'm assuming no hash could equals to 0
+                     *      I need to modify this ASAP
+                     */
+                    if(callbackId != 0) {
+                        auto iter = m_inputCallbacks.find(callbackId);
+                        if(iter != m_inputCallbacks.end()){
                             _DEBUG("INPUT MATCH TRIGERRED");
                             iter->second();
                         } else {

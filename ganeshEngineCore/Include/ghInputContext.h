@@ -32,8 +32,6 @@ private:
      */
     vector<unique_ptr<InputMatch>> m_inputMatches;
 
-    map<int, function<void(void)>> m_inputCallbacks;
-
     /**
      * Last id generated
      */
@@ -43,9 +41,9 @@ public:
     InputContext();
     virtual ~InputContext();
 
-    int contains(rawInput &rawInput) const;
+    U32 contains(rawInput &rawInput) const;
 
-    void registerMatch(unique_ptr<InputMatch> inputMatch, function<void(void)> callback);
+    void registerMatch(unique_ptr<InputMatch> inputMatch);
 
     int getId() const;
 

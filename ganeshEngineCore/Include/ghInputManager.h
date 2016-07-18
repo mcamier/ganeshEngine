@@ -23,6 +23,7 @@ private:
      */
     bool m_bConfigurationOnInitialize = false;
     unique_ptr<InputManagerConfiguration> m_config;
+    map<U32, function<void(void)>> m_inputCallbacks;
 
 protected:
     void vInitialize() override;
@@ -43,6 +44,7 @@ public:
 
     void activeContext(int id, bool active);
     void registerInputContext(unique_ptr<InputContext> inputContext);
+    void registerInputCallback(U32 callbackHash, function<void(void)> callback);
     void update();
 
     /**

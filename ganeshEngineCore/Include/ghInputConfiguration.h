@@ -60,10 +60,15 @@ public:
                 ASSERT(match["type"].IsString());
                 ASSERT(match.HasMember("identifier"));
                 ASSERT(match["identifier"].IsString());
-                ASSERT(match.HasMember("action_id"))
-                ASSERT(match["actions_id"].IsString());
+                ASSERT(match.HasMember("callbackName"))
+                ASSERT(match["callbackName"].IsString());
 
-
+                InputMatch inputMatch;
+                inputMatch.source = RawInput::fromString<RawInput::SOURCE>(match["source"].GetString());
+                inputMatch.type = RawInput::fromString<RawInput::TYPE>(match["type"].GetString());
+                inputMatch.key = RawInput::fromString<RawInput::KEY>(match["identifier"].GetString());
+                inputMatch.callbackNameHash = GH_HASH(match["callbackName"].GetString());
+                inputMatch.mods = 0;
             }
         }
 

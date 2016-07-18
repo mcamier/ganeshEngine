@@ -24,9 +24,6 @@
 #define GH_HASH(s)    ((uint32_t)(H256(s,0,0)^(H256(s,0,0)>>16)))
 
 
-
-
-
 #ifdef DEBUG_ASSERTION_ENABLED
     #include <stdio.h>
     #include <string.h>

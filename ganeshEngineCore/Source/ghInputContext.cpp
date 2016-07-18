@@ -15,32 +15,31 @@ InputContext::InputContext() {
 
 InputContext::~InputContext() {}
 
-int InputContext::contains(rawInput &rawInput) const {
+void InputContext::registerMatch(unique_ptr<InputMatch> inputMatch) {
+	m_inputMatches.push_back(move(inputMatch));
+}
+
+U32 InputContext::contains(rawInput &rawInput) const {
     for(auto const &match : m_inputMatches) {
-        if(rawInput.type == rawInputType::PRESS ||
-           rawInput.type == rawInputType::RELEASE ||
-           rawInput.type == rawInputType::HOLD) {
+        if(rawInput.type == RawInput::TYPE::PRESS ||
+           rawInput.type == RawInput::TYPE::RELEASE ||
+           rawInput.type == RawInput::TYPE::HOLD) {
 
             if(match->type == rawInput.type &&
                match->source == rawInput.source &&
-               match->key == rawInput.data.button.key &&
+               match->key == (RawInput::KEY)rawInput.data.button.key &&
                match->mods == rawInput.data.button.mods ){
-                return match->getId();
+                return match->callbackNameHash;
             }
         } else {
             if(match->type == rawInput.type &&
                match->source == rawInput.source &&
-               match->key == rawInput.data.button.key) {
-                return match->getId();
+               match->key == (RawInput::KEY)rawInput.data.button.key) {
+                return match->callbackNameHash;
             }
         }
     }
     return -1;
-}
-
-void InputContext::registerMatch(unique_ptr<InputMatch> inputMatch, function<void(void)> callback) {
-    m_inputCallbacks.insert(make_pair(inputMatch->getId(), callback));
-    m_inputMatches.push_back(move(inputMatch));
 }
 
 int InputContext::getId() const {
