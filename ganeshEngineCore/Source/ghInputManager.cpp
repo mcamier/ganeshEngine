@@ -78,12 +78,12 @@ namespace ganeshEngine {
         if(m_bConfigurationOnInitialize) {
 
         }
-        _INFO("InputManager initialized");
+        _INFO("InputManager initialized", LOG_CHANNEL::INPUT);
     }
 
 
     void InputManager::vDestroy() {
-        _INFO("InputManager destroyed");
+        _INFO("InputManager destroyed", LOG_CHANNEL::INPUT);
     }
 
     void InputManager::activeContext(int id, bool active) {
@@ -91,7 +91,7 @@ namespace ganeshEngine {
         if(iter != inputContexts.end()) {
             iter->second->setActive(active);
         } else {
-            _ERROR("Cannot active the inputContext with the give id : " << id);
+            _ERROR("Cannot active the inputContext with the give id : " << id, LOG_CHANNEL::INPUT);
         }
     }
 
@@ -102,7 +102,7 @@ namespace ganeshEngine {
     void InputManager::registerInputContext(unique_ptr<InputContext> inputContext) {
         auto iter = inputContexts.find(inputContext->getId());
         if(iter != inputContexts.end()) {
-            _ERROR("Cannot add an inputContext already present in the InputManager");
+            _ERROR("Cannot add an inputContext already present in the InputManager", LOG_CHANNEL::INPUT);
         }
         inputContexts.insert(make_pair(inputContext->getId(), move(inputContext)));
     }
@@ -127,10 +127,10 @@ namespace ganeshEngine {
                     if(callbackId != 0) {
                         auto iter = m_inputCallbacks.find(callbackId);
                         if(iter != m_inputCallbacks.end()){
-                            _DEBUG("INPUT MATCH TRIGERRED");
+                            _DEBUG("INPUT MATCH TRIGERRED", LOG_CHANNEL::INPUT);
                             iter->second();
                         } else {
-                            _WARNING("Input detected but no callback to call")
+                            _WARNING("Input detected but no callback to call", LOG_CHANNEL::INPUT)
                         }
                     }
                 }

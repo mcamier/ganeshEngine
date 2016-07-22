@@ -105,7 +105,7 @@ U32 gRandr(unsigned int min, unsigned int max);
  * @param line
  * @param string
  */
-void gLog(LOG_LEVEL logLevel, const char *file, int line, std::string &string);
+void gLog(LOG_LEVEL logLevel, LOG_CHANNEL channels, const char *file, int line, std::string &string);
 
 }
 #endif //GANESHENGINE_GLCORE_H

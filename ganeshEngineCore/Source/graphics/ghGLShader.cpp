@@ -34,7 +34,7 @@ void GLShader::doCompile() {
 		glGetShaderInfoLog(shaderId, maxLength, nullptr, strInfoLog);
 		strInfoLog[maxLength] = '\0';
 		glDeleteShader(shaderId);
-		_ERROR(strInfoLog);
+		_ERROR(strInfoLog, LOG_CHANNEL::RENDER);
 		delete[] strInfoLog;
 		mStatus = ShaderStatus::FAILED;
 	} else if (isCompiled == GL_TRUE) {

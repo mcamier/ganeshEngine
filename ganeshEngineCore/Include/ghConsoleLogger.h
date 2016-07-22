@@ -13,7 +13,7 @@ namespace ganeshEngine {
 class ConsoleLogger : public ILogger {
 
 public:
-	ConsoleLogger(LOG_LEVEL logLvl) : ILogger(logLvl) {}
+	ConsoleLogger(LOG_LEVEL logLvl,LOG_CHANNEL logChannel) : ILogger(logLvl, logChannel) {}
 	ConsoleLogger(const ConsoleLogger&) = delete;
 	ConsoleLogger& operator=(const ConsoleLogger&) = delete;
 

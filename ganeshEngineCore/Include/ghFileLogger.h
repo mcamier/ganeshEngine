@@ -52,10 +52,10 @@ private:
     list<LogEntry*> mPendingEntries;
 
 public:
-    FileLogger(LOG_LEVEL logLvl, const char* filename, int maxBulkEntry = 5000) :
+    FileLogger(LOG_LEVEL logLvl, LOG_CHANNEL logChannel, const char* filename, int maxBulkEntry = 5000) :
         mMaxBulkEntry(maxBulkEntry),
         mFilename(filename),
-        ILogger(logLvl) {
+        ILogger(logLvl, logChannel) {
 
         mDBSAllocator = new DoubleBufferedStackAllocator(mMaxBulkEntry * sizeof(LogEntry));
         mDBSAllocator->initialize();

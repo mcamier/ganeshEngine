@@ -20,8 +20,9 @@ enum test {
 int main() {
 	auto r = test::retest;
 	LoggerManager::Initialize();
-	gLogger().addLogger(new ConsoleLogger(LOG_LEVEL::TRACE));
-	gLogger().addLogger(new FileLogger(LOG_LEVEL::TRACE, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/error.log"));
+	LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT;
+    gLogger().addLogger(new ConsoleLogger(LOG_LEVEL::TRACE, channels));
+	gLogger().addLogger(new FileLogger(LOG_LEVEL::TRACE, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/log"));
 
 	Platform::Initialize();
 

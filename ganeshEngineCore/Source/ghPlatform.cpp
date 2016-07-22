@@ -31,7 +31,7 @@ void Platform::vInitialize() {
         mpWindow = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
         if( mpWindow ) {
             glfwSetErrorCallback([](int error, const char *message) {
-                _ERROR("GLFW ERROR : code " << error << " message : ");
+                _ERROR("GLFW ERROR : code " << error << " message : ", LOG_CHANNEL::DEFAULT);
             });
             glfwMakeContextCurrent(mpWindow);
             glewExperimental = GL_TRUE;
@@ -45,26 +45,26 @@ void Platform::vInitialize() {
 
                 const GLubyte *renderer = glGetString(GL_RENDERER);
                 const GLubyte *version = glGetString(GL_VERSION);
-                _INFO("RendererManager init : ");
-                _INFO("\t renderer : " << renderer);
-                _INFO("\t version : " << version);
+                _INFO("RendererManager init : ", LOG_CHANNEL::DEFAULT);
+                _INFO("\t renderer : " << renderer, LOG_CHANNEL::DEFAULT);
+                _INFO("\t version : " << version, LOG_CHANNEL::DEFAULT);
 
-                _INFO("GL Context param :");
+                _INFO("GL Context param :", LOG_CHANNEL::DEFAULT);
                 for(tuple<GLenum, string> param : gGLContextParams) {
                     int value = 0;
                     glGetIntegerv(std::get<0>(param), &value);
-                    _INFO("\t" << std::get<1>(param) << " : " << value);
+                    _INFO("\t" << std::get<1>(param) << " : " << value, LOG_CHANNEL::DEFAULT);
                 }
             } else {
-                _FATAL("failed to initialize GLEW");
+                _FATAL("failed to initialize GLEW", LOG_CHANNEL::DEFAULT);
             }
         } else {
-            _FATAL("ERROR ON WINDOW CREATION");
+            _FATAL("ERROR ON WINDOW CREATION", LOG_CHANNEL::DEFAULT);
         }
-        _INFO("Platform initialized");
+        _INFO("Platform initialized", LOG_CHANNEL::DEFAULT);
     }
     else {
-        _FATAL("ERROR ON GLFW INIT DURING Platform INIT");
+        _FATAL("ERROR ON GLFW INIT DURING Platform INIT", LOG_CHANNEL::DEFAULT);
     }
 }
 

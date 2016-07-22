@@ -23,7 +23,7 @@ private:
 
 public:
     static unique_ptr<InputManagerConfiguration> loadFromFile(string configFilename) {
-        _INFO("Load InputManager Configuration : " << configFilename);
+        _INFO("Load InputManager Configuration : " << configFilename, LOG_CHANNEL::INPUT);
         InputManagerConfiguration *conf = new InputManagerConfiguration();
         Document jsonConfig;
         char readBuffer[65536];
@@ -42,14 +42,14 @@ public:
             if(chord.HasMember("threshold_detection_ms")) {
                 ASSERT(chord["threshold_detection_ms"].IsInt());
                 conf->m_chordThresholdDetectionMs = chord["threshold_detection_ms"].GetInt();
-                _INFO("\tthreshold_detection_ms : " << conf->m_chordThresholdDetectionMs);
+                _INFO("\tthreshold_detection_ms : " << conf->m_chordThresholdDetectionMs, LOG_CHANNEL::INPUT);
             }
         }
 
         if(a.HasMember("context")) {
             const Value& context = a["context"];
             ASSERT(context.IsArray());
-            _INFO("\tInput Matches : ");
+            _INFO("\tInput Matches : ", LOG_CHANNEL::INPUT);
 
             for (SizeType i = 0; i < context.Size(); i++) {
                 const Value& match = context[i];

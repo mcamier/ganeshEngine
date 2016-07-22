@@ -6,3 +6,6 @@ libs/glew
 libs/glfw
 libs/glm
 libs/rapidjon
+nbproject
+CMakeCache.txt
+CMakeFiles

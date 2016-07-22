@@ -44,7 +44,7 @@ public:
                 mpCurrentAddr = (char*)mpCurrentAddr + sizeof(T);
                 return new (mpCurrentAddr)T;
             }
-            _WARNING("Stack allocator runs out of memory, please clear it to alloc again");
+            _WARNING("Stack allocator runs out of memory, please clear it to alloc again", LOG_CHANNEL::DEFAULT);
             return nullptr;
         }
         return nullptr;

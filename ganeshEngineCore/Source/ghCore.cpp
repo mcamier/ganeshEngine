@@ -14,8 +14,8 @@ U32 gRandr(unsigned int min, unsigned int max) {
     return (max - min +1)*scaled + min;
 }
 
-void gLog(LOG_LEVEL logLevel, const char *file, int line, std::string &string) {
-    gLogger().log(logLevel, file, line, string);
+void gLog(LOG_LEVEL logLevel, LOG_CHANNEL logChannels, const char *file, int line, std::string &string) {
+    gLogger().log(logLevel, logChannels, file, line, string);
 }
 
 }

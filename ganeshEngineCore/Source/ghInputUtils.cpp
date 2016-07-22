@@ -280,7 +280,6 @@ RawInput::KEY RawInput::fromString<RawInput::KEY>(const char* value) {
     assert(false);
 }
 
-
 InputMatch::InputMatch() {
     m_id = m_lastId++;
 }

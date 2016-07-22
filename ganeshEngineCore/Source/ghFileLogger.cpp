@@ -42,7 +42,7 @@ void FileLogger::writePendingLogsIntroFileAndSwap() {
 		fclose(fp);
 	}
 	else {
-		_ERROR("Enable to open output log file");
+		_ERROR("Enable to open output log file", LOG_CHANNEL::DEFAULT);
 	}
 	// switch stack
 	mDBSAllocator->swapBuffer();

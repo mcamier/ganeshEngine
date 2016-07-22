@@ -30,41 +30,41 @@
         std::string message = internalLogStream.str(); \
         ganeshEngine::gLog(LOG_LEVEL, __FILE__, __LINE__, message);\
     }
-	#define _TRACE(MESSAGE) {\
+	#define _TRACE(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::gLog(LOG_LEVEL::TRACE, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::TRACE, CHANNELS, __FILE__, __LINE__, message);\
     }
-	#define _INFO(MESSAGE) {\
+	#define _INFO(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::gLog(LOG_LEVEL::INFO, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::INFO, CHANNELS,__FILE__, __LINE__, message);\
     }
-	#define _DEBUG(MESSAGE) {\
+	#define _DEBUG(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::gLog(LOG_LEVEL::DEBUG, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::DEBUG, CHANNELS,__FILE__, __LINE__, message);\
     }
-	#define _WARNING(MESSAGE) {\
+	#define _WARNING(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::gLog(LOG_LEVEL::WARNING, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::WARNING, CHANNELS, __FILE__, __LINE__, message);\
     }
-	#define _ERROR(MESSAGE) {\
+	#define _ERROR(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::gLog(LOG_LEVEL::ERROR, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::ERROR, CHANNELS,__FILE__, __LINE__, message);\
     }
-	#define _FATAL(MESSAGE) {\
+	#define _FATAL(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ganeshEngine::gLog(LOG_LEVEL::FATAL, __FILE__, __LINE__, message);\
+        ganeshEngine::gLog(LOG_LEVEL::FATAL, CHANNELS,__FILE__, __LINE__, message);\
         gApp().shutdown();\
     }
 #else

@@ -47,7 +47,7 @@ public:
 	 * @param line line of code where comes the log from
 	 * @param message message to log
      */
-    void log(LOG_LEVEL lvl, const char* file, int line, std::string &message);
+    void log(LOG_LEVEL lvl, LOG_CHANNEL logChannel, const char* file, int line, std::string &message);
 
 protected:
 	/**
