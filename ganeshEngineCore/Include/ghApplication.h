@@ -6,6 +6,7 @@
 #include "ghScene.h"
 #include "ghActor.h"
 #include "ghClock.h"
+#include "ghEvent.h"
 
 #include "graphics/ghGLProgram.h"
 #include "graphics/ghGLTexture.h"
@@ -31,10 +32,10 @@ private:
      */
     Scene mMainScene;
 
-	/**
-	 * The main game clock, will be incremented even if the gameplay
-	 * or other sub systems are paused
-	 */
+    /**
+     * The main game clock, will be incremented even if the gameplay
+     * or other sub systems are paused
+     */
     Clock mMainClock;
 
     /**
@@ -45,18 +46,23 @@ private:
 
 
     GLProgram program;
-    GLTexture *tex {nullptr};
-    GLMesh *mesh {nullptr};
-    GLMesh *mesh2 {nullptr};
-    GLModel *model {nullptr};
-    GLModel *model2 {nullptr};
-    Actor *obj {nullptr};
+    GLTexture *tex{nullptr};
+    GLMesh *mesh{nullptr};
+    GLMesh *mesh2{nullptr};
+    GLModel *model{nullptr};
+    GLModel *model2{nullptr};
+    Actor *obj{nullptr};
 
-    Application() {}
+    Application()
+    {
+    }
 public:
     Application(const Application&) = delete;
     Application& operator=(const Application&) = delete;
-    ~Application() {}
+
+    ~Application()
+    {
+    }
 
     /**
      *  Run the lifecycle of the engine

@@ -15,54 +15,59 @@ using namespace std::chrono;
 
 namespace ganeshEngine {
 
-void Application::RunLoop() {
+void Application::RunLoop()
+{
     Application::get().run();
 }
 
-void Application::run() {
+void Application::run()
+{
     U32 dt = 10000000;
     U64 accumulator = 0;
     U64 totalTime = 0;
 
     high_resolution_clock::time_point lastTime = high_resolution_clock::now();
     high_resolution_clock::time_point currentTime;
-    high_resolution_clock::duration elapsedLastFrame {0};
+    high_resolution_clock::duration elapsedLastFrame{0};
 
-    while(!mIsExiting) {
-        currentTime = high_resolution_clock::now();
-        elapsedLastFrame = currentTime - lastTime;
-        /** For debug purpose if a frame last longer than 0.25 second then the frame
-         *  duration will stay 0.25 second, allowing to catch breakpoint without blowing
-         *  the game logic with huge frame duration
-         */
-        if(elapsedLastFrame.count() > 250000000){
-            elapsedLastFrame = high_resolution_clock::duration{250000000};
-        }
-        lastTime = currentTime;
-        accumulator += elapsedLastFrame.count();
+    while (!mIsExiting) {
+	currentTime = high_resolution_clock::now();
+	elapsedLastFrame = currentTime - lastTime;
+	/** For debug purpose if a frame last longer than 0.25 second then the frame
+	 *  duration will stay 0.25 second, allowing to catch breakpoint without blowing
+	 *  the game logic with huge frame duration
+	 */
+	if (elapsedLastFrame.count() > 250000000) {
+	    elapsedLastFrame = high_resolution_clock::duration{250000000};
+	}
+	lastTime = currentTime;
+	accumulator += elapsedLastFrame.count();
 
-        while(accumulator >= dt) {
-            PROFILE("input", gInput().update());
-            PROFILE("simulation", gSimulation().tick(dt));
+	while (accumulator >= dt) {
+	    PROFILE("input", gInput().update());
+	    PROFILE("simulation", gSimulation().tick(dt));
+	    PROFILE("event", gEvent().update());
 
-            obj->addY( (F32)((2.0f * cos(totalTime)) * 0.005f));
+	    obj->addY((F32) ((2.0f * cos(totalTime)) * 0.005f));
 
-            accumulator -= dt;
-            totalTime += dt;
-        }
-        /**
-         * TODO : use accumulator to lerp the rendering state
-         */
-        PROFILE("rendering", gRenderer().preRender());
-        PROFILE("rendering", gRenderer().render(mMainScene));
-        PROFILE("rendering", gRenderer().postRender());
-        gProfiler().update();
+	    accumulator -= dt;
+	    totalTime += dt;
+	}
+	/**
+	 * TODO : use accumulator to lerp the rendering state
+	 */
+	PROFILE("rendering", gRenderer().preRender());
+	PROFILE("rendering", gRenderer().render(mMainScene));
+	PROFILE("rendering", gRenderer().postRender());
+	gProfiler().update();
     }
 }
 
-void Application::vInitialize() {
+void Application::vInitialize()
+{
     LoggerManager::Initialize();
     Platform::Initialize();
+    EventManager::Initialize();
     ProfilerManager::Initialize();
     InputManager::Initialize();
     RendererManager::Initialize();
@@ -71,13 +76,13 @@ void Application::vInitialize() {
     program = GLProgram::create(ShaderType::VERTEX, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl", ShaderType::FRAGMENT, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
     tex = new GLTexture();
 
-    unique_ptr<vector<Vertex>> vertices = make_unique<vector<Vertex>>();
+    unique_ptr<vector < Vertex>> vertices = make_unique<vector < Vertex >> ();
     vertices->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
     vertices->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
     vertices->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
     mesh = new GLMesh(move(vertices), DrawMode::TRIANGLES);
 
-    unique_ptr<vector<Vertex>> vertices2 = make_unique<vector<Vertex>>();
+    unique_ptr<vector < Vertex>> vertices2 = make_unique<vector < Vertex >> ();
     vertices2->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
     vertices2->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
     vertices2->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
@@ -100,23 +105,26 @@ void Application::vInitialize() {
 
     obj->appendChild(obj2);
 
-    Camera *cam = new Camera(4.0f/3.0f, 80, 1, 100);
+    Camera *cam = new Camera(4.0f / 3.0f, 80, 1, 100);
     root->appendChild(cam);
     root->appendChild(obj);
     mMainScene.setRoot(root);
     //mMainScene.setCamera(shared_ptr<Camera>(cam));
 }
 
-void Application::vDestroy() {
+void Application::vDestroy()
+{
     Simulation::Destroy();
     RendererManager::Destroy();
     InputManager::Destroy();
     ProfilerManager::Destroy();
+    EventManager::Destroy();
     Platform::Destroy();
     LoggerManager::Destroy();
 }
 
-void Application::shutdown() {
+void Application::shutdown()
+{
     mIsExiting = true;
 }
 
