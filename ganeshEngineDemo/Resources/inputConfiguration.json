@@ -1,19 +1,42 @@
 {
-  "chord": {
-    "threshold_detection_ms": 16
-  },
-  "context": [
-    {
-      "source": "MOUSE",
-      "type": "PRESS",
-      "identifier": "A",
-      "callbackName": "ACTION_1"
-    },
-    {
-      "source": "MOUSE",
-      "type": "HOLD",
-      "identifier": "B",
-      "callbackName": "ACTION_2"
-    }
-  ]
+   "chord": {
+      "threshold_detection_ms": 16
+   },
+   "context": {
+      "chords": [
+	 {
+	    "callbackName": "ACTION_323",
+	    "_1": {
+	       "source": "MOUSE",
+	       "type": "MOVE",
+	       "identifier": "A"
+	    },
+	    "_2": {
+	       "source": "MOUSE",
+	       "type": "MOVE",
+	       "identifier": "A"
+	    }
+	 }
+      ],
+      "matches": [
+	 {
+	    "source": "MOUSE",
+	    "type": "MOVE",
+	    "identifier": "A",
+	    "callbackName": "ACTION_1"
+	 },
+	 {
+	    "source": "KEYBOARD",
+	    "type": "PRESS",
+	    "identifier": "B",
+	    "callbackName": "ACTION_2"
+	 },
+	 {
+	    "source": "KEYBOARD",
+	    "type": "RELEASE",
+	    "identifier": "C",
+	    "callbackName": "_ACTION_3"
+	 }
+      ]
+   }
 }

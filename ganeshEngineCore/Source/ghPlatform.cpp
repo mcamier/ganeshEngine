@@ -45,26 +45,26 @@ void Platform::vInitialize() {
 
                 const GLubyte *renderer = glGetString(GL_RENDERER);
                 const GLubyte *version = glGetString(GL_VERSION);
-                _INFO("RendererManager init : ", LOG_CHANNEL::DEFAULT);
-                _INFO("\t renderer : " << renderer, LOG_CHANNEL::DEFAULT);
-                _INFO("\t version : " << version, LOG_CHANNEL::DEFAULT);
+                _DEBUG("RendererManager init : ", LOG_CHANNEL::DEFAULT);
+                _DEBUG("\t renderer : " << renderer, LOG_CHANNEL::DEFAULT);
+                _DEBUG("\t version : " << version, LOG_CHANNEL::DEFAULT);
 
-                _INFO("GL Context param :", LOG_CHANNEL::DEFAULT);
+                _DEBUG("GL Context param :", LOG_CHANNEL::DEFAULT);
                 for(tuple<GLenum, string> param : gGLContextParams) {
                     int value = 0;
                     glGetIntegerv(std::get<0>(param), &value);
-                    _INFO("\t" << std::get<1>(param) << " : " << value, LOG_CHANNEL::DEFAULT);
+                    _DEBUG("\t" << std::get<1>(param) << " : " << value, LOG_CHANNEL::DEFAULT);
                 }
             } else {
-                _FATAL("failed to initialize GLEW", LOG_CHANNEL::DEFAULT);
+                _ERROR("failed to initialize GLEW", LOG_CHANNEL::DEFAULT);
             }
         } else {
-            _FATAL("ERROR ON WINDOW CREATION", LOG_CHANNEL::DEFAULT);
+            _ERROR("ERROR ON WINDOW CREATION", LOG_CHANNEL::DEFAULT);
         }
-        _INFO("Platform initialized", LOG_CHANNEL::DEFAULT);
+        _DEBUG("Platform initialized", LOG_CHANNEL::DEFAULT);
     }
     else {
-        _FATAL("ERROR ON GLFW INIT DURING Platform INIT", LOG_CHANNEL::DEFAULT);
+        _ERROR("ERROR ON GLFW INIT DURING Platform INIT", LOG_CHANNEL::DEFAULT);
     }
 }
 

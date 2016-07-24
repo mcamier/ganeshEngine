@@ -41,7 +41,7 @@ public:
     InputContext();
     virtual ~InputContext();
 
-    U32 contains(rawInput &rawInput) const;
+    InputMatch* getInputMatch(rawInput &rawInput) const;
 
     void registerMatch(unique_ptr<InputMatch> inputMatch);
 

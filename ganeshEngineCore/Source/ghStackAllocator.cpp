@@ -34,11 +34,11 @@ void StackAllocator::clear() {
 
 void StackAllocator::destroy() {
     //TODO implement destroy method
-    _TRACE("start DESTROY StackAllocator", LOG_CHANNEL::DEFAULT);
+    _DEBUG("start DESTROY StackAllocator", LOG_CHANNEL::DEFAULT);
     if (mIsInitialized) {
         free(mpFirstAddr);
     }
-    _TRACE("end DESTROY StackAllocator", LOG_CHANNEL::DEFAULT);
+    _DEBUG("end DESTROY StackAllocator", LOG_CHANNEL::DEFAULT);
 }
 
 }

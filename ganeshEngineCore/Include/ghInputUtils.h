@@ -4,13 +4,18 @@
 #include "ghHeaders.h"
 #include <vector>
 #include <functional>
+#include <GLFW/glfw3.h>
 
 // TODO missing xbox controller keys
 // TODO missing mouse button keys
+/**
+ *This value below are relative to the system input used (GLFW for instance)
+ */
+// TODO those #define must be conditionnal
 #define GH_BUTTON_UNKNOWN   -1
 
-#define GH_BUTTON_MOUSE_LEFT        1001
-#define GH_BUTTON_MOUSE_RIGHT       1002
+#define GH_BUTTON_MOUSE_LEFT        1
+#define GH_BUTTON_MOUSE_RIGHT       2
 #define GH_BUTTON_KEY_APOSTROPHE    39 /* ' */
 #define GH_BUTTON_KEY_COMMA         44 /* , */
 #define GH_BUTTON_KEY_MINUS         45 /* - */
@@ -132,11 +137,15 @@
 #define GH_BUTTON_KEY_MENU          348
 #define GH_BUTTON_KEY_LAST          GLFW_KEY_MENU
 
+#define GH_BUTTON_ARRAY_SIZE     350
+
+#define GH_STATE_RELEASED     1
+#define GH_STATE_PRESSED     2
+#define GH_STATE_HELD      3
+
 namespace ganeshEngine {
 
 using namespace std;
-
-
 
 class RawInput {
 private:
@@ -273,13 +282,14 @@ private:
     const static char* keyMenu;
 
 public:
+
     /**
      * Supported input devices
      */
     enum class SOURCE {
-        MOUSE,
-        KEYBOARD,
-        JOYSTICK
+	MOUSE,
+	KEYBOARD,
+	JOYSTICK
     };
 
     /**
@@ -292,139 +302,157 @@ public:
      * MOVE: 3 dimensional floats
      */
     enum class TYPE {
-        PRESS,
-        RELEASE,
-        HOLD,
-        RANGE,
-        MOVE
+	PRESS,
+	RELEASE,
+	HOLD,
+	RANGE,
+	MOVE
     };
 
+    /**
+     * Every supported key/button which could be pressed, released or held
+     * Note this enum regroup regardless keyboard's key, mouse's button as
+     * well as gamepad's button
+     */
     enum class KEY : int {
-        MOUSE_LEFT = GH_BUTTON_MOUSE_LEFT,
-        MOUSE_RIGHT = GH_BUTTON_MOUSE_RIGHT,
-        APOSTROPHE = GH_BUTTON_KEY_APOSTROPHE,
-        COMMA = GH_BUTTON_KEY_COMMA,
-        MINUS = GH_BUTTON_KEY_MINUS,
-        PERIOD = GH_BUTTON_KEY_PERIOD,
-        SLASH = GH_BUTTON_KEY_SLASH,
-        NUM_0 = GH_BUTTON_KEY_0,
-        NUM_1 = GH_BUTTON_KEY_1,
-        NUM_2 = GH_BUTTON_KEY_2,
-        NUM_3 = GH_BUTTON_KEY_3,
-        NUM_4 = GH_BUTTON_KEY_4,
-        NUM_5 = GH_BUTTON_KEY_5,
-        NUM_6 = GH_BUTTON_KEY_6,
-        NUM_7 = GH_BUTTON_KEY_7,
-        NUM_8 = GH_BUTTON_KEY_8,
-        NUM_9 = GH_BUTTON_KEY_9,
-        SEMICOLON = GH_BUTTON_KEY_SEMICOLON,
-        EQUAL = GH_BUTTON_KEY_EQUAL,
-        A = GH_BUTTON_KEY_A,
-        B = GH_BUTTON_KEY_B,
-        C = GH_BUTTON_KEY_C,
-        D = GH_BUTTON_KEY_D,
-        E = GH_BUTTON_KEY_E,
-        F = GH_BUTTON_KEY_F,
-        G = GH_BUTTON_KEY_G,
-        H = GH_BUTTON_KEY_H,
-        I = GH_BUTTON_KEY_I,
-        J = GH_BUTTON_KEY_J,
-        K = GH_BUTTON_KEY_K,
-        L = GH_BUTTON_KEY_L,
-        M = GH_BUTTON_KEY_M,
-        N = GH_BUTTON_KEY_N,
-        O = GH_BUTTON_KEY_O,
-        P = GH_BUTTON_KEY_P,
-        Q = GH_BUTTON_KEY_Q,
-        R = GH_BUTTON_KEY_R,
-        S = GH_BUTTON_KEY_S,
-        T = GH_BUTTON_KEY_T,
-        U = GH_BUTTON_KEY_U,
-        V = GH_BUTTON_KEY_V,
-        W = GH_BUTTON_KEY_W,
-        X = GH_BUTTON_KEY_X,
-        Y = GH_BUTTON_KEY_Y,
-        Z = GH_BUTTON_KEY_Z,
-        LEFT_BRACKET = GH_BUTTON_KEY_LEFT_BRACKET,
-        BACKSLASH = GH_BUTTON_KEY_BACKSLASH,
-        RIGHT_BRACKET = GH_BUTTON_KEY_RIGHT_BRACKET,
-        GRAVE_ACCENT = GH_BUTTON_KEY_GRAVE_ACCENT,
-        WORLD_1 = GH_BUTTON_KEY_WORLD_1,
-        WORLD_2 = GH_BUTTON_KEY_WORLD_2,
-        ESCAPE = GH_BUTTON_KEY_ESCAPE,
-        ENTER = GH_BUTTON_KEY_ENTER,
-        TAB = GH_BUTTON_KEY_TAB,
-        BACKSPACE = GH_BUTTON_KEY_BACKSPACE,
-        INSERT = GH_BUTTON_KEY_INSERT,
-        DELETE = GH_BUTTON_KEY_DELETE,
-        RIGHT = GH_BUTTON_KEY_RIGHT,
-        LEFT = GH_BUTTON_KEY_LEFT,
-        DOWN = GH_BUTTON_KEY_DOWN,
-        UP = GH_BUTTON_KEY_UP,
-        PAGE_UP = GH_BUTTON_KEY_PAGE_UP,
-        PAGE_DOWN = GH_BUTTON_KEY_PAGE_DOWN,
-        HOME = GH_BUTTON_KEY_HOME,
-        END = GH_BUTTON_KEY_END,
-        CAPS_LOCK = GH_BUTTON_KEY_CAPS_LOCK,
-        SCROLL_LOCK = GH_BUTTON_KEY_SCROLL_LOCK,
-        NUM_LOCK = GH_BUTTON_KEY_NUM_LOCK,
-        PRINT_SCREEN = GH_BUTTON_KEY_PRINT_SCREEN,
-        PAUSE = GH_BUTTON_KEY_PAUSE,
-        F1 = GH_BUTTON_KEY_F1,
-        F2 = GH_BUTTON_KEY_F2,
-        F3 = GH_BUTTON_KEY_F3,
-        F4 = GH_BUTTON_KEY_F4,
-        F5 = GH_BUTTON_KEY_F5,
-        F6 = GH_BUTTON_KEY_F6,
-        F7 = GH_BUTTON_KEY_F7,
-        F8 = GH_BUTTON_KEY_F8,
-        F9 = GH_BUTTON_KEY_F9,
-        F10 = GH_BUTTON_KEY_F10,
-        F11 = GH_BUTTON_KEY_F11,
-        F12 = GH_BUTTON_KEY_F12,
-        F13 = GH_BUTTON_KEY_F13,
-        F14 = GH_BUTTON_KEY_F14,
-        F15 = GH_BUTTON_KEY_F15,
-        F16 = GH_BUTTON_KEY_F16,
-        F17 = GH_BUTTON_KEY_F17,
-        F18 = GH_BUTTON_KEY_F18,
-        F19 = GH_BUTTON_KEY_F19,
-        F20 = GH_BUTTON_KEY_F20,
-        F21 = GH_BUTTON_KEY_F21,
-        F22 = GH_BUTTON_KEY_F22,
-        F23 = GH_BUTTON_KEY_F23,
-        F24 = GH_BUTTON_KEY_F24,
-        F25 = GH_BUTTON_KEY_F25,
-        KP_0 = GH_BUTTON_KEY_KP_0,
-        KP_1 = GH_BUTTON_KEY_KP_1,
-        KP_2 = GH_BUTTON_KEY_KP_2,
-        KP_3 = GH_BUTTON_KEY_KP_3,
-        KP_4 = GH_BUTTON_KEY_KP_4,
-        KP_5 = GH_BUTTON_KEY_KP_5,
-        KP_6 = GH_BUTTON_KEY_KP_6,
-        KP_7 = GH_BUTTON_KEY_KP_7,
-        KP_8 = GH_BUTTON_KEY_KP_8,
-        KP_9 = GH_BUTTON_KEY_KP_9,
-        KP_DECIMAL = GH_BUTTON_KEY_KP_DECIMAL,
-        KP_DIVIDE = GH_BUTTON_KEY_KP_DIVIDE,
-        KP_MULTIPLY = GH_BUTTON_KEY_KP_MULTIPLY,
-        KP_SUBTRACT = GH_BUTTON_KEY_KP_SUBTRACT,
-        KP_ADD = GH_BUTTON_KEY_KP_ADD,
-        KP_ENTER = GH_BUTTON_KEY_KP_ENTER,
-        KP_EQUAL = GH_BUTTON_KEY_KP_EQUAL,
-        LEFT_SHIFT = GH_BUTTON_KEY_LEFT_SHIFT,
-        LEFT_CONTROL = GH_BUTTON_KEY_LEFT_CONTROL,
-        LEFT_ALT = GH_BUTTON_KEY_LEFT_ALT,
-        LEFT_SUPER = GH_BUTTON_KEY_LEFT_SUPER,
-        RIGHT_SHIFT = GH_BUTTON_KEY_RIGHT_SHIFT,
-        RIGHT_CONTROL = GH_BUTTON_KEY_RIGHT_CONTROL,
-        RIGHT_ALT = GH_BUTTON_KEY_RIGHT_ALT,
-        RIGHT_SUPER = GH_BUTTON_KEY_RIGHT_SUPER,
-        MENU = GH_BUTTON_KEY_MENU
+	MOUSE_LEFT = GH_BUTTON_MOUSE_LEFT,
+	MOUSE_RIGHT = GH_BUTTON_MOUSE_RIGHT,
+	APOSTROPHE = GH_BUTTON_KEY_APOSTROPHE,
+	COMMA = GH_BUTTON_KEY_COMMA,
+	MINUS = GH_BUTTON_KEY_MINUS,
+	PERIOD = GH_BUTTON_KEY_PERIOD,
+	SLASH = GH_BUTTON_KEY_SLASH,
+	NUM_0 = GH_BUTTON_KEY_0,
+	NUM_1 = GH_BUTTON_KEY_1,
+	NUM_2 = GH_BUTTON_KEY_2,
+	NUM_3 = GH_BUTTON_KEY_3,
+	NUM_4 = GH_BUTTON_KEY_4,
+	NUM_5 = GH_BUTTON_KEY_5,
+	NUM_6 = GH_BUTTON_KEY_6,
+	NUM_7 = GH_BUTTON_KEY_7,
+	NUM_8 = GH_BUTTON_KEY_8,
+	NUM_9 = GH_BUTTON_KEY_9,
+	SEMICOLON = GH_BUTTON_KEY_SEMICOLON,
+	EQUAL = GH_BUTTON_KEY_EQUAL,
+	A = GH_BUTTON_KEY_A,
+	B = GH_BUTTON_KEY_B,
+	C = GH_BUTTON_KEY_C,
+	D = GH_BUTTON_KEY_D,
+	E = GH_BUTTON_KEY_E,
+	F = GH_BUTTON_KEY_F,
+	G = GH_BUTTON_KEY_G,
+	H = GH_BUTTON_KEY_H,
+	I = GH_BUTTON_KEY_I,
+	J = GH_BUTTON_KEY_J,
+	K = GH_BUTTON_KEY_K,
+	L = GH_BUTTON_KEY_L,
+	M = GH_BUTTON_KEY_M,
+	N = GH_BUTTON_KEY_N,
+	O = GH_BUTTON_KEY_O,
+	P = GH_BUTTON_KEY_P,
+	Q = GH_BUTTON_KEY_Q,
+	R = GH_BUTTON_KEY_R,
+	S = GH_BUTTON_KEY_S,
+	T = GH_BUTTON_KEY_T,
+	U = GH_BUTTON_KEY_U,
+	V = GH_BUTTON_KEY_V,
+	W = GH_BUTTON_KEY_W,
+	X = GH_BUTTON_KEY_X,
+	Y = GH_BUTTON_KEY_Y,
+	Z = GH_BUTTON_KEY_Z,
+	LEFT_BRACKET = GH_BUTTON_KEY_LEFT_BRACKET,
+	BACKSLASH = GH_BUTTON_KEY_BACKSLASH,
+	RIGHT_BRACKET = GH_BUTTON_KEY_RIGHT_BRACKET,
+	GRAVE_ACCENT = GH_BUTTON_KEY_GRAVE_ACCENT,
+	WORLD_1 = GH_BUTTON_KEY_WORLD_1,
+	WORLD_2 = GH_BUTTON_KEY_WORLD_2,
+	ESCAPE = GH_BUTTON_KEY_ESCAPE,
+	ENTER = GH_BUTTON_KEY_ENTER,
+	TAB = GH_BUTTON_KEY_TAB,
+	BACKSPACE = GH_BUTTON_KEY_BACKSPACE,
+	INSERT = GH_BUTTON_KEY_INSERT,
+	DELETE = GH_BUTTON_KEY_DELETE,
+	RIGHT = GH_BUTTON_KEY_RIGHT,
+	LEFT = GH_BUTTON_KEY_LEFT,
+	DOWN = GH_BUTTON_KEY_DOWN,
+	UP = GH_BUTTON_KEY_UP,
+	PAGE_UP = GH_BUTTON_KEY_PAGE_UP,
+	PAGE_DOWN = GH_BUTTON_KEY_PAGE_DOWN,
+	HOME = GH_BUTTON_KEY_HOME,
+	END = GH_BUTTON_KEY_END,
+	CAPS_LOCK = GH_BUTTON_KEY_CAPS_LOCK,
+	SCROLL_LOCK = GH_BUTTON_KEY_SCROLL_LOCK,
+	NUM_LOCK = GH_BUTTON_KEY_NUM_LOCK,
+	PRINT_SCREEN = GH_BUTTON_KEY_PRINT_SCREEN,
+	PAUSE = GH_BUTTON_KEY_PAUSE,
+	F1 = GH_BUTTON_KEY_F1,
+	F2 = GH_BUTTON_KEY_F2,
+	F3 = GH_BUTTON_KEY_F3,
+	F4 = GH_BUTTON_KEY_F4,
+	F5 = GH_BUTTON_KEY_F5,
+	F6 = GH_BUTTON_KEY_F6,
+	F7 = GH_BUTTON_KEY_F7,
+	F8 = GH_BUTTON_KEY_F8,
+	F9 = GH_BUTTON_KEY_F9,
+	F10 = GH_BUTTON_KEY_F10,
+	F11 = GH_BUTTON_KEY_F11,
+	F12 = GH_BUTTON_KEY_F12,
+	F13 = GH_BUTTON_KEY_F13,
+	F14 = GH_BUTTON_KEY_F14,
+	F15 = GH_BUTTON_KEY_F15,
+	F16 = GH_BUTTON_KEY_F16,
+	F17 = GH_BUTTON_KEY_F17,
+	F18 = GH_BUTTON_KEY_F18,
+	F19 = GH_BUTTON_KEY_F19,
+	F20 = GH_BUTTON_KEY_F20,
+	F21 = GH_BUTTON_KEY_F21,
+	F22 = GH_BUTTON_KEY_F22,
+	F23 = GH_BUTTON_KEY_F23,
+	F24 = GH_BUTTON_KEY_F24,
+	F25 = GH_BUTTON_KEY_F25,
+	KP_0 = GH_BUTTON_KEY_KP_0,
+	KP_1 = GH_BUTTON_KEY_KP_1,
+	KP_2 = GH_BUTTON_KEY_KP_2,
+	KP_3 = GH_BUTTON_KEY_KP_3,
+	KP_4 = GH_BUTTON_KEY_KP_4,
+	KP_5 = GH_BUTTON_KEY_KP_5,
+	KP_6 = GH_BUTTON_KEY_KP_6,
+	KP_7 = GH_BUTTON_KEY_KP_7,
+	KP_8 = GH_BUTTON_KEY_KP_8,
+	KP_9 = GH_BUTTON_KEY_KP_9,
+	KP_DECIMAL = GH_BUTTON_KEY_KP_DECIMAL,
+	KP_DIVIDE = GH_BUTTON_KEY_KP_DIVIDE,
+	KP_MULTIPLY = GH_BUTTON_KEY_KP_MULTIPLY,
+	KP_SUBTRACT = GH_BUTTON_KEY_KP_SUBTRACT,
+	KP_ADD = GH_BUTTON_KEY_KP_ADD,
+	KP_ENTER = GH_BUTTON_KEY_KP_ENTER,
+	KP_EQUAL = GH_BUTTON_KEY_KP_EQUAL,
+	LEFT_SHIFT = GH_BUTTON_KEY_LEFT_SHIFT,
+	LEFT_CONTROL = GH_BUTTON_KEY_LEFT_CONTROL,
+	LEFT_ALT = GH_BUTTON_KEY_LEFT_ALT,
+	LEFT_SUPER = GH_BUTTON_KEY_LEFT_SUPER,
+	RIGHT_SHIFT = GH_BUTTON_KEY_RIGHT_SHIFT,
+	RIGHT_CONTROL = GH_BUTTON_KEY_RIGHT_CONTROL,
+	RIGHT_ALT = GH_BUTTON_KEY_RIGHT_ALT,
+	RIGHT_SUPER = GH_BUTTON_KEY_RIGHT_SUPER,
+	MENU = GH_BUTTON_KEY_MENU
     };
 
+    /**
+     * Convienent function (especially for debug) providing the enum value of a given
+     * for a key described by its name
+     *
+     * @param value name of the key
+     * @return the enum value
+     */
     template<typename K> static K fromString(const char* value);
 
+    /**
+     *
+     * @param value
+     * @return
+     */
+    template<typename K> static const char* toString(const K value);
 };
 
 /**
@@ -450,7 +478,6 @@ typedef struct moveData_s {
     float y;
     float z;
 } moveData;
-
 
 /**
  * Store informations from an input got from the system input layer
@@ -485,9 +512,9 @@ typedef struct rawInput_s {
      * Payload informations
      */
     union datas_u {
-        buttonData button;
-        rangeData range;
-        moveData move;
+	buttonData button;
+	rangeData range;
+	moveData move;
     } data;
 } rawInput;
 
@@ -495,8 +522,9 @@ typedef struct rawInput_s {
 /**
  *
  */
-class InputMatch {
+//TODO in progress
 
+class InputMatch {
 private:
     int m_id;
     static int m_lastId;
@@ -510,11 +538,24 @@ public:
     U32 callbackNameHash;
 
     InputMatch();
-    InputMatch(const InputMatch&) = delete;
-    InputMatch& operator=(const InputMatch&) = delete;
 
     int getId();
 };
+
+enum class CHORD_SIZE : int {
+    _2 = 2,
+    _3 = 3
+};
+
+class Chord {
+public:
+    CHORD_SIZE size;
+    shared_ptr<InputMatch> _1{nullptr};
+    shared_ptr<InputMatch> _2{nullptr};
+    shared_ptr<InputMatch> _3{nullptr};
+    U32 callbackNameHash;
+};
+
 
 }
 

@@ -37,9 +37,9 @@ void ProfilerManager::registerSample(std::string &name, F32 durationMs) {
 }
 
 void ProfilerManager::vDestroy() {
-    _INFO("ProfilesManager details", LOG_CHANNEL::DEFAULT);
+    _DEBUG("ProfilesManager details", LOG_CHANNEL::DEFAULT);
     for(auto entry : mGlobalSamplesMap) {
-        _INFO("\t" << entry.first << " [avg : " << entry.second.mAverageDurationMs << "] [min : " << entry.second.mMinDurationMs << "] [max : " << entry.second.mMaxDurationMs << "]", LOG_CHANNEL::DEFAULT);
+        _DEBUG("\t" << entry.first << " [avg : " << entry.second.mAverageDurationMs << "] [min : " << entry.second.mMinDurationMs << "] [max : " << entry.second.mMaxDurationMs << "]", LOG_CHANNEL::DEFAULT);
     }
 }
 

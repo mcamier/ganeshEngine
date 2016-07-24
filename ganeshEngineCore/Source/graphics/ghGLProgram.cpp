@@ -54,17 +54,17 @@ void GLProgram::setUniform(const char *name, vec4 value) {
 }
 
 void GLProgram::logProgramInfo() {
-	_INFO("Shader program infos : " << mInternalId, LOG_CHANNEL::DEFAULT);
+	_DEBUG("Shader program infos : " << mInternalId, LOG_CHANNEL::DEFAULT);
 	int params = -1;
 
 	glGetProgramiv(mInternalId, GL_LINK_STATUS, &params);
-	_INFO("\tGL_LINK_STATUS : " << params, LOG_CHANNEL::RENDER);
+	_DEBUG("\tGL_LINK_STATUS : " << params, LOG_CHANNEL::RENDER);
 
 	glGetProgramiv(mInternalId, GL_ATTACHED_SHADERS, &params);
-	_INFO("\tGL_ATTACHED_SHADERS : " << params, LOG_CHANNEL::RENDER);
+	_DEBUG("\tGL_ATTACHED_SHADERS : " << params, LOG_CHANNEL::RENDER);
 
 	glGetProgramiv(mInternalId, GL_ACTIVE_ATTRIBUTES, &params);
-	_INFO("\tGL_ACTIVE_ATTRIBUTES : " << params, LOG_CHANNEL::RENDER);
+	_DEBUG("\tGL_ACTIVE_ATTRIBUTES : " << params, LOG_CHANNEL::RENDER);
 	for(GLuint i = 0 ; i < (GLuint)params; i++) {
 		char name[64];
 		int maxLenght = 64;
@@ -78,16 +78,16 @@ void GLProgram::logProgramInfo() {
 				char long_name[64];
 				sprintf(long_name, "%s[%i]", name, j);
 				int location = glGetAttribLocation(mInternalId, long_name);
-				_INFO("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
+				_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
 			}
 		} else {
 			int location = glGetAttribLocation(mInternalId, name);
-			_INFO("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
+			_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
 		}
 	}
 
 	glGetProgramiv(mInternalId, GL_ACTIVE_UNIFORMS, &params);
-	_INFO("\tGL_ACTIVE_UNIFORMS : " << params, LOG_CHANNEL::RENDER);
+	_DEBUG("\tGL_ACTIVE_UNIFORMS : " << params, LOG_CHANNEL::RENDER);
 	for(GLuint i = 0 ; i < (GLuint)params; i++) {
 		char name[64];
 		int maxLenght = 64;
@@ -101,11 +101,11 @@ void GLProgram::logProgramInfo() {
 				char long_name[64];
 				sprintf(long_name, "%s[%i]", name, j);
 				int location = glGetUniformLocation(mInternalId, long_name);
-				_INFO("\t\t"<<i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
+				_DEBUG("\t\t"<<i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
 			}
 		} else {
 			int location = glGetUniformLocation(mInternalId, name);
-			_INFO("\t\t"<<i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
+			_DEBUG("\t\t"<<i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
 		}
 	}
 

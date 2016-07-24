@@ -9,12 +9,9 @@ namespace ganeshEngine {
  * Log criticity level
  */
 enum LOG_LEVEL {
-    TRACE = 0,
-    INFO = 1,
-    DEBUG = 2,
-    WARNING = 3,
-    ERROR = 4,
-    FATAL = 5
+    DEBUG = 0,
+    WARNING = 1,
+    ERROR = 2
 };
 
 /**
@@ -54,12 +51,9 @@ inline LOG_CHANNEL& operator &= (LOG_CHANNEL& lhs, LOG_CHANNEL rhs) {
  * @note indexes are related to the LOG_LEVEL enum values
  */
 const std::string LOG_LEVELS[] = {
-	std::string("TRACE"),
-	std::string("INFO"),
 	std::string("DEBUG"),
 	std::string("WARNING"),
-	std::string("ERROR"),
-	std::string("FATAL")
+	std::string("ERROR")
 };
 
 
