@@ -7,6 +7,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 #include "ghInputUtils.h"
+#include "ghInputContext.h"
 #include <cstdio>
 
 namespace ganeshEngine {
@@ -26,11 +27,15 @@ private:
 
     /**
      */
-    vector<unique_ptr<InputMatch>> m_inputMatches;
+    vector<unique_ptr<InputContext>> m_inputContexts;
 
     /**
      */
-    vector<unique_ptr<Chord>> m_chords;
+    //vector<unique_ptr<InputMatch>> m_inputMatches;
+
+    /**
+     */
+    //vector<unique_ptr<Chord>> m_chords;
 
 public:
 
@@ -48,9 +53,9 @@ public:
 	return m_chordThresholdDetectionMs;
     }
 
-    const vector<unique_ptr<InputMatch>> &getInputMatches() const
+    vector<unique_ptr<InputContext>> &getInputContexts()
     {
-	return m_inputMatches;
+	return m_inputContexts;
     }
 
     /**
@@ -81,8 +86,8 @@ public:
 	    readMainDatas(a["chord"], conf);
 	}
 
-	if (a.HasMember("context")) {
-	    readContext(a["context"], conf);
+	if (a.HasMember("contexts")) {
+	    readContexts(a["contexts"], conf);
 	}
 	return unique_ptr<InputManagerConfiguration>(conf);
     }
@@ -114,23 +119,44 @@ private:
 
     }
 
-    static void readContext(const Value& node, InputManagerConfiguration *conf)
+    static void readContexts(const Value& node, InputManagerConfiguration *conf)
+    {
+	if (!node.IsArray()) {
+	    _WARNING("load input configuration : contexts must be an array", LOG_CHANNEL::INPUT);
+	    return;
+	};
+
+	for (SizeType i = 0; i < node.Size(); i++) {
+	    InputContext *inputContxt = nullptr;
+	    readContext(node[i], inputContxt);
+	    if (inputContxt) {
+		conf->m_inputContexts.push_back(unique_ptr<InputContext>(inputContxt));
+	    }
+	}
+    }
+
+    static void readContext(const Value& node, InputContext *ctx)
     {
 	if (!node.IsObject()) {
-	    _WARNING("load input configuration : contexts must be an object", LOG_CHANNEL::INPUT);
+	    _WARNING("load input configuration : context must be an object", LOG_CHANNEL::INPUT);
 	    return;
 	};
 	_DEBUG("\tInput Matches : ", LOG_CHANNEL::INPUT);
 
-	if (node.HasMember("chords")) {
-	    readChords(node["chords"], conf);
-	}
-	if (node.HasMember("matches")) {
-	    readMatches(node["matches"], conf);
+	if (node.HasMember("name")) {
+	    if (node.HasMember("chords")) {
+		readChords(node["chords"], ctx);
+	    }
+	    if (node.HasMember("matches")) {
+		readMatches(node["matches"], ctx);
+	    }
+	} else {
+	    _WARNING("load input configuration : context must be named", LOG_CHANNEL::INPUT);
+	    return;
 	}
     }
 
-    static void readMatches(const Value& node, InputManagerConfiguration *conf)
+    static void readMatches(const Value& node, InputContext *ctx)
     {
 	if (!node.IsArray()) {
 	    _WARNING("load input configuration : matches must be an array", LOG_CHANNEL::INPUT);
@@ -141,7 +167,7 @@ private:
 	    InputMatch *inputMatch = nullptr;
 	    readMatch(node[i], inputMatch);
 	    if (inputMatch) {
-		conf->m_inputMatches.push_back(unique_ptr<InputMatch>(inputMatch));
+		ctx->registerMatch(unique_ptr<InputMatch>(inputMatch));
 	    }
 	}
     }
@@ -237,7 +263,7 @@ private:
 	im->mods = 0;
     }
 
-    static void readChords(const Value& node, InputManagerConfiguration *conf)
+    static void readChords(const Value& node, InputContext *ctx)
     {
 	if (!node.IsArray()) {
 	    _WARNING("load input configuration : chords must be an array", LOG_CHANNEL::INPUT);
@@ -249,7 +275,7 @@ private:
 	    //readChord(node[i], chord);
 
 	    if (chord) {
-		conf->m_chords.push_back(unique_ptr<Chord>(chord));
+		ctx->registerChord(unique_ptr<Chord>(chord));
 	    }
 	}
     }

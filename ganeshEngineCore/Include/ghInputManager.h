@@ -15,14 +15,6 @@ class InputManager : public System<InputManager> {
     friend class System<InputManager>;
 
 private:
-    /** Inputs read from the system
-     */
-    vector<rawInput> rawInputs;
-
-    /** register input contexts
-     */
-    map<int, unique_ptr<InputContext>> inputContexts;
-
     /**
      * configuration purpose variables
      */
@@ -31,6 +23,14 @@ private:
     /**
      */
     unique_ptr<InputManagerConfiguration> m_config;
+    
+    /** Inputs read from the system
+     */
+    vector<rawInput> rawInputs;
+
+    /** register input contexts
+     */
+    map<int, unique_ptr<InputContext>> m_inputContexts;
 
     /**
      */
@@ -62,9 +62,26 @@ public:
     InputManager& operator=(const InputManager&) = delete;
 
 
+    /**
+     *
+     * @param id
+     * @param active
+     */
     void activeContext(int id, bool active);
+
+    /**
+     *
+     * @param inputContext
+     */
     void registerInputContext(unique_ptr<InputContext> inputContext);
+
+    /**
+     */
     void registerInputCallback(U32 callbackHash, function<void(void) > callback);
+
+    /**
+     *
+     */
     void update();
 
 private:

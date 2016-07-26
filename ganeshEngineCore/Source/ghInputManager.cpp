@@ -89,7 +89,9 @@ void InputManager::vInitialize()
     /**
      * Add default input detection to exit the game when ESC is pressed
      */
-    unique_ptr<InputContext> inputContext = make_unique<InputContext>();
+    
+    //unique_ptr<InputContext> inputContext = make_unique<InputContext>(GH_HASH("__GH_INPUT_CONTEXT_SYSTEM"));
+    unique_ptr<InputContext> inputContext = make_unique<InputContext>(99999);
     int id = inputContext->getId();
     InputMatch *inputMatch = new InputMatch();
     inputMatch->source = RawInput::SOURCE::KEYBOARD;
@@ -109,52 +111,50 @@ void InputManager::vInitialize()
     /**
      * Read and configuration from conf object
      */
-    unique_ptr<InputContext> loadedInputCtxt = make_unique<InputContext>();
-    loadedInputCtxt->setActive(true);
     if (m_bConfigurationOnInitialize) {
-	const auto &matches = m_config->getInputMatches();
-	for (const unique_ptr<InputMatch> &m : matches) {
+	vector<unique_ptr<InputContext>> &ictxs = m_config->getInputContexts();
 
-	    //TODO bad way to do this
-	    InputMatch *im = new InputMatch();
-	    im->callbackNameHash = m->callbackNameHash;
-	    im->key = m->key;
-	    im->mods = m->mods;
-	    im->source = m->source;
-	    im->type = m->type;
-	    loadedInputCtxt->registerMatch(unique_ptr<InputMatch>(im));
+	for (int i = 0; i < ictxs.size(); i++) {
+	    int id = (ictxs[i])->getId();
+	    unique_ptr<InputContext> ptr{move(ictxs[i])};
+	    ptr->setActive(true);
+	    m_inputContexts.insert(pair<int, unique_ptr<InputContext>>(id, move(ptr)));
 	}
-	inputContexts.insert(pair<int, unique_ptr < InputContext >> (loadedInputCtxt->getId(), move(loadedInputCtxt)));
     }
+    m_config = nullptr;
     _DEBUG("InputManager initialized", LOG_CHANNEL::INPUT);
 }
 
 void InputManager::vDestroy()
 {
+
     _DEBUG("InputManager destroyed", LOG_CHANNEL::INPUT);
 }
 
 void InputManager::activeContext(int id, bool active)
 {
-    auto iter = inputContexts.find(id);
-    if (iter != inputContexts.end()) {
+    auto iter = m_inputContexts.find(id);
+    if (iter != m_inputContexts.end()) {
 	iter->second->setActive(active);
     } else {
+
 	_ERROR("Cannot active the inputContext with the give id : " << id, LOG_CHANNEL::INPUT);
     }
 }
 
 void InputManager::registerInputContext(unique_ptr<InputContext> inputContext)
 {
-    auto iter = inputContexts.find(inputContext->getId());
-    if (iter != inputContexts.end()) {
+    auto iter = m_inputContexts.find(inputContext->getId());
+    if (iter != m_inputContexts.end()) {
+
 	_ERROR("Cannot add an inputContext already present in the InputManager", LOG_CHANNEL::INPUT);
     }
-    inputContexts.insert(make_pair(inputContext->getId(), move(inputContext)));
+    m_inputContexts.insert(make_pair(inputContext->getId(), move(inputContext)));
 }
 
 void InputManager::registerInputCallback(U32 callbackHash, function<void(void) > callback)
 {
+
     m_inputCallbacks.insert(make_pair(callbackHash, callback));
 }
 
@@ -169,6 +169,7 @@ void InputManager::update()
 	    m_keyState[i] == GH_STATE_HELD;
 	    _DEBUG("HOLD KEY", LOG_CHANNEL::INPUT);
 	} else if (m_keyState[i] == GH_STATE_HELD) {
+
 	    _DEBUG("HOLD KEY", LOG_CHANNEL::INPUT);
 	}
     }
@@ -181,7 +182,7 @@ void InputManager::update()
 
 void InputManager::detectChords()
 {
-    for (auto const &entry : inputContexts) {
+    for (auto const &entry : m_inputContexts) {
 	InputContext &context = (*entry.second);
 	if (context.isActive()) {
 
@@ -192,7 +193,7 @@ void InputManager::detectChords()
 void InputManager::detectPlainInputs()
 {
     for (rawInput &input : rawInputs) {
-	for (auto const &entry : inputContexts) {
+	for (auto const &entry : m_inputContexts) {
 	    InputContext &context = (*entry.second);
 	    if (context.isActive()) {
 		U32 callbackId;

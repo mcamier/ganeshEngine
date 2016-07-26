@@ -6,14 +6,6 @@
 
 namespace ganeshEngine {
 
-int InputContext::m_lastId = 0;
-
-InputContext::InputContext()
-{
-    m_id = m_lastId++;
-    m_bActive = false;
-}
-
 InputContext::~InputContext()
 {
 }
@@ -21,6 +13,11 @@ InputContext::~InputContext()
 void InputContext::registerMatch(unique_ptr<InputMatch> inputMatch)
 {
     m_inputMatches.push_back(move(inputMatch));
+}
+
+void InputContext::registerChord(unique_ptr<Chord> chord)
+{
+    m_chords.push_back(move(chord));
 }
 
 bool InputContext::getInputMatch(rawInput &rawInput, U32 *callbackId) const

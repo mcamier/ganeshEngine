@@ -2,54 +2,57 @@
    "chord": {
       "threshold_detection_ms": 16
    },
-   "context": {
-      "chords": [
-	 {
-	    "callbackName": "ACTION_323",
-	    "_1": {
-	       "source": "MOUSE",
-	       "type": "MOVE",
-	       "identifier": "A"
-	    },
-	    "_2": {
-	       "source": "MOUSE",
-	       "type": "MOVE",
-	       "identifier": "A"
+   "contexts": [
+      {
+	 "name": "default",
+	 "chords": [
+	    {
+	       "callbackName": "ACTION_323",
+	       "_1": {
+		  "source": "MOUSE",
+		  "type": "MOVE",
+		  "identifier": "A"
+	       },
+	       "_2": {
+		  "source": "MOUSE",
+		  "type": "MOVE",
+		  "identifier": "A"
+	       }
 	    }
-	 }
-      ],
-      "matches": [
-	 {
-	    "source": "KEYBOARD",
-	    "type": "PRESS",
-	    "identifier": "A",
-	    "callbackName": "ACTION_1"
-	 },
-	 {
-	    "source": "KEYBOARD",
-	    "type": "RELEASE",
-	    "identifier": "B",
-	    "callbackName": "ACTION_2"
-	 },
-	 {
-	    "source": "KEYBOARD",
-	    "type": "HOLD",
-	    "identifier": "C",
-	    "callbackName": "_ACTION_3"
-	 },
-	 {
-	    "source": "MOUSE",
-	    "type": "MOVE",
-	    "identifier": "MOUSE_LEFT",
-	    "callbackName": "_ACTION_4"
-	 },
-	 {
-	    "source": "MOUSE",
-	    "type": "PRESS",
-	    "identifier": "MOUSE_LEFT",
-	    "callbackName": "_ACTION_5"
-	 }
-	 
-      ]
-   }
+	 ],
+	 "matches": [
+	    {
+	       "source": "KEYBOARD",
+	       "type": "PRESS",
+	       "identifier": "A",
+	       "callbackName": "ACTION_1"
+	    },
+	    {
+	       "source": "KEYBOARD",
+	       "type": "RELEASE",
+	       "identifier": "B",
+	       "callbackName": "ACTION_2"
+	    },
+	    {
+	       "source": "KEYBOARD",
+	       "type": "HOLD",
+	       "identifier": "C",
+	       "callbackName": "_ACTION_3"
+	    },
+	    {
+	       "source": "MOUSE",
+	       "type": "MOVE",
+	       "identifier": "MOUSE_LEFT",
+	       "callbackName": "_ACTION_4"
+	    },
+	    {
+	       "source": "MOUSE",
+	       "type": "PRESS",
+	       "identifier": "MOUSE_LEFT",
+	       "callbackName": "_ACTION_5"
+	    }
+
+	 ]
+      }
+   ]
 }

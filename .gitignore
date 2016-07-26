@@ -1,11 +1,15 @@
 .idea
 bin
+lib
 doc
 logs
 libs/glew
 libs/glfw
 libs/glm
-libs/rapidjon
+libs/rapidjson
 nbproject
 CMakeCache.txt
 CMakeFiles
+Makefile
+cmake_install.cmake
+compile_commands.json

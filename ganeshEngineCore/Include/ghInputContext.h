@@ -19,7 +19,7 @@ private:
     /**
      * Unique ID among all inputContext during on game^s execution
      */
-    int m_id;
+    U32 m_id;
 
     /**
      * True if the inputManager should try to match a rawInput against this context, False
@@ -33,16 +33,19 @@ private:
     vector<unique_ptr<InputMatch>> m_inputMatches;
 
     /**
-     * Last id generated
      */
-    static int m_lastId;
+    vector<unique_ptr<Chord>> m_chords;
 
 public:
-    InputContext();
+
+    InputContext(U32 id) : m_id(id), m_bActive(false)
+    {
+    }
+
     virtual ~InputContext();
 
     /**
-     * 
+     *
      * @param rawInput
      * @param callback
      * @return
@@ -54,6 +57,13 @@ public:
      * @param inputMatch
      */
     void registerMatch(unique_ptr<InputMatch> inputMatch);
+
+    /**
+     *
+     * @param inputMatch
+     */
+    void registerChord(unique_ptr<Chord> chord);
+
 
     /**
      *
