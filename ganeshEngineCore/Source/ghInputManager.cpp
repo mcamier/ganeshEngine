@@ -90,8 +90,7 @@ void InputManager::vInitialize()
      * Add default input detection to exit the game when ESC is pressed
      */
     
-    //unique_ptr<InputContext> inputContext = make_unique<InputContext>(GH_HASH("__GH_INPUT_CONTEXT_SYSTEM"));
-    unique_ptr<InputContext> inputContext = make_unique<InputContext>(99999);
+    unique_ptr<InputContext> inputContext = make_unique<InputContext>(GH_HASH("__GH_INPUT_CONTEXT_SYSTEM"));
     int id = inputContext->getId();
     InputMatch *inputMatch = new InputMatch();
     inputMatch->source = RawInput::SOURCE::KEYBOARD;

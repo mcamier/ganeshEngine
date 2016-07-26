@@ -135,7 +135,7 @@ private:
 	}
     }
 
-    static void readContext(const Value& node, InputContext *ctx)
+    static void readContext(const Value& node, InputContext *&ctx)
     {
 	if (!node.IsObject()) {
 	    _WARNING("load input configuration : context must be an object", LOG_CHANNEL::INPUT);
@@ -143,7 +143,8 @@ private:
 	};
 	_DEBUG("\tInput Matches : ", LOG_CHANNEL::INPUT);
 
-	if (node.HasMember("name")) {
+	if (node.HasMember("name") && node["name"].IsString()) {
+	    ctx = new InputContext(GH_HASH(node["name"].GetString()));
 	    if (node.HasMember("chords")) {
 		readChords(node["chords"], ctx);
 	    }
