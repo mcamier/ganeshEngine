@@ -20,23 +20,36 @@
       ],
       "matches": [
 	 {
-	    "source": "MOUSE",
-	    "type": "MOVE",
+	    "source": "KEYBOARD",
+	    "type": "PRESS",
 	    "identifier": "A",
 	    "callbackName": "ACTION_1"
 	 },
 	 {
 	    "source": "KEYBOARD",
-	    "type": "PRESS",
+	    "type": "RELEASE",
 	    "identifier": "B",
 	    "callbackName": "ACTION_2"
 	 },
 	 {
 	    "source": "KEYBOARD",
-	    "type": "RELEASE",
+	    "type": "HOLD",
 	    "identifier": "C",
 	    "callbackName": "_ACTION_3"
+	 },
+	 {
+	    "source": "MOUSE",
+	    "type": "MOVE",
+	    "identifier": "MOUSE_LEFT",
+	    "callbackName": "_ACTION_4"
+	 },
+	 {
+	    "source": "MOUSE",
+	    "type": "PRESS",
+	    "identifier": "MOUSE_LEFT",
+	    "callbackName": "_ACTION_5"
 	 }
+	 
       ]
    }
 }

@@ -41,15 +41,37 @@ public:
     InputContext();
     virtual ~InputContext();
 
-    InputMatch* getInputMatch(rawInput &rawInput) const;
+    /**
+     * 
+     * @param rawInput
+     * @param callback
+     * @return
+     */
+    bool getInputMatch(rawInput &rawInput, U32 *callback) const;
 
+    /**
+     *
+     * @param inputMatch
+     */
     void registerMatch(unique_ptr<InputMatch> inputMatch);
 
+    /**
+     *
+     * @return
+     */
     int getId() const;
 
+    /**
+     *
+     * @return
+     */
     bool isActive() const;
 
 private:
+    /**
+     *
+     * @param active
+     */
     void setActive(bool active);
 };
 

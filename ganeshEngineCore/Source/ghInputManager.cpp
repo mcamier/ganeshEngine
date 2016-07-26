@@ -109,8 +109,8 @@ void InputManager::vInitialize()
     /**
      * Read and configuration from conf object
      */
-    inputContext = make_unique<InputContext>();
-    inputContext->setActive(true);
+    unique_ptr<InputContext> loadedInputCtxt = make_unique<InputContext>();
+    loadedInputCtxt->setActive(true);
     if (m_bConfigurationOnInitialize) {
 	const auto &matches = m_config->getInputMatches();
 	for (const unique_ptr<InputMatch> &m : matches) {
@@ -122,8 +122,9 @@ void InputManager::vInitialize()
 	    im->mods = m->mods;
 	    im->source = m->source;
 	    im->type = m->type;
-	    inputContext->registerMatch(unique_ptr<InputMatch>(im));
+	    loadedInputCtxt->registerMatch(unique_ptr<InputMatch>(im));
 	}
+	inputContexts.insert(pair<int, unique_ptr < InputContext >> (loadedInputCtxt->getId(), move(loadedInputCtxt)));
     }
     _DEBUG("InputManager initialized", LOG_CHANNEL::INPUT);
 }
@@ -180,6 +181,12 @@ void InputManager::update()
 
 void InputManager::detectChords()
 {
+    for (auto const &entry : inputContexts) {
+	InputContext &context = (*entry.second);
+	if (context.isActive()) {
+
+	}
+    }
 }
 
 void InputManager::detectPlainInputs()
@@ -188,10 +195,9 @@ void InputManager::detectPlainInputs()
 	for (auto const &entry : inputContexts) {
 	    InputContext &context = (*entry.second);
 	    if (context.isActive()) {
-
-		auto match = context.getInputMatch(input);
-		if (match != nullptr) {
-		    auto iter = m_inputCallbacks.find(match->callbackNameHash);
+		U32 callbackId;
+		if (context.getInputMatch(input, &callbackId)) {
+		    auto iter = m_inputCallbacks.find(callbackId);
 		    if (iter != m_inputCallbacks.end()) {
 			_DEBUG("INPUT MATCH TRIGERRED", LOG_CHANNEL::INPUT);
 			iter->second();

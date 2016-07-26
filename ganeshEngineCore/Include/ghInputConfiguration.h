@@ -146,7 +146,7 @@ private:
 	}
     }
 
-    static void readMatch(const Value& node, InputMatch *im)
+    static void readMatch(const Value& node, InputMatch *&im)
     {
 	if (!node.IsObject() ||
 		!node.HasMember("source") || !node["source"].IsString() ||
@@ -165,7 +165,7 @@ private:
 	im->mods = 0;
     }
 
-    static void readChord(const Value& node, Chord* chord)
+    static void readChord(const Value& node, Chord *&chord)
     {
 	chord = nullptr;
 
@@ -216,7 +216,7 @@ private:
 	}
     }
 
-    static void readMatchFromChord(const Value& node, InputMatch *im)
+    static void readMatchFromChord(const Value& node, InputMatch *&im)
     {
 	im = nullptr;
 	if (!node.IsObject()) {

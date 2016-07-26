@@ -5,13 +5,19 @@ namespace ganeshEngine {
 
 using namespace std;
 
-    class Dummy {
-    public:
-        int m_foo;
-        float m_bar;
+class Dummy {
+public:
+    int m_foo;
+    float m_bar;
 
-        Dummy(int foo, float bar) : m_foo(foo), m_bar(bar) {}
-    };
+    Dummy(int foo, float bar) : m_foo(foo), m_bar(bar)
+    {
+    }
+
+    virtual ~Dummy()
+    {
+    }
+};
 
 class IResource {
 protected:
@@ -23,20 +29,23 @@ protected:
  */
 template<typename T>
 class Resource : public IResource {
-
 private:
     unique_ptr<T> m_object;
 
 public:
-    Resource(unique_ptr<T> obj) : m_object(move(obj)) {}
+
+    Resource(unique_ptr<T> obj) : m_object(move(obj))
+    {
+    }
     virtual ~Resource();
 
     /**
      * The pointer returned should never be copied, stored or deleted
      * @return
      */
-    const T * const get() {
-        return m_object.get();
+    const T * const get()
+    {
+	return m_object.get();
     }
 };
 
@@ -46,7 +55,8 @@ using hResource = shared_ptr<Resource<T>>;
 /**
  *
  */
-class ResourceConfiguration {};
+class ResourceConfiguration {
+};
 
 /**
  *
@@ -61,19 +71,28 @@ private:
 
 private:
     // temporary empty constructor
-    ResourceManager(){}
+
+    ResourceManager()
+    {
+    }
+
     ResourceManager(unique_ptr<ResourceConfiguration> conf)
-            : m_configuration(move(conf)) {}
+    : m_configuration(move(conf))
+    {
+    }
 
 public:
     ResourceManager(const ResourceManager&) = delete;
     ResourceManager& operator=(const ResourceManager&) = delete;
 
-    virtual ~ResourceManager() {}
+    virtual ~ResourceManager()
+    {
+    }
 
     template<typename T>
-    hResource<T> getResource(int resId) {
-        return nullptr;
+    hResource<T> getResource(int resId)
+    {
+	return nullptr;
     }
 
 protected:

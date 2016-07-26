@@ -12,10 +12,21 @@
  *This value below are relative to the system input used (GLFW for instance)
  */
 // TODO those #define must be conditionnal
-#define GH_BUTTON_UNKNOWN   -1
+#define GH_BUTTON_UNKNOWN     -1
 
-#define GH_BUTTON_MOUSE_LEFT        1
-#define GH_BUTTON_MOUSE_RIGHT       2
+#define GH_BUTTON_MOUSE_1     GLFW_MOUSE_BUTTON_1
+#define GH_BUTTON_MOUSE_2     GLFW_MOUSE_BUTTON_2
+#define GH_BUTTON_MOUSE_3     GLFW_MOUSE_BUTTON_3
+#define GH_BUTTON_MOUSE_4     GLFW_MOUSE_BUTTON_4
+#define GH_BUTTON_MOUSE_5     GLFW_MOUSE_BUTTON_5
+#define GH_BUTTON_MOUSE_6     GLFW_MOUSE_BUTTON_6
+#define GH_BUTTON_MOUSE_7     GLFW_MOUSE_BUTTON_7
+#define GH_BUTTON_MOUSE_8     GLFW_MOUSE_BUTTON_8
+#define GH_BUTTON_MOUSE_LEFT     GLFW_MOUSE_BUTTON_LEFT
+#define GH_BUTTON_MOUSE_RIGHT     GLFW_MOUSE_BUTTON_RIGHT
+#define GH_BUTTON_MOUSE_MIDDLE     GLFW_MOUSE_BUTTON_MIDDLE
+
+#define GH_BUTTON_KEY_SPACE     32
 #define GH_BUTTON_KEY_APOSTROPHE    39 /* ' */
 #define GH_BUTTON_KEY_COMMA         44 /* , */
 #define GH_BUTTON_KEY_MINUS         45 /* - */

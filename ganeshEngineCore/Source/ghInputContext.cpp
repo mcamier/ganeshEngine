@@ -23,14 +23,14 @@ void InputContext::registerMatch(unique_ptr<InputMatch> inputMatch)
     m_inputMatches.push_back(move(inputMatch));
 }
 
-InputMatch* InputContext::getInputMatch(rawInput &rawInput) const
+bool InputContext::getInputMatch(rawInput &rawInput, U32 *callbackId) const
 {
     for (const auto &match : m_inputMatches) {
 	if (rawInput.type == RawInput::TYPE::MOVE) {
 	    if (match->type == rawInput.type &&
 		    match->source == rawInput.source) {
-		//shared_ptr<InputMatch> m {new InputMatch((*match.get()))};
-		return nullptr;
+		*callbackId = match->callbackNameHash;
+		return true;
 	    }
 	}
 
@@ -42,19 +42,19 @@ InputMatch* InputContext::getInputMatch(rawInput &rawInput) const
 		    match->source == rawInput.source &&
 		    match->key == (RawInput::KEY)rawInput.data.button.key &&
 		    match->mods == rawInput.data.button.mods) {
-		//shared_ptr<InputMatch> m {new InputMatch((*match.get()))};
-		return nullptr;
+		*callbackId = match->callbackNameHash;
+		return true;
 	    }
 	} else {
 	    if (match->type == rawInput.type &&
 		    match->source == rawInput.source &&
 		    match->key == (RawInput::KEY)rawInput.data.button.key) {
-		//shared_ptr<InputMatch> m {new InputMatch((*match.get()))};
-		return nullptr;
+		*callbackId = match->callbackNameHash;
+		return true;
 	    }
 	}
     }
-    return nullptr;
+    return false;
 }
 
 int InputContext::getId() const
