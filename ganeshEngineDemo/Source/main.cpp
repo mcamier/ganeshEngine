@@ -8,6 +8,7 @@
 #include "ghInputConfiguration.h"
 #include "ghPlatform.h"
 #include "ghHeaders.h"
+#include "ghEvent.h"
 
 
 #include "ghMath.h"
@@ -21,7 +22,7 @@ int main()
 {
     LoggerManager::Initialize();
     LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT;
-    gLogger().addLogger(new ConsoleLogger(LOG_LEVEL::DEBUG, LOG_CHANNEL::INPUT));
+    gLogger().addLogger(new ConsoleLogger(LOG_LEVEL::DEBUG, LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT));
     gLogger().addLogger(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/log"));
 
     Platform::Initialize();

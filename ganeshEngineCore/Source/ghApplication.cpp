@@ -8,6 +8,7 @@
 #include "ghSimulation.h"
 #include "ghInputManager.h"
 #include "ghLoggerManager.h"
+#include "ghResource.h"
 #include "ghGLRendererManager.h"
 #include "ghSkybox.h"
 
@@ -46,7 +47,7 @@ void Application::run()
 	while (accumulator >= dt) {
 	    PROFILE("input", gInput().update());
 	    PROFILE("simulation", gSimulation().tick(dt));
-	    PROFILE("event", gEvent().update());
+	    //PROFILE("event", gEvent().update());
 
 	    obj->addY((F32) ((2.0f * cos(totalTime)) * 0.005f));
 
@@ -67,11 +68,14 @@ void Application::vInitialize()
 {
     LoggerManager::Initialize();
     Platform::Initialize();
-    EventManager::Initialize();
+    ResourceManager::Initialize();
+    //EventManager::Initialize();
     ProfilerManager::Initialize();
     InputManager::Initialize();
     RendererManager::Initialize();
     Simulation::Initialize();
+
+    auto test = gResource().getResource<Dummy>(1);
 
     program = GLProgram::create(ShaderType::VERTEX, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl", ShaderType::FRAGMENT, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
     tex = new GLTexture();
@@ -118,7 +122,8 @@ void Application::vDestroy()
     RendererManager::Destroy();
     InputManager::Destroy();
     ProfilerManager::Destroy();
-    EventManager::Destroy();
+    //EventManager::Destroy();
+    ResourceManager::Destroy();
     Platform::Destroy();
     LoggerManager::Destroy();
 }

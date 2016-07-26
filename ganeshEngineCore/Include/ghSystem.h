@@ -16,7 +16,6 @@ enum SystemState {
     DESTROYED = 0x04,
 };
 
-
 /**
  *  System classes meant to be used as global services providers, they are singletons and requires
  *  to be initialized within the Application's initialization and destroyed within Application's
@@ -25,7 +24,6 @@ enum SystemState {
  */
 template<typename T>
 class System {
-
 public:
 
     /**
@@ -36,10 +34,11 @@ public:
      *
      * @return Reference to the specific system instance
      */
-    static T& get() {
-        ASSERT(_instance != nullptr);
-        ASSERT_FLAG(_state(), INITIALIZED);
-        return *_instance();
+    static T& get()
+    {
+	ASSERT(_instance != nullptr);
+	ASSERT_FLAG(_state(), INITIALIZED);
+	return *_instance();
     }
 
     /**
@@ -51,16 +50,17 @@ public:
      * @param args Variadic arguments list forwarded to the system specific constructor
      */
     template<typename... Args>
-    static void Initialize(Args... args) {
-        static_assert(std::is_base_of<System, T>::value, "Type T must be derivated from System");
+    static void Initialize(Args... args)
+    {
+	static_assert(std::is_base_of<System, T>::value, "Type T must be derivated from System");
 
-        if( (_state() & UNINITIALIZED) == UNINITIALIZED ) {
-            ASSERT(_instance() == nullptr);
+	if ((_state() & UNINITIALIZED) == UNINITIALIZED) {
+	    ASSERT(_instance() == nullptr);
 
-            _instance() = new T(std::forward<Args>(args)...);
-            ((System*) _instance())->vInitialize();
-            _state() = INITIALIZED;
-        }
+	    _instance() = new T(std::forward<Args>(args)...);
+	    ((System*) _instance())->vInitialize();
+	    _state() = INITIALIZED;
+	}
     }
 
     /**
@@ -69,45 +69,53 @@ public:
      * @warning if DEBUG_ASSERTION_ENABLED is defined this call will raise a breakpoint if the internal
      * intance pointer doesn't points to nullptr while the system state is UNINITIALIZED.
      */
-    static void Destroy() {
-        ASSERT_FLAG(_state(), INITIALIZED);
+    static void Destroy()
+    {
+	ASSERT_FLAG(_state(), INITIALIZED);
 
-        ((System*) _instance())->vDestroy();
-        delete _instance();
-        _instance() = nullptr;
-        _state() = DESTROYED;
+	((System*) _instance())->vDestroy();
+	delete _instance();
+	_instance() = nullptr;
+	_state() = DESTROYED;
     }
 
 protected:
-	/**
-	 * Internal getter of the reference of the static instance pointer
-	 *
-	 * @return reference to the static instance pointer
-	 */
-    static T*& _instance() {
-        static T* instance = nullptr;
-        return instance;
+
+    /**
+     * Internal getter of the reference of the static instance pointer
+     *
+     * @return reference to the static instance pointer
+     */
+    static T*& _instance()
+    {
+	static T* instance = nullptr;
+	return instance;
     }
 
-	/**
-	 * Internal getter of the reference of the static state
-	 *
-	 * @return reference to the static state
-	 */
-    static SystemState& _state() {
-        static SystemState state = UNINITIALIZED;
-        return state;
+    /**
+     * Internal getter of the reference of the static state
+     *
+     * @return reference to the static state
+     */
+    static SystemState& _state()
+    {
+	static SystemState state = UNINITIALIZED;
+	return state;
     }
 
-	/**
-	 * Initialize method called by the static initialization method
-	 */
-    virtual void vInitialize() {}
+    /**
+     * Initialize method called by the static initialization method
+     */
+    virtual void vInitialize()
+    {
+    }
 
-	/**
-	 * Destroy method called by the static initialization method
-	 */
-    virtual void vDestroy() {}
+    /**
+     * Destroy method called by the static initialization method
+     */
+    virtual void vDestroy()
+    {
+    }
 };
 
 }

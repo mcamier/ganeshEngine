@@ -71,6 +71,7 @@ get_lib_from_github(${GLEW_DIR} ${GLEW_URL} ${GLEW_TAG})
 if(NOT EXISTS "${GLEW_DIR}/src/glew.c")
     set(GEN_CMD "C:/MinGW/msys/1.0/bin/bash.exe")
     message(WARNING "generate glew.c")
+    message(WARNING "${GEN_CMD} -l -c 'cd ${GLEW_DIR}/auto && make'")
 
     execute_process(
             COMMAND ${GEN_CMD} -l -c "cd ${GLEW_DIR}/auto && make"
