@@ -14,47 +14,51 @@ class GLFWwindow;
 
 namespace ganeshEngine {
 
-using namespace std;
+    using namespace std;
 
 /**
  *
  */
-extern vector<tuple<GLenum, string>> gGLContextParams;
+    extern vector<tuple<GLenum, string>> gGLContextParams;
 
 
-class RendererManager : public System<RendererManager> {
-	friend class System<RendererManager>;
+    class RendererManager : public System<RendererManager> {
+        friend class System<RendererManager>;
 
-private:
-	RendererManager() {}
+    private:
+        RendererManager() {}
 
-public:
-	RendererManager(const RendererManager&) = delete;
-	RendererManager& operator=(const RendererManager&) = delete;
-	~RendererManager() {}
+    public:
+        RendererManager(const RendererManager &) = delete;
 
-    void preRender();
-    void render(Scene &scene);
-    void postRender();
+        RendererManager &operator=(const RendererManager &) = delete;
 
-protected:
-	/**
-	 * Initialization of GLFW and GLEW, creation of the windows and settings
-	 * default rendering parameters
-	 */
-    void vInitialize() override;
+        ~RendererManager() {}
 
-    /**
-     * Free everything used by GLFW and GLEW
-     */
-    void vDestroy() override;
-};
+        void preRender();
+
+        void render(Scene &scene);
+
+        void postRender();
+
+    protected:
+        /**
+         * Initialization of GLFW and GLEW, creation of the windows and settings
+         * default rendering parameters
+         */
+        void vInitialize() override;
+
+        /**
+         * Free everything used by GLFW and GLEW
+         */
+        void vDestroy() override;
+    };
 
 /**
  * Global getter of reference to the RendererManager
  * @return reference to the RendererManager
  */
-extern RendererManager&(*gRenderer)();
+    extern RendererManager &(*gRenderer)();
 }
 
 #endif //GANESHENGINE_GHGLRENDERERMANAGER_H

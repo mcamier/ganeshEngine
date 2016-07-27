@@ -5,8 +5,8 @@
 
 namespace ganeshEngine {
 
-using namespace glm;
-using namespace std;
+    using namespace glm;
+    using namespace std;
 
 // TODO lerp for quaternion
 
@@ -17,23 +17,24 @@ using namespace std;
  * @param t
  * @return
  */
-template<typename T> T lerp(T begin, T end, float t);
+    template<typename T>
+    T lerp(T begin, T end, float t);
 
 /**
  *
  * @param value
  * @return
  */
-template<typename T> T clamp01(T value)
-{
-    if (value < 0.0f) {
-	return 0.0f;
+    template<typename T>
+    T clamp01(T value) {
+        if (value < 0.0f) {
+            return 0.0f;
+        }
+        if (value > 1.0f) {
+            return 1.0f;
+        }
+        return value;
     }
-    if (value > 1.0f) {
-	return 1.0f;
-    }
-    return value;
-}
 
 /**
  *
@@ -43,7 +44,7 @@ template<typename T> T clamp01(T value)
  * @param t
  * @return
  */
-vec3 quadraBezierPoint(vec3 pt1, vec3 pt2, vec3 pt3, float t);
+    vec3 quadraBezierPoint(vec3 pt1, vec3 pt2, vec3 pt3, float t);
 
 /**
  *
@@ -53,7 +54,7 @@ vec3 quadraBezierPoint(vec3 pt1, vec3 pt2, vec3 pt3, float t);
  * @param t
  * @return
  */
-vec3 quadraBezierFirstDerivative(vec3 pt1, vec3 pt2, vec3 pt3, float t);
+    vec3 quadraBezierFirstDerivative(vec3 pt1, vec3 pt2, vec3 pt3, float t);
 
 /**
  *
@@ -64,7 +65,7 @@ vec3 quadraBezierFirstDerivative(vec3 pt1, vec3 pt2, vec3 pt3, float t);
  * @param t
  * @return
  */
-vec3 cubicBezierPoint(vec3 pt1, vec3 pt2, vec3 pt3, vec3 pt4, float t);
+    vec3 cubicBezierPoint(vec3 pt1, vec3 pt2, vec3 pt3, vec3 pt4, float t);
 
 /**
  *
@@ -75,32 +76,33 @@ vec3 cubicBezierPoint(vec3 pt1, vec3 pt2, vec3 pt3, vec3 pt4, float t);
  * @param t
  * @return
  */
-vec3 cubicBezierFirstDerivative(vec3 pt1, vec3 pt2, vec3 pt3, vec3 pt4, float t);
+    vec3 cubicBezierFirstDerivative(vec3 pt1, vec3 pt2, vec3 pt3, vec3 pt4, float t);
 
 /**
  */
-class BezierSpline {
-private:
-    vector<vec3> points;
+    class BezierSpline {
+    private:
+        vector<vec3> points;
 
-public:
-    BezierSpline(vec3 pt1, vec3 pt2, vec3 pt3, vec3 pt4);
-    virtual ~BezierSpline();
+    public:
+        BezierSpline(vec3 pt1, vec3 pt2, vec3 pt3, vec3 pt4);
 
-    void appendCurve(vec3 pt1, vec3 pt2, vec3 pt3);
+        virtual ~BezierSpline();
 
-    vec3 getValue(float t);
+        void appendCurve(vec3 pt1, vec3 pt2, vec3 pt3);
 
-    vec3 getDirection(float t);
+        vec3 getValue(float t);
 
-    int getCurveCount();
+        vec3 getDirection(float t);
 
-private:
+        int getCurveCount();
 
-    int getCurveIndex(float t);
+    private:
 
-    float getCurveT(float t);
-};
+        int getCurveIndex(float t);
+
+        float getCurveT(float t);
+    };
 
 
 }

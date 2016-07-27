@@ -6,14 +6,15 @@
 
 namespace ganeshEngine {
 
-using namespace std;
+    using namespace std;
+
 /**
  *
  */
-class GLTexture {
-public:
-	void sendToGC();
-};
+    class GLTexture {
+    public:
+        void sendToGC();
+    };
 
 }
 

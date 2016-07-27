@@ -29,6 +29,7 @@ int main()
     gLogger().addLogger(new ConsoleLogger(LOG_LEVEL::DEBUG, LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT));
     gLogger().addLogger(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/log"));
 
+    EventManager::Initialize();
     Platform::Initialize();
 
     auto ic = InputManagerConfiguration::loadFromFile(string("C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/inputConfiguration.json"));

@@ -3,7 +3,7 @@
 
 namespace ganeshEngine {
 
-void Simulation::tick(U32 deltaNanosecond) { }
+    void Simulation::tick(U32 deltaNanosecond) {}
 
-Simulation&(*gSimulation)() = &Simulation::get;
+    Simulation &(*gSimulation)() = &Simulation::get;
 }

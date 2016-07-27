@@ -8,82 +8,81 @@
 
 namespace ganeshEngine {
 
-using namespace std;
+    using namespace std;
 
-class InputManager;
+    class InputManager;
 
-class InputContext {
-    friend class InputManager;
+    class InputContext {
+        friend class InputManager;
 
-private:
-    /**
-     * Unique ID among all inputContext during on game^s execution
-     */
-    U32 m_id;
+    private:
+        /**
+         * Unique ID among all inputContext during on game^s execution
+         */
+        U32 m_id;
 
-    /**
-     * True if the inputManager should try to match a rawInput against this context, False
-     * otherwise
-     */
-    bool m_bActive;
+        /**
+         * True if the inputManager should try to match a rawInput against this context, False
+         * otherwise
+         */
+        bool m_bActive;
 
-    /**
-     * List of registered inputs in the context
-     */
-    vector<unique_ptr<InputMatch>> m_inputMatches;
+        /**
+         * List of registered inputs in the context
+         */
+        vector<unique_ptr<InputMatch>> m_inputMatches;
 
-    /**
-     */
-    vector<unique_ptr<Chord>> m_chords;
+        /**
+         */
+        vector<unique_ptr<Chord>> m_chords;
 
-public:
+    public:
 
-    InputContext(U32 id) : m_id(id), m_bActive(false)
-    {
-    }
+        InputContext(U32 id) : m_id(id), m_bActive(false) {
+        }
 
-    virtual ~InputContext();
+        virtual ~InputContext();
 
-    /**
-     *
-     * @param rawInput
-     * @param callback
-     * @return
-     */
-    bool getInputMatch(rawInput &rawInput, U32 *callback) const;
+        /**
+         *
+         * @param rawInput
+         * @param callback
+         * @return
+         */
+        bool getInputMatch(rawInput &rawInput, U32 *callback) const;
 
-    /**
-     *
-     * @param inputMatch
-     */
-    void registerMatch(unique_ptr<InputMatch> inputMatch);
+        /**
+         *
+         * @param inputMatch
+         */
+        void registerMatch(unique_ptr<InputMatch> inputMatch);
 
-    /**
-     *
-     * @param inputMatch
-     */
-    void registerChord(unique_ptr<Chord> chord);
+        /**
+         *
+         * @param inputMatch
+         */
+        void registerChord(unique_ptr<Chord> chord);
 
 
-    /**
-     *
-     * @return
-     */
-    int getId() const;
+        /**
+         *
+         * @return
+         */
+        int getId() const;
 
-    /**
-     *
-     * @return
-     */
-    bool isActive() const;
+        /**
+         *
+         * @return
+         */
+        bool isActive() const;
 
-private:
-    /**
-     *
-     * @param active
-     */
-    void setActive(bool active);
-};
+    private:
+        /**
+         *
+         * @param active
+         */
+        void setActive(bool active);
+    };
 
 }
 #endif //GANESHENGINE_GHINPUTCONTEXT_H

@@ -6,25 +6,26 @@
 
 namespace ganeshEngine {
 
-using namespace std;
+    using namespace std;
 
 /**
  *
  */
-class GLMesh {
-	friend class GLModel;
+    class GLMesh {
+        friend class GLModel;
 
-	unique_ptr<vector<Vertex>> mVertices {nullptr};
-	DrawMode mDrawMode;
-	GLuint mVBO;
+        unique_ptr<vector<Vertex>> mVertices{nullptr};
+        DrawMode mDrawMode;
+        GLuint mVBO;
 
-public:
-	GLMesh(unique_ptr<vector<Vertex>> vertices, DrawMode drawMode) :
-			mVertices(std::move(vertices)), mDrawMode(drawMode), mVBO(-1) {}
-	~GLMesh() {}
+    public:
+        GLMesh(unique_ptr<vector<Vertex>> vertices, DrawMode drawMode) :
+                mVertices(std::move(vertices)), mDrawMode(drawMode), mVBO(-1) {}
 
-	void sendToGC();
-};
+        ~GLMesh() {}
+
+        void sendToGC();
+    };
 
 }
 

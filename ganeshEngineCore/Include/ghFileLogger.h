@@ -7,7 +7,7 @@
 
 namespace ganeshEngine {
 
-using namespace std;
+    using namespace std;
 
 
 /**
@@ -16,96 +16,97 @@ using namespace std;
  *
  * @todo add log channels (like rendering, simulation, events, ...)
  */
-class FileLogger : public ILogger {
+    class FileLogger : public ILogger {
 
-private:
-	/**
-	 * Max amount of LogEntry stored in memory before being written in the log file
-	 */
-    int mMaxBulkEntry;
+    private:
+        /**
+         * Max amount of LogEntry stored in memory before being written in the log file
+         */
+        int mMaxBulkEntry;
 
-    /**
-	 * Current amount of LogEntry stored in memory before being written in the log file
-     */
-    int currentAmount;
+        /**
+         * Current amount of LogEntry stored in memory before being written in the log file
+         */
+        int currentAmount;
 
-    /**
-     * Target logging filename
-     */
-    const char *mFilename;
+        /**
+         * Target logging filename
+         */
+        const char *mFilename;
 
-    /**
-     * Storage for LogEntry s
-     * DoubleBufferedStackAllocator is used to separate LogEntry to write at a time and
-     * those that will wait until next file writing
-     */
-    DoubleBufferedStackAllocator *mDBSAllocator;
+        /**
+         * Storage for LogEntry s
+         * DoubleBufferedStackAllocator is used to separate LogEntry to write at a time and
+         * those that will wait until next file writing
+         */
+        DoubleBufferedStackAllocator *mDBSAllocator;
 
-    /**
-     * List of LogEntry s that are written or has been written
-     */
-    list<LogEntry*> mCurrentEntries;
+        /**
+         * List of LogEntry s that are written or has been written
+         */
+        list<LogEntry *> mCurrentEntries;
 
-    /**
-     * List of LogEntry s that will be written later
-     */
-    list<LogEntry*> mPendingEntries;
+        /**
+         * List of LogEntry s that will be written later
+         */
+        list<LogEntry *> mPendingEntries;
 
-public:
-    FileLogger(LOG_LEVEL logLvl, LOG_CHANNEL logChannel, const char* filename, int maxBulkEntry = 5000) :
-        mMaxBulkEntry(maxBulkEntry),
-        mFilename(filename),
-        ILogger(logLvl, logChannel) {
+    public:
+        FileLogger(LOG_LEVEL logLvl, LOG_CHANNEL logChannel, const char *filename, int maxBulkEntry = 5000) :
+                mMaxBulkEntry(maxBulkEntry),
+                mFilename(filename),
+                ILogger(logLvl, logChannel) {
 
-        mDBSAllocator = new DoubleBufferedStackAllocator(mMaxBulkEntry * sizeof(LogEntry));
-        mDBSAllocator->initialize();
-        currentAmount = 0;
-    }
+            mDBSAllocator = new DoubleBufferedStackAllocator(mMaxBulkEntry * sizeof(LogEntry));
+            mDBSAllocator->initialize();
+            currentAmount = 0;
+        }
 
-    FileLogger (const FileLogger&) = delete;
-    FileLogger& operator=(const FileLogger&) = delete;
+        FileLogger(const FileLogger &) = delete;
 
-    /**
-	 * Put a log into the logging file
-	 *
-	 * @param lvl log level of the given message
-	 * @param file origin file where comes the log from
-	 * @param line line of code where comes the log from
-	 * @param message message to log
-     */
-    void vLog(LOG_LEVEL lvl, const char* file, int line, std::string &message) override;
+        FileLogger &operator=(const FileLogger &) = delete;
 
-	/**
-	 * Initialize the fileLogging by erasing the content of the logging file if
-	 * it already exists
-	 */
-    void vInitialize(void) override;
+        /**
+         * Put a log into the logging file
+         *
+         * @param lvl log level of the given message
+         * @param file origin file where comes the log from
+         * @param line line of code where comes the log from
+         * @param message message to log
+         */
+        void vLog(LOG_LEVEL lvl, const char *file, int line, std::string &message) override;
 
-    /**
-     * Destroy the FileLogger
-     *
-     * @note Usualy Loggers are destroyed when the LoggerManager is destroyed on the game
-     * extinction, by the way at this time the last pending LogEntry s that are not
-     * saved in the file needs to be written : the vDestroy method takes care of that
-     */
-    void vDestroy(void) override;
+        /**
+         * Initialize the fileLogging by erasing the content of the logging file if
+         * it already exists
+         */
+        void vInitialize(void) override;
 
-private:
-	/**
-	 * Internal helper writting pending LogEntry s into file
-	 */
-    void writePendingLogsIntroFileAndSwap();
+        /**
+         * Destroy the FileLogger
+         *
+         * @note Usualy Loggers are destroyed when the LoggerManager is destroyed on the game
+         * extinction, by the way at this time the last pending LogEntry s that are not
+         * saved in the file needs to be written : the vDestroy method takes care of that
+         */
+        void vDestroy(void) override;
 
-    /**
-     * Enqueue a LogEntry before being written in the log file
-     *
-	 * @param lvl log level of the given message
-	 * @param file origin file where comes the log from
-	 * @param line line of code where comes the log from
-	 * @param message message to log
-     */
-    void appendLogEntry(LOG_LEVEL lvl, const char* file, int line, std::string &message);
-};
+    private:
+        /**
+         * Internal helper writting pending LogEntry s into file
+         */
+        void writePendingLogsIntroFileAndSwap();
+
+        /**
+         * Enqueue a LogEntry before being written in the log file
+         *
+         * @param lvl log level of the given message
+         * @param file origin file where comes the log from
+         * @param line line of code where comes the log from
+         * @param message message to log
+         */
+        void appendLogEntry(LOG_LEVEL lvl, const char *file, int line, std::string &message);
+    };
 
 }
 

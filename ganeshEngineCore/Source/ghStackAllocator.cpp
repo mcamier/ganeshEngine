@@ -2,43 +2,43 @@
 
 namespace ganeshEngine {
 
-bool StackAllocator::initialize() {
-    mpFirstAddr = malloc(mByteSize);
-    if (!mpFirstAddr) return false;
-    mpCurrentAddr = mpFirstAddr;
-    mpLastAddr = (char*)mpFirstAddr + mByteSize;
+    bool StackAllocator::initialize() {
+        mpFirstAddr = malloc(mByteSize);
+        if (!mpFirstAddr) return false;
+        mpCurrentAddr = mpFirstAddr;
+        mpLastAddr = (char *) mpFirstAddr + mByteSize;
 
-    mIsInitialized = true;
-    return mIsInitialized;
-}
+        mIsInitialized = true;
+        return mIsInitialized;
+    }
 
 
-void* StackAllocator::alloc(unsigned long byteSize) {
-    if (mIsInitialized) {
-        if ((((char*)mpCurrentAddr) + byteSize) <= mpLastAddr) {
-            mpCurrentAddr = (char*)mpCurrentAddr + byteSize;
-            return mpCurrentAddr;
+    void *StackAllocator::alloc(unsigned long byteSize) {
+        if (mIsInitialized) {
+            if ((((char *) mpCurrentAddr) + byteSize) <= mpLastAddr) {
+                mpCurrentAddr = (char *) mpCurrentAddr + byteSize;
+                return mpCurrentAddr;
+            }
+            _WARNING("Allocator runs out of memory, please clear it to alloc again", LOG_CHANNEL::DEFAULT);
+            return nullptr;
         }
-        _WARNING("Allocator runs out of memory, please clear it to alloc again", LOG_CHANNEL::DEFAULT);
         return nullptr;
     }
-    return nullptr;
-}
 
-void StackAllocator::clear() {
-    if (mIsInitialized) {
-        mpCurrentAddr = mpFirstAddr;
+    void StackAllocator::clear() {
+        if (mIsInitialized) {
+            mpCurrentAddr = mpFirstAddr;
+        }
     }
-}
 
 
-void StackAllocator::destroy() {
-    //TODO implement destroy method
-    _DEBUG("start DESTROY StackAllocator", LOG_CHANNEL::DEFAULT);
-    if (mIsInitialized) {
-        free(mpFirstAddr);
+    void StackAllocator::destroy() {
+        //TODO implement destroy method
+        _DEBUG("start DESTROY StackAllocator", LOG_CHANNEL::DEFAULT);
+        if (mIsInitialized) {
+            free(mpFirstAddr);
+        }
+        _DEBUG("end DESTROY StackAllocator", LOG_CHANNEL::DEFAULT);
     }
-    _DEBUG("end DESTROY StackAllocator", LOG_CHANNEL::DEFAULT);
-}
 
 }

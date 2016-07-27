@@ -9,54 +9,55 @@
 
 namespace ganeshEngine {
 
-using namespace std;
-using namespace glm;
+    using namespace std;
+    using namespace glm;
 
 
 /**
  *
  */
-class GLModel {
-private:
-	/**
-	 * The shader program used to draw the geometry
-	 */
-	GLProgram *mpProgram;
+    class GLModel {
+    private:
+        /**
+         * The shader program used to draw the geometry
+         */
+        GLProgram *mpProgram;
 
-	/**
-	 * The mesh to draw
-	 */
-	GLMesh *mpMesh;
+        /**
+         * The mesh to draw
+         */
+        GLMesh *mpMesh;
 
-	/**
-	 * Optional texture to apply on the mesh
-	 */
-	GLTexture *mpTexture;
+        /**
+         * Optional texture to apply on the mesh
+         */
+        GLTexture *mpTexture;
 
-	/**
-	 * The id of Vertex Array Object
-	 */
-	GLuint mVAO;
+        /**
+         * The id of Vertex Array Object
+         */
+        GLuint mVAO;
 
-public:
-	GLModel(GLProgram *program, GLMesh *mesh, GLTexture *texture) :
-		mpProgram(program), mpMesh(mesh), mpTexture(texture) {}
-	~GLModel() {}
+    public:
+        GLModel(GLProgram *program, GLMesh *mesh, GLTexture *texture) :
+                mpProgram(program), mpMesh(mesh), mpTexture(texture) {}
 
-	/**
-	 * Load the model into the GC memory to use it during the drawing
-	 */
-	void sendToGC();
+        ~GLModel() {}
 
-	GLProgram* getProgram();
+        /**
+         * Load the model into the GC memory to use it during the drawing
+         */
+        void sendToGC();
 
-	void preRender();
+        GLProgram *getProgram();
 
-	void render();
+        void preRender();
 
-	void postRender();
+        void render();
 
-};
+        void postRender();
+
+    };
 
 }
 

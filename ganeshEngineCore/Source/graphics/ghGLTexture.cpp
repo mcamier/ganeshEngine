@@ -2,6 +2,6 @@
 
 namespace ganeshEngine {
 
-void GLTexture::sendToGC() {}
+    void GLTexture::sendToGC() {}
 
 }

@@ -2,16 +2,16 @@
 
 namespace ganeshEngine {
 
-void Skybox::preRender() {
-	SceneObject::preRender();
-}
+    void Skybox::preRender() {
+        SceneObject::preRender();
+    }
 
-void Skybox::render() {
-	SceneObject::render();
-}
+    void Skybox::render() {
+        SceneObject::render();
+    }
 
-void Skybox::postRender() {
-	SceneObject::postRender();
-}
+    void Skybox::postRender() {
+        SceneObject::postRender();
+    }
 
 }

@@ -8,22 +8,26 @@
 
 namespace ganeshEngine {
 
-class Actor : public SceneObject {
+    class Actor : public SceneObject {
 
-private:
-	GLModel *mModel {nullptr};
+    private:
+        GLModel *mModel{nullptr};
 
-public:
-	Actor() : SceneObject(SceneObjectType::ACTOR) {}
-	virtual ~Actor() {}
+    public:
+        Actor() : SceneObject(SceneObjectType::ACTOR) {}
 
-	void setModel(GLModel* model);
-	GLModel* getModel() const;
+        virtual ~Actor() {}
 
-	void preRender() override;
-	void render() override;
-	void postRender() override;
-};
+        void setModel(GLModel *model);
+
+        GLModel *getModel() const;
+
+        void preRender() override;
+
+        void render() override;
+
+        void postRender() override;
+    };
 
 }
 

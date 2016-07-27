@@ -5,31 +5,34 @@
 
 namespace ganeshEngine {
 
-class PoolAllocator {
+    class PoolAllocator {
 
-private:
-    uintptr_t beginAddr;
-    uintptr_t endAddr;
+    private:
+        uintptr_t beginAddr;
+        uintptr_t endAddr;
 
-    void* mpFreePtr {nullptr};
-    void* mpMemSection {nullptr};
-    bool mIsInitialized {false};
+        void *mpFreePtr{nullptr};
+        void *mpMemSection{nullptr};
+        bool mIsInitialized{false};
 
-    size_t mBlockSize;
-    size_t mBlockAmount;
+        size_t mBlockSize;
+        size_t mBlockAmount;
 
-public:
-    PoolAllocator(size_t blockSize, size_t blockAmount) :
-            mBlockSize(blockSize),
-            mBlockAmount(blockAmount) {}
+    public:
+        PoolAllocator(size_t blockSize, size_t blockAmount) :
+                mBlockSize(blockSize),
+                mBlockAmount(blockAmount) {}
 
-    bool v_initialize(void);
-    void v_destroy(void);
+        bool v_initialize(void);
 
-    void *alloc(void);
-    void free(void*);
-    bool isInitialized(void) { return mIsInitialized; }
-};
+        void v_destroy(void);
+
+        void *alloc(void);
+
+        void free(void *);
+
+        bool isInitialized(void) { return mIsInitialized; }
+    };
 }
 
 #endif //GANESHENGINE_POOLALLOCATOR_H

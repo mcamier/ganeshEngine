@@ -7,92 +7,96 @@
 
 namespace ganeshEngine {
 
-using namespace std;
+    using namespace std;
 
-enum GLProgramStatus {
-	NONE        = 0x01,
-	COMPILED    = 0x02,
-	FAILED      = 0x04,
-};
+    enum GLProgramStatus {
+        NONE = 0x01,
+        COMPILED = 0x02,
+        FAILED = 0x04,
+    };
 
 
-class GLProgram {
-	friend class GLModel;
+    class GLProgram {
+        friend class GLModel;
 
-private:
-	GLProgramStatus mStatus;
-	GLuint mInternalId;
+    private:
+        GLProgramStatus mStatus;
+        GLuint mInternalId;
 
-public:
-	GLProgram() : mStatus(GLProgramStatus::NONE), mInternalId(-1) {}
-	~GLProgram() {}
+    public:
+        GLProgram() : mStatus(GLProgramStatus::NONE), mInternalId(-1) {}
 
-	template<typename... S>
-	static GLProgram create(GLShader& first, S&... rest) {
-		GLProgram program = GLProgram();
-		program.mInternalId = glCreateProgram();
+        ~GLProgram() {}
 
-		return GLProgram::create(program, first, rest...);
-	}
+        template<typename... S>
+        static GLProgram create(GLShader &first, S &... rest) {
+            GLProgram program = GLProgram();
+            program.mInternalId = glCreateProgram();
 
-	template<typename... F>
-	static GLProgram create(ShaderType shaderType, const char *first, F... rest) {
-		GLProgram program = GLProgram();
-		program.mInternalId = glCreateProgram();
+            return GLProgram::create(program, first, rest...);
+        }
 
-		return GLProgram::create(program, shaderType, first, rest...);
-	}
+        template<typename... F>
+        static GLProgram create(ShaderType shaderType, const char *first, F... rest) {
+            GLProgram program = GLProgram();
+            program.mInternalId = glCreateProgram();
 
-	void logProgramInfo();
+            return GLProgram::create(program, shaderType, first, rest...);
+        }
 
-	void setUniform(const char* name, vec3 value);
-	void setUniform(const char* name, vec4 value);
-	void setUniform(const char* name, mat3 value);
-	void setUniform(const char* name, mat4 value);
+        void logProgramInfo();
 
-private:
-	template<typename... S>
-	static GLProgram create(GLProgram& program, GLShader& shader, S&... rest) {
-		/// try to compile the shader if it is not already compiled
-		if(shader.getStatus() == ShaderStatus::NONE) {
-			shader.doCompile();
-		}
-		/// check if shader compilation is successfull, fail creation if not
-		if(shader.getStatus() != ShaderStatus::COMPILED) {
-			throw std::exception();
-		}
-		glAttachShader(program.mInternalId, shader.mInternalId);
-		GLProgram p = GLProgram::create(program, rest...);
-		if(program.mStatus == GLProgramStatus::COMPILED) {
-			glDetachShader(program.mInternalId, shader.mInternalId);
-		}
-		return program;
-	}
+        void setUniform(const char *name, vec3 value);
 
-	template<typename... F>
-	static GLProgram create(GLProgram& program, ShaderType type, const char *filename, F... rest) {
-		GLShader shader = GLShader::fromFile(type, filename);
-		shader.doCompile();
-		/// check if shader compilation is successfull, fail creation if not
-		if(shader.getStatus() != ShaderStatus::COMPILED) {
-			throw std::exception();
-		}
-		glAttachShader(program.mInternalId, shader.mInternalId);
-		GLProgram p = GLProgram::create(program, rest...);
-		if(program.mStatus == GLProgramStatus::COMPILED) {
-			glDetachShader(program.mInternalId, shader.mInternalId);
-		}
-		return program;
-	}
+        void setUniform(const char *name, vec4 value);
 
-	static GLProgram create(GLProgram& program);
+        void setUniform(const char *name, mat3 value);
 
-	void use();
+        void setUniform(const char *name, mat4 value);
 
-	bool inUse();
+    private:
+        template<typename... S>
+        static GLProgram create(GLProgram &program, GLShader &shader, S &... rest) {
+            /// try to compile the shader if it is not already compiled
+            if (shader.getStatus() == ShaderStatus::NONE) {
+                shader.doCompile();
+            }
+            /// check if shader compilation is successfull, fail creation if not
+            if (shader.getStatus() != ShaderStatus::COMPILED) {
+                throw std::exception();
+            }
+            glAttachShader(program.mInternalId, shader.mInternalId);
+            GLProgram p = GLProgram::create(program, rest...);
+            if (program.mStatus == GLProgramStatus::COMPILED) {
+                glDetachShader(program.mInternalId, shader.mInternalId);
+            }
+            return program;
+        }
 
-	void stopUsing();
-};
+        template<typename... F>
+        static GLProgram create(GLProgram &program, ShaderType type, const char *filename, F... rest) {
+            GLShader shader = GLShader::fromFile(type, filename);
+            shader.doCompile();
+            /// check if shader compilation is successfull, fail creation if not
+            if (shader.getStatus() != ShaderStatus::COMPILED) {
+                throw std::exception();
+            }
+            glAttachShader(program.mInternalId, shader.mInternalId);
+            GLProgram p = GLProgram::create(program, rest...);
+            if (program.mStatus == GLProgramStatus::COMPILED) {
+                glDetachShader(program.mInternalId, shader.mInternalId);
+            }
+            return program;
+        }
+
+        static GLProgram create(GLProgram &program);
+
+        void use();
+
+        bool inUse();
+
+        void stopUsing();
+    };
 
 }
 

@@ -5,34 +5,38 @@
 
 namespace ganeshEngine {
 
-class DoubleBufferedStackAllocator {
+    class DoubleBufferedStackAllocator {
 
-private:
-    StackAllocator *mpCurrentBuffer;
-    StackAllocator mBufferOne;
-    StackAllocator mBufferTwo;
+    private:
+        StackAllocator *mpCurrentBuffer;
+        StackAllocator mBufferOne;
+        StackAllocator mBufferTwo;
 
-public:
-    DoubleBufferedStackAllocator(unsigned long byteSize) :
-            mBufferOne(byteSize),
-            mBufferTwo(byteSize),
-            mpCurrentBuffer(&mBufferOne) {}
+    public:
+        DoubleBufferedStackAllocator(unsigned long byteSize) :
+                mBufferOne(byteSize),
+                mBufferTwo(byteSize),
+                mpCurrentBuffer(&mBufferOne) {}
 
-    DoubleBufferedStackAllocator& operator=(const DoubleBufferedStackAllocator &) = delete;
-    DoubleBufferedStackAllocator(const DoubleBufferedStackAllocator &) = delete;
+        DoubleBufferedStackAllocator &operator=(const DoubleBufferedStackAllocator &) = delete;
 
-    bool initialize(void);
-    void destroy(void);
+        DoubleBufferedStackAllocator(const DoubleBufferedStackAllocator &) = delete;
 
-    void swapBuffer(void);
-    void* alloc(unsigned long byteSize);
-    void clear(void);
+        bool initialize(void);
 
-    template <typename T>
-    T* alloc() {
-        return mpCurrentBuffer->alloc<T>();
-    }
-};
+        void destroy(void);
+
+        void swapBuffer(void);
+
+        void *alloc(unsigned long byteSize);
+
+        void clear(void);
+
+        template<typename T>
+        T *alloc() {
+            return mpCurrentBuffer->alloc<T>();
+        }
+    };
 
 }
 

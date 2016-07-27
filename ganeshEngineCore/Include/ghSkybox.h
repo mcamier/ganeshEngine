@@ -6,22 +6,25 @@
 
 namespace ganeshEngine {
 
-using namespace std;
+    using namespace std;
 
 /**
  *
  */
-class Skybox : public SceneObject {
-private:
+    class Skybox : public SceneObject {
+    private:
 
-public:
-	Skybox() : SceneObject(SceneObjectType::SKYBOX) {};
-	virtual ~Skybox() {}
+    public:
+        Skybox() : SceneObject(SceneObjectType::SKYBOX) {};
 
-	void preRender() override;
-	void render() override;
-	void postRender() override;
-};
+        virtual ~Skybox() {}
+
+        void preRender() override;
+
+        void render() override;
+
+        void postRender() override;
+    };
 }
 
 #endif //GANESHENGINE_GHSKYBOX_H

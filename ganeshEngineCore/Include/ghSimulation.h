@@ -7,17 +7,17 @@
 
 namespace ganeshEngine {
 
-class Simulation : public System<Simulation> {
+    class Simulation : public System<Simulation> {
 
-public:
-    void tick(U32 deltaNanosecond);
-};
+    public:
+        void tick(U32 deltaNanosecond);
+    };
 
 /**
  * Global getter of reference to the Simulation
  * @return reference to the Simulation
  */
-extern Simulation&(*gSimulation)();
+    extern Simulation &(*gSimulation)();
 }
 
 #endif //GANESHENGINE_GHSIMULATION_H
