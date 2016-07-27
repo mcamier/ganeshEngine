@@ -38,7 +38,7 @@ set(RAPIDJSON_TAG "v1.0.2")
 set(RAPIDJSON_DIR "${LIB_DIR}/rapidjson")
 
 set(GLFW_URL "https://github.com/glfw/glfw.git")
-set(GLFW_TAG "3.1.2")
+set(GLFW_TAG "3.2")
 set(GLFW_DIR "${LIB_DIR}/glfw")
 
 set(GLEW_URL "https://github.com/nigels-com/glew.git")

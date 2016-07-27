@@ -9,87 +9,104 @@ namespace ganeshEngine {
 void InputManager::vInitialize()
 {
     for (int i = 0; i < GH_BUTTON_ARRAY_SIZE; i++) {
-	m_keyState[i] = GH_STATE_RELEASED;
+		m_keyState[i] = GH_STATE_RELEASED;
     }
 
     glfwSetWindowUserPointer(gPlatform().getWindow(), this);
     glfwSetKeyCallback(gPlatform().getWindow(), [](GLFWwindow *window, int key, int scancde, int action, int mods)
     {
-	InputManager *mgr = static_cast<InputManager*> (glfwGetWindowUserPointer(gPlatform().getWindow()));
-	rawInput input;
-	input.idx = 0;
-	input.timestamp = 0;
-	input.source = RawInput::SOURCE::KEYBOARD;
-	input.data.button.key = key;
-	input.data.button.scancode = scancde;
-	input.data.button.mods = mods;
+		InputManager *mgr = static_cast<InputManager*> (glfwGetWindowUserPointer(gPlatform().getWindow()));
+		rawInput input;
+		input.idx = 0;
+		input.timestamp = 0;
+		input.source = RawInput::SOURCE::KEYBOARD;
+		input.data.button.key = key;
+		input.data.button.scancode = scancde;
+		input.data.button.mods = mods;
 
-	switch (action) {
-	case GLFW_PRESS:
-	{
-	    input.type = RawInput::TYPE::PRESS;
-		    mgr->m_keyState[key] = GH_STATE_PRESSED;
-		    mgr->rawInputs.push_back(input);
-		    _DEBUG("rawInput registered : [KEYBOARD] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
-	    break;
-	}
-	case GLFW_RELEASE:
-	{
-	    input.type = RawInput::TYPE::RELEASE;
-		    mgr->m_keyState[key] = GH_STATE_RELEASED;
-		    mgr->rawInputs.push_back(input);
-		    _DEBUG("rawInput registered : [KEYBOARD] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
-	    break;
-	}
-	}
+		switch (action) {
+		case GLFW_PRESS:
+		{
+			input.type = RawInput::TYPE::PRESS;
+				mgr->m_keyState[key] = GH_STATE_PRESSED;
+				mgr->rawInputs.push_back(input);
+				_DEBUG("rawInput registered : [KEYBOARD] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
+			break;
+		}
+		case GLFW_RELEASE:
+		{
+			input.type = RawInput::TYPE::RELEASE;
+				mgr->m_keyState[key] = GH_STATE_RELEASED;
+				mgr->rawInputs.push_back(input);
+				_DEBUG("rawInput registered : [KEYBOARD] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
+			break;
+		}
+		}
     });
 
     glfwSetCursorPosCallback(gPlatform().getWindow(), [](GLFWwindow *window, double xpos, double ypos)
     {
-	InputManager *mgr = static_cast<InputManager*> (glfwGetWindowUserPointer(gPlatform().getWindow()));
-	rawInput input;
-	input.idx = 0;
-	input.timestamp = 0;
-	input.source = RawInput::SOURCE::MOUSE;
-	input.type = RawInput::TYPE::MOVE;
-	input.data.move.x = xpos;
-	input.data.move.y = ypos;
+		InputManager *mgr = static_cast<InputManager*> (glfwGetWindowUserPointer(gPlatform().getWindow()));
+		rawInput input;
+		input.idx = 0;
+		input.timestamp = 0;
+		input.source = RawInput::SOURCE::MOUSE;
+		input.type = RawInput::TYPE::MOVE;
+		input.data.move.x = xpos;
+		input.data.move.y = ypos;
 
-	mgr->rawInputs.push_back(input);
-	_DEBUG("rawInput registered : [MOUSE] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
+		mgr->rawInputs.push_back(input);
     });
 
     glfwSetMouseButtonCallback(gPlatform().getWindow(), [](GLFWwindow *window, int button, int action, int mods)
     {
-	InputManager *mgr = static_cast<InputManager*> (glfwGetWindowUserPointer(gPlatform().getWindow()));
-	rawInput input;
-	input.idx = 0;
-	input.timestamp = 0;
-	input.source = RawInput::SOURCE::MOUSE;
-	input.data.button.key = button;
-	input.data.button.scancode = button;
-	input.data.button.mods = mods;
+		InputManager *mgr = static_cast<InputManager*> (glfwGetWindowUserPointer(gPlatform().getWindow()));
+		rawInput input;
+		input.idx = 0;
+		input.timestamp = 0;
+		input.source = RawInput::SOURCE::MOUSE;
+		input.data.button.key = button;
+		input.data.button.scancode = button;
+		input.data.button.mods = mods;
 
-	switch (action) {
-	case GLFW_PRESS:
-	    input.type = RawInput::TYPE::PRESS;
-		    mgr->m_keyState[button] = GH_STATE_PRESSED;
-		    mgr->rawInputs.push_back(input);
-		    _DEBUG("rawInput registered : [MOUSE] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
-	    break;
-	case GLFW_RELEASE:
-	    input.type = RawInput::TYPE::RELEASE;
-		    mgr->m_keyState[button] = GH_STATE_RELEASED;
-		    mgr->rawInputs.push_back(input);
-		    _DEBUG("rawInput registered : [MOUSE] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
-	    break;
-	}
+		switch (action) {
+		case GLFW_PRESS:
+			input.type = RawInput::TYPE::PRESS;
+				mgr->m_keyState[button] = GH_STATE_PRESSED;
+				mgr->rawInputs.push_back(input);
+			break;
+		case GLFW_RELEASE:
+			input.type = RawInput::TYPE::RELEASE;
+				mgr->m_keyState[button] = GH_STATE_RELEASED;
+				mgr->rawInputs.push_back(input);
+			break;
+		}
+    });
+
+	glfwSetScrollCallback(gPlatform().getWindow(), [](GLFWwindow *window, double offsetX, double offsetY) {
+		InputManager *mgr = static_cast<InputManager*> (glfwGetWindowUserPointer(gPlatform().getWindow()));
+		rawInput input;
+		input.idx = 0;
+		input.timestamp = 0;
+		input.source = RawInput::SOURCE::MOUSE;
+		input.type = RawInput::TYPE::RANGE;
+		input.data.range.x = offsetX;
+		input.data.range.y = offsetY;
+		input.data.range.z = 0;
+		mgr->rawInputs.push_back(input);
+	});
+
+    gEvent().addListener(GH_HASH("__GH_EVENT_JOYSTICK_STATE_CHANGE"), [](Event* e) {
+        /*if(e->getJoystickState() == 1) {
+            _DEBUG("Joystick [" << e->getJoystickIndex() << "] connected", LOG_CHANNEL::DEFAULT);
+        } else {
+            _DEBUG("Joystick [" << e->getJoystickIndex() << "] disconnected", LOG_CHANNEL::DEFAULT);
+        }*/
     });
 
     /**
      * Add default input detection to exit the game when ESC is pressed
      */
-    
     unique_ptr<InputContext> inputContext = make_unique<InputContext>(GH_HASH("__GH_INPUT_CONTEXT_SYSTEM"));
     int id = inputContext->getId();
     InputMatch *inputMatch = new InputMatch();
@@ -99,9 +116,8 @@ void InputManager::vInitialize()
     inputMatch->callbackNameHash = GH_HASH("GH_ESCAPE_GAME");
     inputContext->registerMatch(unique_ptr<InputMatch>(inputMatch));
 
-    this->registerInputCallback(GH_HASH("GH_ESCAPE_GAME"), []()
-    {
-	gApp().shutdown();
+    this->registerInputCallback(GH_HASH("__GH_INPUT_EXIT_GAME"), []() {
+		gApp().shutdown();
     });
 
     this->registerInputContext(move(inputContext));
@@ -111,14 +127,13 @@ void InputManager::vInitialize()
      * Read and configuration from conf object
      */
     if (m_bConfigurationOnInitialize) {
-	vector<unique_ptr<InputContext>> &ictxs = m_config->getInputContexts();
-
-	for (int i = 0; i < ictxs.size(); i++) {
-	    int id = (ictxs[i])->getId();
-	    unique_ptr<InputContext> ptr{move(ictxs[i])};
-	    ptr->setActive(true);
-	    m_inputContexts.insert(pair<int, unique_ptr<InputContext>>(id, move(ptr)));
-	}
+		vector<unique_ptr<InputContext>> &ictxs = m_config->getInputContexts();
+		for (int i = 0; i < ictxs.size(); i++) {
+			int id = (ictxs[i])->getId();
+			unique_ptr<InputContext> ptr{move(ictxs[i])};
+			ptr->setActive(true);
+			m_inputContexts.insert(pair<int, unique_ptr<InputContext>>(id, move(ptr)));
+		}
     }
     m_config = nullptr;
     _DEBUG("InputManager initialized", LOG_CHANNEL::INPUT);
@@ -126,7 +141,6 @@ void InputManager::vInitialize()
 
 void InputManager::vDestroy()
 {
-
     _DEBUG("InputManager destroyed", LOG_CHANNEL::INPUT);
 }
 

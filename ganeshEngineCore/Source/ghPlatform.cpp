@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <ghApplication.h>
+#include <ghEvent.h>
 
 namespace ganeshEngine {
 
@@ -61,6 +62,11 @@ void Platform::vInitialize() {
         } else {
             _ERROR("ERROR ON WINDOW CREATION", LOG_CHANNEL::DEFAULT);
         }
+
+        glfwSetJoystickCallback([](int joyIndex, int joyEvent) {
+            gEvent().queueEvent(new JoystickStateChangeEvent(joyIndex, joyEvent));
+        });
+
         _DEBUG("Platform initialized", LOG_CHANNEL::DEFAULT);
     }
     else {

@@ -479,9 +479,9 @@ typedef struct buttonData_s {
 } buttonData;
 
 typedef struct rangeData_s {
-    float x;
-    float y;
-    float z;
+	double x;
+	double y;
+    double z;
 } rangeData;
 
 typedef struct moveData_s {

@@ -9,6 +9,8 @@
 
 namespace ganeshEngine {
 
+    class JoystickStateChangeEvent;
+
 /**
  * Read some system informations about the system like the screen framerate,
  * the screen resolution, the CPU speed and so on.
@@ -53,6 +55,7 @@ public:
      * @return screen's refresh rate as U16
      */
     const U16 getCpuCoreAmount();
+
 };
 
 /**
