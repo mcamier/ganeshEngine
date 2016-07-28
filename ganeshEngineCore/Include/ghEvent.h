@@ -6,123 +6,126 @@
 
 namespace ganeshEngine {
 
-    using namespace std;
+using namespace std;
 
-    using EventType = U32;
-
-/**
-*/
-    class Event {
-
-    private:
-        EventType m_type;
-
-    public:
-        Event(EventType type) : m_type(type) {}
-
-        virtual ~Event() {}
-
-        const EventType getType() const {
-            return m_type;
-        }
-    };
-
-    class JoystickStateChangeEvent : public Event {
-    private:
-        int m_joystickIndex;
-        int m_joystickState;
-
-    public:
-        JoystickStateChangeEvent(int index, int state) :
-                Event(GH_HASH("__GH_EVENT_JOYSTICK_STATE_CHANGE")),
-                m_joystickIndex(index),
-                m_joystickState(state) {}
-
-        virtual ~JoystickStateChangeEvent() {}
-
-        int getJoystickIndex() const {
-            return m_joystickIndex;
-        }
-
-        int getJoystickState() const {
-            return m_joystickState;
-        }
-    };
+using EventType = U32;
 
 /**
 */
-    class EventManager : public System<EventManager> {
-        friend class System<EventManager>;
+class Event {
 
-    private:
-        /**
-         */
-        vector<Event*> m_EventQueue;
+private:
+	EventType m_type;
 
-        /**
-         */
-        multimap<EventType, function<void(Event*)>> m_Listeners;
+public:
+	Event(EventType type) : m_type(type) {}
 
-        EventManager();
-        virtual ~EventManager();
+	virtual ~Event() {}
 
-    protected:
-        void vInitialize() override;
+	const EventType getType() const {
+		return m_type;
+	}
+};
 
-        void vDestroy() override;
+class JoystickStateChangeEvent : public Event {
+private:
+	int m_joystickIndex;
+	int m_joystickState;
 
-    public:
-        EventManager(const EventManager &) = delete;
+public:
+	JoystickStateChangeEvent(int index, int state) :
+			Event(GH_HASH("__GH_EVENT_JOYSTICK_STATE_CHANGE")),
+			m_joystickIndex(index),
+			m_joystickState(state) {}
 
-        EventManager &operator=(const EventManager &) = delete;
+	virtual ~JoystickStateChangeEvent() {}
 
-        /**
-         *
-         */
-        void update();
+	int getJoystickIndex() const {
+		return m_joystickIndex;
+	}
 
-        /**
-         *
-         * @param eventData
-         * @return
-         */
-        void fireEvent(Event *eventData);
+	int getJoystickState() const {
+		return m_joystickState;
+	}
+};
 
-        /**
-         *
-         * @param eventData
-         */
-        void queueEvent(Event *eventData);
+using EventCallback = function<void(Event *)>;
 
-        /**
-         *
-         * @param
-         * @param
-         * @return
-         */
-        void addListener(EventType, function<void(Event*)>);
+/**
+*/
+class EventManager : public System<EventManager> {
+	friend class System<EventManager>;
 
-        /**
-         *
-         * @param
-         * @return
-         */
-        void removeAllListeners(EventType);
+private:
+	/**
+	 */
+	vector<Event *> m_EventQueue;
 
-        /**
-         *
-         * @param eventType
-         * @param object
-         * @return
-         */
-        template<class T>
-        void addListener(EventType eventType, T *object, void (T::*TMethod)(Event)) {
-            auto f = std::bind(TMethod, object, placeholders::_1);
-            m_Listeners.insert(pair<EventType, function<void(Event*)>>(eventType, f));
-        }
-    };
+	/**
+	 */
+	multimap<EventType, function<void(Event *)>> m_Listeners;
 
-    extern EventManager &(*gEvent)();
+	EventManager();
+
+	virtual ~EventManager();
+
+protected:
+	void vInitialize() override;
+
+	void vDestroy() override;
+
+public:
+	EventManager(const EventManager &) = delete;
+
+	EventManager &operator=(const EventManager &) = delete;
+
+	/**
+	 *
+	 */
+	void update();
+
+	/**
+	 *
+	 * @param eventData
+	 * @return
+	 */
+	void fireEvent(Event *eventData);
+
+	/**
+	 *
+	 * @param eventData
+	 */
+	void queueEvent(Event *eventData);
+
+	/**
+	 *
+	 * @param
+	 * @param
+	 * @return
+	 */
+	void addListener(EventType, function<void(Event *)>);
+
+	/**
+	 *
+	 * @param
+	 * @return
+	 */
+	void removeAllListeners(EventType);
+
+	/**
+	 *
+	 * @param eventType
+	 * @param object
+	 * @return
+	 */
+	template<class T>
+	void addListener(EventType eventType, T *object, void (T::*TMethod)(Event *)) {
+		auto f = std::bind(TMethod, object, placeholders::_1);
+		m_Listeners.insert(pair<EventType, function<void(Event *)>>(eventType, f));
+	}
+};
+
+extern EventManager &(*gEvent)();
 
 }
 

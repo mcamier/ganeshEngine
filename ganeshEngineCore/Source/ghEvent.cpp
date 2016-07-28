@@ -22,7 +22,7 @@ namespace ganeshEngine {
             event = m_EventQueue.back();
 
             auto pair = m_Listeners.equal_range(event->getType());
-            for (multimap<EventType, function<void(Event*)>>::iterator it = pair.first;
+            for (multimap<EventType, EventCallback>::iterator it = pair.first;
                  it != pair.second;
                  ++it) {
                 (*it).second(event);
@@ -33,7 +33,7 @@ namespace ganeshEngine {
 
     void EventManager::fireEvent(Event *event) {
         auto pair = m_Listeners.equal_range(event->getType());
-        for (multimap<EventType, function<void(Event*)>>::iterator it = pair.first;
+        for (multimap<EventType, EventCallback>::iterator it = pair.first;
              it != pair.second;
              ++it) {
             (*it).second(event);
@@ -44,8 +44,8 @@ namespace ganeshEngine {
         m_EventQueue.push_back(event);
     }
 
-    void EventManager::addListener(EventType eventType, function<void(Event*)> callback) {
-        m_Listeners.insert(pair<EventType, function<void(Event*)>>(eventType, callback));
+    void EventManager::addListener(EventType eventType, EventCallback callback) {
+        m_Listeners.insert(pair<EventType, EventCallback>(eventType, callback));
     }
 
     void EventManager::removeAllListeners(EventType eventType) {

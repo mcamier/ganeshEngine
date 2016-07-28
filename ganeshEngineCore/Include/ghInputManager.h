@@ -10,92 +10,99 @@
 
 namespace ganeshEngine {
 
-    using namespace std;
+using namespace std;
 
-    class InputManager : public System<InputManager> {
-        friend class System<InputManager>;
+class InputManager : public System<InputManager> {
+	friend class System<InputManager>;
 
-    private:
-        /**
-         * configuration purpose variables
-         */
-        bool m_bConfigurationOnInitialize = false;
+private:
+	/**
+	 * configuration purpose variables
+	 */
+	bool m_bConfigurationOnInitialize = false;
 
-        /**
-         */
-        unique_ptr<InputManagerConfiguration> m_config;
+	/**
+	 */
+	unique_ptr<InputManagerConfiguration> m_config;
 
-        /** Inputs read from the system
-         */
-        vector<rawInput> rawInputs;
+	/** Inputs read from the system
+	 */
+	vector<rawInput> rawInputs;
 
-        /** register input contexts
-         */
-        map<int, unique_ptr<InputContext>> m_inputContexts;
+	/** register input contexts
+	 */
+	map<U32, unique_ptr<InputContext>> m_inputContexts;
 
-        /**
-         */
-        map<U32, function<void(void) >> m_inputCallbacks;
+	/**
+	 */
+	map<U32, function<void(void) >> m_inputCallbacks;
 
-        /**
-         */
-        int m_keyState[GH_BUTTON_ARRAY_SIZE];
+	/**
+	 */
+	int m_keyState[GH_BUTTON_ARRAY_SIZE];
 
-    protected:
-        void vInitialize() override;
+	/**
+	 *
+	 */
+	unique_ptr<Joystick> m_joystick[GH_MAX_JOYSTICK];
 
-        void vDestroy() override;
+protected:
+	void vInitialize() override;
 
-    public:
+	void vDestroy() override;
 
-        InputManager() :
-                m_bConfigurationOnInitialize(false),
-                m_config(nullptr) {
-        }
+public:
 
-        InputManager(unique_ptr<InputManagerConfiguration> config) :
-                m_bConfigurationOnInitialize(true),
-                m_config(move(config)) {
-        }
+	InputManager() :
+			m_bConfigurationOnInitialize(false),
+			m_config(nullptr) {
+	}
 
-        InputManager(const InputManager &) = delete;
+	InputManager(unique_ptr<InputManagerConfiguration> config) :
+			m_bConfigurationOnInitialize(true),
+			m_config(move(config)) {
+	}
 
-        InputManager &operator=(const InputManager &) = delete;
+	InputManager(const InputManager &) = delete;
+	InputManager &operator=(const InputManager &) = delete;
 
+	/**
+	 *
+	 * @param id
+	 * @param active
+	 */
+	void activeContext(int id, bool active);
 
-        /**
-         *
-         * @param id
-         * @param active
-         */
-        void activeContext(int id, bool active);
+	/**
+	 *
+	 * @param inputContext
+	 */
+	void registerInputContext(unique_ptr<InputContext> inputContext);
 
-        /**
-         *
-         * @param inputContext
-         */
-        void registerInputContext(unique_ptr<InputContext> inputContext);
+	/**
+	 */
+	void registerInputCallback(U32 callbackHash, function<void(void)> callback);
 
-        /**
-         */
-        void registerInputCallback(U32 callbackHash, function<void(void)> callback);
+	/**
+	 *
+	 */
+	void update();
 
-        /**
-         *
-         */
-        void update();
+private:
+	void detectChords();
 
-    private:
-        void detectChords();
+	void detectPlainInputs();
 
-        void detectPlainInputs();
-    };
+	void onJoystickStateChange(Event* event);
+
+	void updateJoystick(int index);
+};
 
 /**
  * Global getter of reference to the InputManager
  * @return reference to the InputManager
  */
-    extern InputManager &(*gInput)();
+extern InputManager &(*gInput)();
 }
 
 #endif //GANESHENGINE_GHINPUTMANAGER_H
