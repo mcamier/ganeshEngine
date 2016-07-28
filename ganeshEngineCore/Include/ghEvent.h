@@ -11,21 +11,25 @@ using namespace std;
 using EventType = U32;
 
 /**
-*/
+ * Basic Event class that all other event have to extends in order to be used by the
+ * input Manager
+ */
 class Event {
-
 private:
 	EventType m_type;
 
 public:
 	Event(EventType type) : m_type(type) {}
+	virtual ~Event();
 
-	virtual ~Event() {}
-
-	const EventType getType() const {
-		return m_type;
-	}
+	/**
+	 * Getter on the event's type
+	 *
+	 * @return event's type
+	 */
+	const EventType getType() const;
 };
+using EventCallback = function<void(Event *)>;
 
 class JoystickStateChangeEvent : public Event {
 private:
@@ -38,91 +42,81 @@ public:
 			m_joystickIndex(index),
 			m_joystickState(state) {}
 
-	virtual ~JoystickStateChangeEvent() {}
+	virtual ~JoystickStateChangeEvent();
 
-	int getJoystickIndex() const {
-		return m_joystickIndex;
-	}
+	int getJoystickIndex() const;
 
-	int getJoystickState() const {
-		return m_joystickState;
-	}
+	int getJoystickState() const;
 };
 
-using EventCallback = function<void(Event *)>;
-
 /**
-*/
+ * EventManager si the system in charge of storing thrown events and calling correspondant event once each game loop
+ */
 class EventManager : public System<EventManager> {
 	friend class System<EventManager>;
-
 private:
-	/**
-	 */
 	vector<Event *> m_EventQueue;
 
-	/**
-	 */
-	multimap<EventType, function<void(Event *)>> m_Listeners;
-
-	EventManager();
-
-	virtual ~EventManager();
+	multimap<EventType, EventCallback> m_Listeners;
 
 protected:
 	void vInitialize() override;
-
 	void vDestroy() override;
 
 public:
 	EventManager(const EventManager &) = delete;
-
 	EventManager &operator=(const EventManager &) = delete;
 
 	/**
-	 *
+	 * Update read all events stored m_EventQueue and call related event's callback stored
+	 * in m_Listeners
 	 */
 	void update();
 
 	/**
+	 * Executes immediately the callbacks registered for the given input
 	 *
-	 * @param eventData
-	 * @return
+	 * @param eventData Pointer the base class Event
 	 */
 	void fireEvent(Event *eventData);
 
 	/**
-	 *
-	 * @param eventData
+	 * Enqueue a event in order to be processed at the next EventManager update call
+	 * @param eventData Pointer the base class Event
 	 */
 	void queueEvent(Event *eventData);
 
 	/**
+	 * Register a callback method to be called when event occurs
 	 *
-	 * @param
-	 * @param
-	 * @return
+	 * @param eventType event type to match to trigger callback
+	 * @param callback method to execute when event occurs
 	 */
-	void addListener(EventType, function<void(Event *)>);
+	void addListener(EventType eventType, EventCallback callback);
 
 	/**
-	 *
-	 * @param
-	 * @return
+	 * Remove all listerners of a given type of event
+	 * @param eventType type of event to find
 	 */
-	void removeAllListeners(EventType);
+	void removeAllListeners(EventType eventType);
 
 	/**
+	 * Register a callback method to be called when event occurs
+	 * The callback method is a member function of an object
 	 *
-	 * @param eventType
-	 * @param object
-	 * @return
+	 * @param eventType event type to match to trigger callback
+	 * @param object instance of the object
+	 * @param TMethod pointer to the member function to use as callback
 	 */
 	template<class T>
 	void addListener(EventType eventType, T *object, void (T::*TMethod)(Event *)) {
 		auto f = std::bind(TMethod, object, placeholders::_1);
-		m_Listeners.insert(pair<EventType, function<void(Event *)>>(eventType, f));
+		m_Listeners.insert(pair<EventType, EventCallback>(eventType, f));
 	}
+
+private:
+	EventManager();
+	virtual ~EventManager();
 };
 
 extern EventManager &(*gEvent)();

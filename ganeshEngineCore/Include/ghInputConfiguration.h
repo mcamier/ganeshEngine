@@ -175,12 +175,11 @@ namespace ganeshEngine {
                 im = nullptr;
                 return;
             }
-            im = new InputMatch();
-            im->source = RawInput::fromString<RawInput::SOURCE>(node["source"].GetString());
-            im->type = RawInput::fromString<RawInput::TYPE>(node["type"].GetString());
-            im->key = RawInput::fromString<RawInput::KEY>(node["identifier"].GetString());
-            im->callbackNameHash = GH_HASH(node["callbackName"].GetString());
-            im->mods = 0;
+            im = new InputMatch(
+                    RawInput::fromString<RawInput::SOURCE>(node["source"].GetString()),
+                    RawInput::fromString<RawInput::TYPE>(node["type"].GetString()),
+                    RawInput::fromString<RawInput::KEY>(node["identifier"].GetString()),
+                    GH_HASH(node["callbackName"].GetString()));
         }
 
         static void readChord(const Value &node, Chord *&chord) {
@@ -249,11 +248,11 @@ namespace ganeshEngine {
                          LOG_CHANNEL::INPUT);
                 return;
             }
-            im = new InputMatch();
-            im->source = RawInput::fromString<RawInput::SOURCE>(node["source"].GetString());
-            im->type = RawInput::fromString<RawInput::TYPE>(node["type"].GetString());
-            im->key = RawInput::fromString<RawInput::KEY>(node["identifier"].GetString());
-            im->mods = 0;
+            im = new InputMatch(
+                    RawInput::fromString<RawInput::SOURCE>(node["source"].GetString()),
+                    RawInput::fromString<RawInput::TYPE>(node["type"].GetString()),
+                    RawInput::fromString<RawInput::KEY>(node["identifier"].GetString()),
+                    0);
         }
 
         static void readChords(const Value &node, InputContext *ctx) {

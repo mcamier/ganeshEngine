@@ -20,9 +20,9 @@ namespace ganeshEngine {
     bool InputContext::getInputMatch(rawInput &rawInput, U32 *callbackId) const {
         for (const auto &match : m_inputMatches) {
             if (rawInput.type == RawInput::TYPE::MOVE) {
-                if (match->type == rawInput.type &&
-                    match->source == rawInput.source) {
-                    *callbackId = match->callbackNameHash;
+                if (match->getType() == rawInput.type &&
+                    match->getSource() == rawInput.source) {
+                    *callbackId = match->getCallbackHash();
                     return true;
                 }
             }
@@ -31,18 +31,17 @@ namespace ganeshEngine {
                 rawInput.type == RawInput::TYPE::RELEASE ||
                 rawInput.type == RawInput::TYPE::HOLD) {
 
-                if (match->type == rawInput.type &&
-                    match->source == rawInput.source &&
-                    match->key == (RawInput::KEY) rawInput.data.button.key &&
-                    match->mods == rawInput.data.button.mods) {
-                    *callbackId = match->callbackNameHash;
+                if (match->getType() == rawInput.type &&
+                    match->getSource() == rawInput.source &&
+                    match->getKey() == (RawInput::KEY) rawInput.data.button.key) {
+                    *callbackId = match->getCallbackHash();
                     return true;
                 }
             } else {
-                if (match->type == rawInput.type &&
-                    match->source == rawInput.source &&
-                    match->key == (RawInput::KEY) rawInput.data.button.key) {
-                    *callbackId = match->callbackNameHash;
+                if (match->getType() == rawInput.type &&
+                    match->getSource() == rawInput.source &&
+                    match->getKey() == (RawInput::KEY) rawInput.data.button.key) {
+                    *callbackId = match->getCallbackHash();
                     return true;
                 }
             }

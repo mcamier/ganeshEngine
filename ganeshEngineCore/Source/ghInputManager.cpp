@@ -97,11 +97,11 @@ void InputManager::vInitialize() {
 	 */
 	unique_ptr<InputContext> inputContext = make_unique<InputContext>(GH_HASH("__GH_INPUT_CONTEXT_SYSTEM"));
 	int id = inputContext->getId();
-	InputMatch *inputMatch = new InputMatch();
-	inputMatch->source = RawInput::SOURCE::KEYBOARD;
-	inputMatch->type = RawInput::TYPE::PRESS;
-	inputMatch->key = (RawInput::KEY) GH_BUTTON_KEY_ESCAPE;
-	inputMatch->callbackNameHash = GH_HASH("__GH_INPUT_EXIT_GAME");
+	InputMatch *inputMatch = new InputMatch(
+			RawInput::SOURCE::KEYBOARD,
+			RawInput::TYPE::PRESS,
+			(RawInput::KEY) GH_BUTTON_KEY_ESCAPE,
+			GH_HASH("__GH_INPUT_EXIT_GAME"));
 	inputContext->registerMatch(unique_ptr<InputMatch>(inputMatch));
 
 	this->registerInputCallback(GH_HASH("__GH_INPUT_EXIT_GAME"), []() {

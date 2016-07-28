@@ -544,28 +544,29 @@ typedef struct rawInput_s {
 	} data;
 } rawInput;
 
-
 /**
  *
  */
 class InputMatch {
 private:
-	int m_id;
-	static int m_lastId;
+	RawInput::SOURCE m_source;
+	RawInput::TYPE m_type;
+	RawInput::KEY m_key;
+	U32 m_callbackNameHash;
 
 public:
-	RawInput::SOURCE source;
-	RawInput::TYPE type;
-	RawInput::KEY key;
-	// TODO mods support
-	int mods = 0;
-	U32 callbackNameHash;
+	InputMatch(RawInput::SOURCE source, RawInput::TYPE type, RawInput::KEY key, U32 callbackHash) :
+			m_source(source), m_type(type), m_key(key), m_callbackNameHash(callbackHash) {}
 
-	InputMatch();
-
-	int getId();
+	RawInput::SOURCE getSource() const;
+	RawInput::TYPE getType() const;
+	RawInput::KEY getKey() const;
+	U32 getCallbackHash() const;
 };
 
+/**
+ *
+ */
 class Chord {
 public:
 	CHORD_SIZE size;
