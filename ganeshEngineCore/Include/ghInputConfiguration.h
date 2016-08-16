@@ -29,14 +29,6 @@ namespace ganeshEngine {
          */
         vector<unique_ptr<InputContext>> m_inputContexts;
 
-        /**
-         */
-        //vector<unique_ptr<InputMatch>> m_inputMatches;
-
-        /**
-         */
-        //vector<unique_ptr<Chord>> m_chords;
-
     public:
 
         virtual ~InputManagerConfiguration() {

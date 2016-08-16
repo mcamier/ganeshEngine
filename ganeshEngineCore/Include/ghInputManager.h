@@ -39,7 +39,7 @@ private:
 
 	/**
 	 */
-	int m_keyState[GH_BUTTON_ARRAY_SIZE];
+	rawInput m_keyState[GH_BUTTON_ARRAY_SIZE];
 
 	/**
 	 *

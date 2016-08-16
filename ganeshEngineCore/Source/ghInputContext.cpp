@@ -29,7 +29,7 @@ namespace ganeshEngine {
 
             if (rawInput.type == RawInput::TYPE::PRESS ||
                 rawInput.type == RawInput::TYPE::RELEASE ||
-                rawInput.type == RawInput::TYPE::HOLD) {
+                rawInput.type == RawInput::TYPE::DOWN) {
 
                 if (match->getType() == rawInput.type &&
                     match->getSource() == rawInput.source &&

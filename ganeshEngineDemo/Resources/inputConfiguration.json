@@ -4,54 +4,66 @@
    },
    "contexts": [
       {
-	 "name": "default",
-	 "chords": [
+	 "name": "kzInGame",
+	 "chords": [],
+	 "matches": [
 	    {
-	       "callbackName": "ACTION_323",
-	       "_1": {
-		  "source": "MOUSE",
-		  "type": "MOVE",
-		  "identifier": "A"
-	       },
-	       "_2": {
-		  "source": "MOUSE",
-		  "type": "MOVE",
-		  "identifier": "A"
-	       }
+	       "source": "KEYBOARD",
+	       "type": "DOWN",
+	       "identifier": "UP",
+	       "callbackName": "kzActionPlayerGoUp"
+	    }, {
+	       "source": "KEYBOARD",
+	       "type": "DOWN",
+	       "identifier": "DOWN",
+	       "callbackName": "kzActionPlayerGoDown"
+	    }, {
+	       "source": "KEYBOARD",
+	       "type": "DOWN",
+	       "identifier": "LEFT",
+	       "callbackName": "kzActionPlayerGoLeft"
+	    }, {
+	       "source": "KEYBOARD",
+	       "type": "DOWN",
+	       "identifier": "RIGHT",
+	       "callbackName": "kzActionPlayerGoRight"
+	    }, {
+	       "source": "KEYBOARD",
+	       "type": "DOWN",
+	       "identifier": "SPACE",
+	       "callbackName": "kzActionPlayerFire"
+	    }, {
+	       "source": "KEYBOARD",
+	       "type": "DOWN",
+	       "identifier": "ENTER",
+	       "callbackName": "kzActionPlayerAction"
 	    }
-	 ],
+	 ]
+      }, {
+	 "name": "kzInMenu",
+	 "chords": [],
 	 "matches": [
 	    {
 	       "source": "KEYBOARD",
 	       "type": "PRESS",
-	       "identifier": "A",
-	       "callbackName": "ACTION_1"
-	    },
-	    {
+	       "identifier": "UP",
+	       "callbackName": "kzActionMenuUp"
+	    }, {
 	       "source": "KEYBOARD",
-	       "type": "RELEASE",
-	       "identifier": "B",
-	       "callbackName": "ACTION_2"
-	    },
-	    {
-	       "source": "KEYBOARD",
-	       "type": "HOLD",
-	       "identifier": "C",
-	       "callbackName": "_ACTION_3"
-	    },
-	    {
-	       "source": "MOUSE",
-	       "type": "MOVE",
-	       "identifier": "MOUSE_LEFT",
-	       "callbackName": "_ACTION_4"
-	    },
-	    {
-	       "source": "MOUSE",
 	       "type": "PRESS",
-	       "identifier": "MOUSE_LEFT",
-	       "callbackName": "_ACTION_5"
+	       "identifier": "DOWN",
+	       "callbackName": "kzActionMenuDown"
+	    }, {
+	       "source": "KEYBOARD",
+	       "type": "PRESS",
+	       "identifier": "ENTER",
+	       "callbackName": "kzActionMenuEnter"
+	    }, {
+	       "source": "KEYBOARD",
+	       "type": "PRESS",
+	       "identifier": "BACKSPACE",
+	       "callbackName": "kzActionMenuExit"
 	    }
-
 	 ]
       }
    ]

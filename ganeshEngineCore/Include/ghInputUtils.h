@@ -179,7 +179,7 @@ private:
 
 	const static char *typePress;
 	const static char *typeRelease;
-	const static char *typeHold;
+	const static char *typeDown;
 	const static char *typeRange;
 	const static char *typeMove;
 
@@ -202,6 +202,7 @@ private:
 	const static char *keyNum9;
 	const static char *keySemicolon;
 	const static char *keyEqual;
+	const static char *keySpace;
 	const static char *keyA;
 	const static char *keyB;
 	const static char *keyC;
@@ -319,16 +320,16 @@ public:
 	/**
 	 * Kind of input
 	 *
-	 * PRESS: when a button get pressed
+	 * PRESS: when a button get pressed, only triggered once, even is key is kept down
 	 * RELEASE: when a button get released
-	 * HOLD: when a button was pressed last frame and is still pressed this frame
+	 * DOWN: when a button is pressed
 	 * RANGE: value between 0 and 1, for instance the xbox controller triggers
 	 * MOVE: 3 dimensional floats
 	 */
 	enum class TYPE {
 		PRESS,
+		DOWN,
 		RELEASE,
-		HOLD,
 		RANGE,
 		MOVE
 	};
@@ -358,6 +359,7 @@ public:
 		NUM_9 = GH_BUTTON_KEY_9,
 		SEMICOLON = GH_BUTTON_KEY_SEMICOLON,
 		EQUAL = GH_BUTTON_KEY_EQUAL,
+		SPACE = GH_BUTTON_KEY_SPACE,
 		A = GH_BUTTON_KEY_A,
 		B = GH_BUTTON_KEY_B,
 		C = GH_BUTTON_KEY_C,
