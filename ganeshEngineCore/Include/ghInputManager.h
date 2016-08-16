@@ -39,12 +39,15 @@ private:
 
 	/**
 	 */
-	rawInput m_keyState[GH_BUTTON_ARRAY_SIZE];
+	rawInput m_keyboardButtonsState[GH_BUTTON_ARRAY_SIZE];
 
 	/**
-	 *
 	 */
-	unique_ptr<Joystick> m_joystick[GH_MAX_JOYSTICK];
+	rawInput m_mouseButtonsState[GH_BUTTON_MOUSE_SIZE];
+
+	/**
+	 */
+	array<unique_ptr<Joystick>, GH_MAX_JOYSTICK> m_joystick;
 
 protected:
 	void vInitialize() override;
@@ -96,6 +99,12 @@ private:
 	void onJoystickStateChange(Event* event);
 
 	void updateJoystick(int index);
+
+	void setKeyboardState(int key, RawInput::TYPE type);
+
+	void setMouseState(int button, RawInput::TYPE type);
+
+	void updateStates(rawInput target[], int size);
 };
 
 /**

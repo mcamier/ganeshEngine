@@ -25,6 +25,7 @@
 #define GH_BUTTON_MOUSE_LEFT        GLFW_MOUSE_BUTTON_LEFT
 #define GH_BUTTON_MOUSE_RIGHT       GLFW_MOUSE_BUTTON_RIGHT
 #define GH_BUTTON_MOUSE_MIDDLE      GLFW_MOUSE_BUTTON_MIDDLE
+#define GH_BUTTON_MOUSE_SIZE        8
 
 #define GH_BUTTON_KEY_SPACE         32
 #define GH_BUTTON_KEY_APOSTROPHE    39 /* ' */
@@ -161,11 +162,17 @@ namespace ganeshEngine {
 using namespace std;
 
 class Joystick {
+private:
+	// TODO handle buttons states
 public:
 	Joystick() {}
 	virtual ~Joystick() {}
 };
 
+/**
+ * Chord is a combination of two or three pressed at the same time
+ * resulting in one action
+ */
 enum class CHORD_SIZE : int {
 	_2 = 2,
 	_3 = 3
