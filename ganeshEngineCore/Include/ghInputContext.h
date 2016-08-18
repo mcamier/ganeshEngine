@@ -34,7 +34,7 @@ namespace ganeshEngine {
 
         /**
          */
-        vector<unique_ptr<Chord>> m_chords;
+        vector<Chord> m_chords;
 
     public:
 
@@ -61,7 +61,7 @@ namespace ganeshEngine {
          *
          * @param inputMatch
          */
-        void registerChord(unique_ptr<Chord> chord);
+        void registerChord(Chord chord);
 
 
         /**

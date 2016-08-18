@@ -13,8 +13,8 @@ namespace ganeshEngine {
         m_inputMatches.push_back(move(inputMatch));
     }
 
-    void InputContext::registerChord(unique_ptr<Chord> chord) {
-        m_chords.push_back(move(chord));
+    void InputContext::registerChord(Chord chord) {
+        m_chords.push_back(chord);
     }
 
     bool InputContext::getInputMatch(rawInput &rawInput, U32 *callbackId) const {

@@ -188,7 +188,7 @@ namespace ganeshEngine {
             }
 
             chord = new Chord();
-            //chord->callbackNameHash = GH_HASH(chord["callbackName"].GetString());
+            chord->callbackNameHash = GH_HASH(node["callbackName"].GetString());
             if (node.HasMember("_3")) {
                 chord->size = CHORD_SIZE::_3;
             } else {
@@ -196,11 +196,14 @@ namespace ganeshEngine {
             }
             for (int i = 1; i <= (int) chord->size; i++) {
                 char const *nodeName;
-                switch (chord->size) {
-                    case CHORD_SIZE::_2:
+                switch (i) {
+                    case 1:
+                        nodeName = "_1";
+                        break;
+                    case 2:
                         nodeName = "_2";
                         break;
-                    case CHORD_SIZE::_3:
+                    case 3:
                         nodeName = "_3";
                         break;
                 }
@@ -209,13 +212,13 @@ namespace ganeshEngine {
                 if (im) {
                     switch (i) {
                         case 1:
-                            chord->_1 = unique_ptr<InputMatch>(im);
+                            chord->_1 = im;
                             break;
                         case 2:
-                            chord->_2 = unique_ptr<InputMatch>(im);
+                            chord->_2 = im;
                             break;
                         case 3:
-                            chord->_3 = unique_ptr<InputMatch>(im);
+                            chord->_3 = im;
                             break;
                     }
                 } else {
@@ -255,10 +258,10 @@ namespace ganeshEngine {
 
             for (SizeType i = 0; i < node.Size(); i++) {
                 Chord *chord = nullptr;
-                //readChord(node[i], chord);
+                readChord(node[i], chord);
 
                 if (chord) {
-                    ctx->registerChord(unique_ptr<Chord>(chord));
+                    ctx->registerChord(*chord);
                 }
             }
         }

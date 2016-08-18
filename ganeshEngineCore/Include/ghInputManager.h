@@ -17,55 +17,63 @@ class InputManager : public System<InputManager> {
 
 private:
 	/**
-	 * configuration purpose variables
-	 */
-	bool m_bConfigurationOnInitialize = false;
-
-	/**
+	 * Configuration object used during the initialization step of the object
+	 * Contains the game's inputContext filled with input chord and/or input matches
 	 */
 	unique_ptr<InputManagerConfiguration> m_config;
 
-	/** Inputs read from the system
-	 */
-	vector<rawInput> rawInputs;
-
-	/** register input contexts
+	/**
+	 * List of the registered input contexts in the manager
+	 * Multiple inputContext could be active at the same time
 	 */
 	map<U32, unique_ptr<InputContext>> m_inputContexts;
 
 	/**
+	 * Map of input corresponding actions in the game
+	 * the key is the hash of the actual name of the input action, the value is
+	 * function called when input action is triggered
 	 */
 	map<U32, function<void(void) >> m_inputCallbacks;
 
-	/**
+    /**
+     * Contains all inputs read from the system during the actual frame
+     * this vector is cleared atthje end of each frames
+     */
+    vector<rawInput> m_frameRawInputs;
+
+    /**
+	 * Contains postponed input that belongs to a chord
+     * This list contains input for maybe several frame, the time needed to detecte a valid chord
+     * or when input chord detection lifetime is over
 	 */
+    vector<rawInput> m_postponedRawInputs;
+
+    /**
+     * Array used to store each keyboard buttons state
+     * Only used to determine if button is held down (was pressed once but not yet
+     * released)
+     */
 	rawInput m_keyboardButtonsState[GH_BUTTON_ARRAY_SIZE];
 
-	/**
-	 */
+    /**
+     * Array used to store each mouse buttons state
+     * Only used to determine if button is held down (was pressed once but not yet
+     * released)
+     */
 	rawInput m_mouseButtonsState[GH_BUTTON_MOUSE_SIZE];
 
 	/**
+	 * Joystick object responsible of storing the joystick's state
 	 */
 	array<unique_ptr<Joystick>, GH_MAX_JOYSTICK> m_joystick;
 
 protected:
 	void vInitialize() override;
-
 	void vDestroy() override;
 
 public:
-
-	InputManager() :
-			m_bConfigurationOnInitialize(false),
-			m_config(nullptr) {
-	}
-
-	InputManager(unique_ptr<InputManagerConfiguration> config) :
-			m_bConfigurationOnInitialize(true),
-			m_config(move(config)) {
-	}
-
+	InputManager() : m_config(nullptr) {}
+	InputManager(unique_ptr<InputManagerConfiguration> config) : m_config(move(config)) {}
 	InputManager(const InputManager &) = delete;
 	InputManager &operator=(const InputManager &) = delete;
 

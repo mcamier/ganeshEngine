@@ -544,6 +544,11 @@ typedef struct rawInput_s {
 	int idx;
 
 	/**
+	 * Remaining lifetime of the input before it could be used to detect chord
+	 */
+	int chordDetectionLifetimeMs;
+
+	/**
 	 * Payload informations
 	 */
 	union datas_u {
@@ -579,10 +584,22 @@ public:
 class Chord {
 public:
 	CHORD_SIZE size;
-	shared_ptr<InputMatch> _1{nullptr};
-	shared_ptr<InputMatch> _2{nullptr};
-	shared_ptr<InputMatch> _3{nullptr};
+	InputMatch* _1{nullptr};
+	InputMatch* _2{nullptr};
+	InputMatch* _3{nullptr};
 	U32 callbackNameHash;
+
+    bool containsRawInput(RawInput::SOURCE source, RawInput::TYPE type ,RawInput::KEY key) {
+        if(_1 != nullptr && _2 != nullptr && _3 != nullptr) {
+            return ((_1->getSource() == source && _1->getType() == type && _1->getKey() == key) ||
+                    (_2->getSource() == source && _2->getType() == type && _2->getKey() == key) ||
+                    (_3->getSource() == source && _3->getType() == type && _3->getKey() == key));
+        } else if(_1 != nullptr && _2 != nullptr) {
+            return ((_1->getSource() == source && _1->getType() == type && _1->getKey() == key) ||
+                    (_2->getSource() == source && _2->getType() == type && _2->getKey() == key));
+        }
+        return false;
+    }
 };
 
 
