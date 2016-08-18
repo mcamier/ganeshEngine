@@ -100,7 +100,7 @@ namespace ganeshEngine {
                     return;
                 };
                 conf->m_chordThresholdDetectionMs = node["threshold_detection_ms"].GetInt();
-                _DEBUG("\tthreshold_detection_ms : " << conf->m_chordThresholdDetectionMs, LOG_CHANNEL::INPUT);
+                _DEBUG("threshold_detection_ms : " << conf->m_chordThresholdDetectionMs, LOG_CHANNEL::INPUT);
             }
 
         }
@@ -110,7 +110,7 @@ namespace ganeshEngine {
                 _WARNING("load input configuration : contexts must be an array", LOG_CHANNEL::INPUT);
                 return;
             };
-
+			_DEBUG("Input configuration", LOG_CHANNEL::INPUT);
             for (SizeType i = 0; i < node.Size(); i++) {
                 InputContext *inputContxt = nullptr;
                 readContext(node[i], inputContxt);
@@ -125,9 +125,9 @@ namespace ganeshEngine {
                 _WARNING("load input configuration : context must be an object", LOG_CHANNEL::INPUT);
                 return;
             };
-            _DEBUG("\tInput Matches : ", LOG_CHANNEL::INPUT);
 
             if (node.HasMember("name") && node["name"].IsString()) {
+            	_DEBUG("Input Contexts: " << node["name"].GetString(), LOG_CHANNEL::INPUT);
                 ctx = new InputContext(GH_HASH(node["name"].GetString()));
                 if (node.HasMember("chords")) {
                     readChords(node["chords"], ctx);
@@ -151,6 +151,8 @@ namespace ganeshEngine {
                 InputMatch *inputMatch = nullptr;
                 readMatch(node[i], inputMatch);
                 if (inputMatch) {
+					_WARNING("\t - " << RawInput::toString(inputMatch->getSource())<< "/" << RawInput::toString(inputMatch->getType()) << "/"<< RawInput::toString(inputMatch->getKey()),
+							 LOG_CHANNEL::INPUT);
                     ctx->registerMatch(unique_ptr<InputMatch>(inputMatch));
                 }
             }
@@ -174,66 +176,52 @@ namespace ganeshEngine {
                     GH_HASH(node["callbackName"].GetString()));
         }
 
-        static void readChord(const Value &node, Chord *&chord) {
+        static Chord* readChord(const Value &node, Chord *&chord) {
             chord = nullptr;
 
             if (!node.HasMember("callbackName")) {
                 _WARNING("load input configuration : chords must has a callbackName", LOG_CHANNEL::INPUT);
-                return;
+                return chord;
             }
             if (!(node.HasMember("_1") && node.HasMember("_2"))) {
                 _WARNING("load input configuration : chord must contains at least two input matche",
                          LOG_CHANNEL::INPUT);
-                return;
+                return chord;
             }
 
-            chord = new Chord();
-            chord->callbackNameHash = GH_HASH(node["callbackName"].GetString());
+			CHORD_SIZE csize;
+            U32 callbackNameHash = GH_HASH(node["callbackName"].GetString());
+			InputMatch i1, i2, i3;
+
+
+				_DEBUG("Chord action ["<< callbackNameHash <<"] :", LOG_CHANNEL::INPUT);
             if (node.HasMember("_3")) {
-                chord->size = CHORD_SIZE::_3;
+				csize = CHORD_SIZE::_3;
+				i1 = readMatchFromChord(node["_1"]);
+				i2 = readMatchFromChord(node["_2"]);
+				i3 = readMatchFromChord(node["_3"]);
+				chord = new Chord(callbackNameHash, i1,i2,i3);
+				_DEBUG("\t - "<< RawInput::toString(chord->_1.getSource()) <<"/"<< RawInput::toString(chord->_1.getType()) << "/" << RawInput::toString(chord->_1.getKey()), LOG_CHANNEL::INPUT);
+				_DEBUG("\t - "<< RawInput::toString(chord->_2.getSource()) <<"/"<< RawInput::toString(chord->_2.getType()) << "/" << RawInput::toString(chord->_2.getKey()), LOG_CHANNEL::INPUT);
+				_DEBUG("\t - "<< RawInput::toString(chord->_3.getSource()) <<"/"<< RawInput::toString(chord->_3.getType()) << "/" << RawInput::toString(chord->_3.getKey()), LOG_CHANNEL::INPUT);
             } else {
-                chord->size = CHORD_SIZE::_2;
+				csize = CHORD_SIZE::_2;
+				i1 = readMatchFromChord(node["_1"]);
+				i2 = readMatchFromChord(node["_2"]);
+				chord = new Chord(callbackNameHash, i1,i2);
+				_DEBUG("\t - "<< RawInput::toString(chord->_1.getSource()) <<"/"<< RawInput::toString(chord->_1.getType()) << "/" << RawInput::toString(chord->_1.getKey()), LOG_CHANNEL::INPUT);
+				_DEBUG("\t - "<< RawInput::toString(chord->_2.getSource()) <<"/"<< RawInput::toString(chord->_2.getType()) << "/" << RawInput::toString(chord->_2.getKey()), LOG_CHANNEL::INPUT);
             }
-            for (int i = 1; i <= (int) chord->size; i++) {
-                char const *nodeName;
-                switch (i) {
-                    case 1:
-                        nodeName = "_1";
-                        break;
-                    case 2:
-                        nodeName = "_2";
-                        break;
-                    case 3:
-                        nodeName = "_3";
-                        break;
-                }
-                InputMatch *im = nullptr;
-                readMatchFromChord(node[nodeName], im);
-                if (im) {
-                    switch (i) {
-                        case 1:
-                            chord->_1 = im;
-                            break;
-                        case 2:
-                            chord->_2 = im;
-                            break;
-                        case 3:
-                            chord->_3 = im;
-                            break;
-                    }
-                } else {
-                    _WARNING("load input configuration : chord skipped because it's not well formed",
-                             LOG_CHANNEL::INPUT);
-                    chord = nullptr;
-                }
-            }
+			if (chord == nullptr) {
+				_WARNING("load input configuration : chord skipped because it's not well formed", LOG_CHANNEL::INPUT);
+			}
+			return chord;
         }
 
-        static void readMatchFromChord(const Value &node, InputMatch *&im) {
-            im = nullptr;
+        static InputMatch readMatchFromChord(const Value &node) {
             if (!node.IsObject()) {
                 _WARNING("load input configuration : chord skipped because it's not well formed", LOG_CHANNEL::INPUT);
-                return;
+                return InputMatch();
             }
 
             if (!node.HasMember("source") || !node["source"].IsString() ||
@@ -241,9 +229,9 @@ namespace ganeshEngine {
                 !node.HasMember("identifier") || !node["identifier"].IsString()) {
                 _WARNING("load input configuration : input match in chord skipped because it's not well formed",
                          LOG_CHANNEL::INPUT);
-                return;
+                return InputMatch();
             }
-            im = new InputMatch(
+            return InputMatch(
                     RawInput::fromString<RawInput::SOURCE>(node["source"].GetString()),
                     RawInput::fromString<RawInput::TYPE>(node["type"].GetString()),
                     RawInput::fromString<RawInput::KEY>(node["identifier"].GetString()),

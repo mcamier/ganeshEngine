@@ -1,6 +1,7 @@
 #include "ghInputUtils.h"
 
 namespace ganeshEngine {
+const char *RawInput::undefined = "UNDEFINED";
 
 const char *RawInput::sourceMouse = "MOUSE";
 const char *RawInput::sourceKeyboard = "KEYBOARD";
@@ -140,6 +141,7 @@ const char *RawInput::toString<RawInput::SOURCE>(const RawInput::SOURCE value) {
 	if (value == RawInput::SOURCE::MOUSE) return RawInput::sourceMouse;
 	if (value == RawInput::SOURCE::KEYBOARD) return RawInput::sourceKeyboard;
 	if (value == RawInput::SOURCE::JOYSTICK) return RawInput::sourceJoystick;
+	if (value == RawInput::SOURCE::UNDEFINED) return RawInput::undefined;
 }
 
 template<>
@@ -149,10 +151,12 @@ const char *RawInput::toString<RawInput::TYPE>(const RawInput::TYPE value) {
 	if (value == RawInput::TYPE::DOWN) return RawInput::typeDown;
 	if (value == RawInput::TYPE::RANGE) return RawInput::typeRange;
 	if (value == RawInput::TYPE::MOVE) return RawInput::typeMove;
+	if (value == RawInput::TYPE::UNDEFINED) return RawInput::undefined;
 }
 
 template<>
 const char* RawInput::toString<RawInput::KEY>(const RawInput::KEY value) {
+	if (value == RawInput::KEY::UNDEFINED) return RawInput::undefined;
 	return "to be implemented";
 }
 
@@ -161,7 +165,7 @@ RawInput::SOURCE RawInput::fromString<RawInput::SOURCE>(const char *value) {
 	if (strcmp(value, sourceMouse) == 0) return RawInput::SOURCE::MOUSE;
 	if (strcmp(value, sourceKeyboard) == 0) return RawInput::SOURCE::KEYBOARD;
 	if (strcmp(value, sourceJoystick) == 0) return RawInput::SOURCE::JOYSTICK;
-	assert(false);
+	return RawInput::SOURCE::UNDEFINED;
 }
 
 template<>
@@ -171,7 +175,7 @@ RawInput::TYPE RawInput::fromString<RawInput::TYPE>(const char *value) {
 	if (strcmp(value, typeDown) == 0) return RawInput::TYPE::DOWN;
 	if (strcmp(value, typeRange) == 0) return RawInput::TYPE::RANGE;
 	if (strcmp(value, typeMove) == 0) return RawInput::TYPE::MOVE;
-	assert(false);
+	return RawInput::TYPE::UNDEFINED;
 }
 
 template<>
@@ -298,7 +302,7 @@ RawInput::KEY RawInput::fromString<RawInput::KEY>(const char *value) {
 	if (strcmp(value, keyRightAlt) == 0) return RawInput::KEY::RIGHT_ALT;
 	if (strcmp(value, keyRightSuper) == 0) return RawInput::KEY::RIGHT_SUPER;
 	if (strcmp(value, keyMenu) == 0) return RawInput::KEY::MENU;
-	assert(false);
+	return RawInput::KEY::UNDEFINED;
 }
 
 RawInput::SOURCE InputMatch::getSource() const {

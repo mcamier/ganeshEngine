@@ -180,6 +180,8 @@ enum class CHORD_SIZE : int {
 
 class RawInput {
 private:
+	const static char *undefined;
+
 	const static char *sourceMouse;
 	const static char *sourceKeyboard;
 	const static char *sourceJoystick;
@@ -321,7 +323,8 @@ public:
 	enum class SOURCE {
 		MOUSE,
 		KEYBOARD,
-		JOYSTICK
+		JOYSTICK,
+		UNDEFINED
 	};
 
 	/**
@@ -338,7 +341,8 @@ public:
 		DOWN,
 		RELEASE,
 		RANGE,
-		MOVE
+		MOVE,
+		UNDEFINED
 	};
 
 	/**
@@ -468,7 +472,8 @@ public:
 		RIGHT_CONTROL = GH_BUTTON_KEY_RIGHT_CONTROL,
 		RIGHT_ALT = GH_BUTTON_KEY_RIGHT_ALT,
 		RIGHT_SUPER = GH_BUTTON_KEY_RIGHT_SUPER,
-		MENU = GH_BUTTON_KEY_MENU
+		MENU = GH_BUTTON_KEY_MENU,
+		UNDEFINED = 9999
 	};
 
 	/**
@@ -563,12 +568,13 @@ typedef struct rawInput_s {
  */
 class InputMatch {
 private:
-	RawInput::SOURCE m_source;
-	RawInput::TYPE m_type;
-	RawInput::KEY m_key;
-	U32 m_callbackNameHash;
+	RawInput::SOURCE m_source {RawInput::SOURCE::UNDEFINED};
+	RawInput::TYPE m_type {RawInput::TYPE::UNDEFINED};
+	RawInput::KEY m_key {RawInput::KEY::UNDEFINED};
+	U32 m_callbackNameHash {0};
 
 public:
+	InputMatch() {}
 	InputMatch(RawInput::SOURCE source, RawInput::TYPE type, RawInput::KEY key, U32 callbackHash) :
 			m_source(source), m_type(type), m_key(key), m_callbackNameHash(callbackHash) {}
 
@@ -584,19 +590,29 @@ public:
 class Chord {
 public:
 	CHORD_SIZE size;
-	InputMatch* _1{nullptr};
-	InputMatch* _2{nullptr};
-	InputMatch* _3{nullptr};
-	U32 callbackNameHash;
+	InputMatch _1;
+	InputMatch _2;
+	InputMatch _3;
+	U32 m_callbackNameHash;
+
+	Chord(U32 callbackNameHash, InputMatch i1, InputMatch i2) :
+			size(CHORD_SIZE::_2),
+			_1(i1), _2(i2),
+			m_callbackNameHash(callbackNameHash) {}
+
+	Chord(U32 callbackNameHash, InputMatch i1, InputMatch i2, InputMatch i3) :
+			size(CHORD_SIZE::_3),
+			_1(i1), _2(i2), _3(i3),
+			m_callbackNameHash(callbackNameHash) {}
 
     bool containsRawInput(RawInput::SOURCE source, RawInput::TYPE type ,RawInput::KEY key) {
-        if(_1 != nullptr && _2 != nullptr && _3 != nullptr) {
-            return ((_1->getSource() == source && _1->getType() == type && _1->getKey() == key) ||
-                    (_2->getSource() == source && _2->getType() == type && _2->getKey() == key) ||
-                    (_3->getSource() == source && _3->getType() == type && _3->getKey() == key));
-        } else if(_1 != nullptr && _2 != nullptr) {
-            return ((_1->getSource() == source && _1->getType() == type && _1->getKey() == key) ||
-                    (_2->getSource() == source && _2->getType() == type && _2->getKey() == key));
+        if(size == CHORD_SIZE::_3) {
+            return ((_1.getSource() == source && _1.getType() == type && _1.getKey() == key) ||
+                    (_2.getSource() == source && _2.getType() == type && _2.getKey() == key) ||
+                    (_3.getSource() == source && _3.getType() == type && _3.getKey() == key));
+        } else if(size == CHORD_SIZE::_2) {
+            return ((_1.getSource() == source && _1.getType() == type && _1.getKey() == key) ||
+                    (_2.getSource() == source && _2.getType() == type && _2.getKey() == key));
         }
         return false;
     }
