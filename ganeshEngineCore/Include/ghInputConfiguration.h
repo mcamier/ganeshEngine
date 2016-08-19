@@ -23,7 +23,7 @@ namespace ganeshEngine {
         /**
          * maximum amount of time inputs can be held in order to detects chords
          */
-        int m_chordThresholdDetectionMs = -1;
+        int m_chordThresholdDetectionUs = -1;
 
         /**
          */
@@ -40,7 +40,7 @@ namespace ganeshEngine {
          * @return amount of time in millisecond
          */
         int getChordThresholdDetectionMs() const {
-            return m_chordThresholdDetectionMs;
+            return m_chordThresholdDetectionUs;
         }
 
         vector<unique_ptr<InputContext>> &getInputContexts() {
@@ -94,13 +94,13 @@ namespace ganeshEngine {
                 return;
             };
 
-            if (node.HasMember("threshold_detection_ms")) {
-                if (!node["threshold_detection_ms"].IsInt()) {
-                    _WARNING("load input configuration : threshold_detection_ms must be an int", LOG_CHANNEL::INPUT);
+            if (node.HasMember("threshold_detection_us")) {
+                if (!node["threshold_detection_us"].IsInt()) {
+                    _WARNING("load input configuration : threshold_detection_us must be an int", LOG_CHANNEL::INPUT);
                     return;
                 };
-                conf->m_chordThresholdDetectionMs = node["threshold_detection_ms"].GetInt();
-                _DEBUG("threshold_detection_ms : " << conf->m_chordThresholdDetectionMs, LOG_CHANNEL::INPUT);
+                conf->m_chordThresholdDetectionUs = node["threshold_detection_us"].GetInt();
+                _DEBUG("threshold_detection_us : " << conf->m_chordThresholdDetectionUs, LOG_CHANNEL::INPUT);
             }
 
         }

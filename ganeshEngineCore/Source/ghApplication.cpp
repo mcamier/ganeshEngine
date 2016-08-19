@@ -43,7 +43,7 @@ namespace ganeshEngine {
             accumulator += elapsedLastFrame.count();
 
             while (accumulator >= dt) {
-                PROFILE("input", gInput().update());
+                PROFILE("input", gInput().update(dt));
                 PROFILE("simulation", gSimulation().tick(dt));
                 PROFILE("event", gEvent().update());
 

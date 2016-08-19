@@ -1,6 +1,6 @@
 {
   "chord": {
-    "threshold_detection_ms": 16
+    "threshold_detection_us": 100000000
   },
   "contexts": [
     {

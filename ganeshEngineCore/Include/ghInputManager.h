@@ -67,6 +67,11 @@ private:
 	 */
 	array<unique_ptr<Joystick>, GH_MAX_JOYSTICK> m_joystick;
 
+	/**
+	 *
+	 */
+	U32 m_rawInputLifetimeChordDetection = 0;
+
 protected:
 	void vInitialize() override;
 	void vDestroy() override;
@@ -97,9 +102,11 @@ public:
 	/**
 	 *
 	 */
-	void update();
+	void update(U32 frameDuration);
 
 private:
+	void triggerPlainInputAction(rawInput ri);
+
 	void onJoystickStateChange(Event* event);
 
 	void updateJoystick(int index);
