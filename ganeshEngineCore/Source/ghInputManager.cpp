@@ -123,7 +123,7 @@ void InputManager::vInitialize() {
 			GH_HASH("__GH_INPUT_EXIT_GAME"));
 	inputContext->registerMatch(unique_ptr<InputMatch>(inputMatch));
 
-	this->registerInputCallback(GH_HASH("__GH_INPUT_EXIT_GAME"), []() {
+	this->registerInputCallback(GH_HASH("__GH_INPUT_EXIT_GAME"), [](rawInput ri, U32 deltaTime) {
 		gApp().shutdown();
 	});
 
@@ -150,7 +150,9 @@ void InputManager::vInitialize() {
 
 	for (int i = 0; i <= GH_MAX_JOYSTICK; i++) {
 		if (GLFW_TRUE == glfwJoystickPresent(i)) {
-			m_joystick[i].reset(new Joystick());
+			m_joystick[i] = new Joystick(i);
+		}else {
+			m_joystick[i] = nullptr;
 		}
 	}
 
@@ -158,6 +160,11 @@ void InputManager::vInitialize() {
 }
 
 void InputManager::vDestroy() {
+	for (int i = 0; i <= GH_MAX_JOYSTICK; i++) {
+		if (m_joystick[i] != nullptr) {
+			delete(m_joystick[i]);
+		}
+	}
 	_DEBUG("InputManager destroyed", LOG_CHANNEL::INPUT);
 }
 
@@ -179,11 +186,11 @@ void InputManager::registerInputContext(unique_ptr<InputContext> inputContext) {
 	m_inputContexts.insert(make_pair(inputContext->getId(), move(inputContext)));
 }
 
-void InputManager::registerInputCallback(U32 callbackHash, function<void(void)> callback) {
+void InputManager::registerInputCallback(U32 callbackHash, InputCallbackType callback) {
 	m_inputCallbacks.insert(make_pair(callbackHash, callback));
 }
 
-void InputManager::update(U32 frameDuration) {
+void InputManager::update(U32 deltaTime) {
 	/**
 	 * Detection of held key, I dont rely on GLFW action repeat because
 	 * of the delay between press and the firist triggered hold input
@@ -193,7 +200,9 @@ void InputManager::update(U32 frameDuration) {
 
 	glfwPollEvents();
 	for (int i = 0; i <= GH_MAX_JOYSTICK; i++) {
-		updateJoystick(i);
+		if (m_joystick[i] != nullptr) {
+			m_joystick[i]->update();
+		}
 	}
 
 
@@ -225,7 +234,7 @@ void InputManager::update(U32 frameDuration) {
             /**
              * trigger regular action for this input
              */
-			triggerPlainInputAction(input);
+			triggerPlainInputAction(input, deltaTime);
         }
         m_frameRawInputs.pop();
     }
@@ -277,9 +286,9 @@ void InputManager::update(U32 frameDuration) {
      * apply lifetime on remaining input and remove the too old ones
      */
     for(auto itr = m_postponedRawInputs.begin() ; itr!= m_postponedRawInputs.end() ; ) {
-        (*itr).chordDetectionLifetimeMs -= frameDuration;
+        (*itr).chordDetectionLifetimeMs -= deltaTime;
         if((*itr).chordDetectionLifetimeMs<=0){
-			triggerPlainInputAction((*itr));
+			triggerPlainInputAction((*itr), deltaTime);
 			m_postponedRawInputs.erase(itr);
             _DEBUG("INPUT FOR CHORD DETECTION LIFETIME OVER", LOG_CHANNEL::INPUT);
         }else{
@@ -288,7 +297,7 @@ void InputManager::update(U32 frameDuration) {
     }
 }
 
-void InputManager::triggerPlainInputAction(rawInput ri) {
+void InputManager::triggerPlainInputAction(rawInput ri, U32 deltaTime) {
 	for (auto const &entry : m_inputContexts) {
 		InputContext &context = (*entry.second);
 		if (context.isActive()) {
@@ -297,7 +306,7 @@ void InputManager::triggerPlainInputAction(rawInput ri) {
 				auto iter = m_inputCallbacks.find(callbackId);
 				if (iter != m_inputCallbacks.end()) {
 					_DEBUG("INPUT MATCH TRIGERRED BY " << RawInput::toString(ri.source) << ", " << RawInput::toString(ri.type), LOG_CHANNEL::INPUT);
-					iter->second();
+					iter->second(ri, deltaTime);
 				} else {
 					_WARNING("Input detected but no callback to call", LOG_CHANNEL::INPUT);
 				}
@@ -313,17 +322,12 @@ void InputManager::onJoystickStateChange(Event *event) {
 	} else {
 		if (jsce->getJoystickState() == GLFW_CONNECTED) {
 			_DEBUG("Joystick [" << jsce->getJoystickIndex() << "] connected", LOG_CHANNEL::INPUT);
-			m_joystick[jsce->getJoystickIndex()].reset(new Joystick());
+			m_joystick[jsce->getJoystickIndex()] = new Joystick(jsce->getJoystickIndex());
 		} else if (jsce->getJoystickState() == GLFW_DISCONNECTED) {
 			_DEBUG("Joystick [" << jsce->getJoystickIndex() << "] disconnected", LOG_CHANNEL::INPUT);
-			m_joystick[jsce->getJoystickIndex()].reset(nullptr);
+			delete(m_joystick[jsce->getJoystickIndex()]);
+			m_joystick[jsce->getJoystickIndex()] = nullptr;
 		}
-	}
-}
-
-void InputManager::updateJoystick(int index) {
-	if (m_joystick[index] != nullptr) {
-		// read joystick state
 	}
 }
 

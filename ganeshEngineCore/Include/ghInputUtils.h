@@ -3,6 +3,7 @@
 
 #include "ghHeaders.h"
 #include <vector>
+#include <cstring>
 #include <functional>
 #include <GLFW/glfw3.h>
 
@@ -161,12 +162,33 @@ namespace ganeshEngine {
 
 using namespace std;
 
+/**
+ *
+ */
 class Joystick {
 private:
-	// TODO handle buttons states
+	int m_index;
+	int axeCount;
+	int buttonCount;
+
+	const unsigned char* axes;
+	const float* buttons;
+	float* previousButtons;
+
 public:
-	Joystick() {}
-	virtual ~Joystick() {}
+	Joystick(int index) : m_index(index) {
+		glfwGetJoystickAxes(index, &buttonCount);
+		previousButtons = static_cast<float*>(malloc(buttonCount * sizeof(float)));
+	}
+	virtual ~Joystick() {
+		free(previousButtons);
+	}
+
+	void update() {
+		std::memcpy(previousButtons, buttons, sizeof previousButtons);
+		axes = glfwGetJoystickButtons(m_index, &axeCount);
+		buttons = glfwGetJoystickAxes(m_index, &buttonCount);
+	}
 };
 
 /**
@@ -655,6 +677,8 @@ public:
         return -1;
     }
 };
+
+using InputCallbackType = function<void(rawInput ri, U32 frameDuration)>;
 
 }
 

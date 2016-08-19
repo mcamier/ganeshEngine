@@ -12,6 +12,7 @@ namespace ganeshEngine {
 
 using namespace std;
 
+
 class InputManager : public System<InputManager> {
 	friend class System<InputManager>;
 
@@ -33,7 +34,7 @@ private:
 	 * the key is the hash of the actual name of the input action, the value is
 	 * function called when input action is triggered
 	 */
-	map<U32, function<void(void) >> m_inputCallbacks;
+	map<U32, InputCallbackType> m_inputCallbacks;
 
     /**
      * Contains all inputs read from the system during the actual frame
@@ -65,7 +66,7 @@ private:
 	/**
 	 * Joystick object responsible of storing the joystick's state
 	 */
-	array<unique_ptr<Joystick>, GH_MAX_JOYSTICK> m_joystick;
+	array<Joystick*, GH_MAX_JOYSTICK> m_joystick;
 
 	/**
 	 *
@@ -97,7 +98,7 @@ public:
 
 	/**
 	 */
-	void registerInputCallback(U32 callbackHash, function<void(void)> callback);
+	void registerInputCallback(U32 callbackHash, InputCallbackType callback);
 
 	/**
 	 *
@@ -105,11 +106,9 @@ public:
 	void update(U32 frameDuration);
 
 private:
-	void triggerPlainInputAction(rawInput ri);
+	void triggerPlainInputAction(rawInput ri, U32 deltaTime);
 
 	void onJoystickStateChange(Event* event);
-
-	void updateJoystick(int index);
 
 	void setKeyboardState(int key, RawInput::TYPE type);
 
