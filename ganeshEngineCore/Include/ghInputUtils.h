@@ -595,6 +595,7 @@ public:
 	InputMatch _3;
 	U32 m_callbackNameHash;
 
+public:
 	Chord(U32 callbackNameHash, InputMatch i1, InputMatch i2) :
 			size(CHORD_SIZE::_2),
 			_1(i1), _2(i2),
@@ -605,7 +606,7 @@ public:
 			_1(i1), _2(i2), _3(i3),
 			m_callbackNameHash(callbackNameHash) {}
 
-    bool containsRawInput(RawInput::SOURCE source, RawInput::TYPE type ,RawInput::KEY key) {
+    bool containsRawInput(RawInput::SOURCE source, RawInput::TYPE type ,RawInput::KEY key) const {
         if(size == CHORD_SIZE::_3) {
             return ((_1.getSource() == source && _1.getType() == type && _1.getKey() == key) ||
                     (_2.getSource() == source && _2.getType() == type && _2.getKey() == key) ||
@@ -616,8 +617,44 @@ public:
         }
         return false;
     }
-};
 
+    int findFirstInputFrom(vector<rawInput> &listInputs) const {
+        for(int i = 0 ; i<listInputs.size() ; ++i) {
+            auto const& ri = listInputs[i];
+            if(this->_1.getSource() == ri.source &&
+               this->_1.getType() == ri.type &&
+               this->_1.getKey() == ((RawInput::KEY)ri.data.button.key)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int findSecondInputFrom(vector<rawInput> &listInputs) const {
+        for(int i = 0 ; i<listInputs.size() ; ++i) {
+            auto const& ri = listInputs[i];
+            if(this->_2.getSource() == ri.source &&
+               this->_2.getType() == ri.type &&
+               this->_2.getKey() == ((RawInput::KEY)ri.data.button.key)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int findThirdInputFrom(vector<rawInput> &listInputs) const {
+        if(size != CHORD_SIZE::_3) return -1;
+        for(int i = 0 ; i<listInputs.size() ; ++i) {
+            auto const& ri = listInputs[i];
+            if(this->_3.getSource() == ri.source &&
+               this->_3.getType() == ri.type &&
+               this->_3.getKey() == ((RawInput::KEY)ri.data.button.key)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+};
 
 }
 

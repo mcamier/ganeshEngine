@@ -2,6 +2,7 @@
 #include "ghApplication.h"
 #include "ghPlatform.h"
 
+#include <algorithm>
 #include <GLFW/glfw3.h>
 
 namespace ganeshEngine {
@@ -34,7 +35,7 @@ void InputManager::vInitialize() {
 			case GLFW_PRESS: {
 				input.type = RawInput::TYPE::PRESS;
 				mgr->setKeyboardState(key, RawInput::TYPE::PRESS);
-				mgr->m_frameRawInputs.push_back(input);
+				mgr->m_frameRawInputs.push(input);
 				_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
 					   LOG_CHANNEL::INPUT);
 				break;
@@ -42,7 +43,7 @@ void InputManager::vInitialize() {
 			case GLFW_RELEASE: {
 				input.type = RawInput::TYPE::RELEASE;
 				mgr->setKeyboardState(key, RawInput::TYPE::RELEASE);
-				mgr->m_frameRawInputs.push_back(input);
+				mgr->m_frameRawInputs.push(input);
 				_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
 					   LOG_CHANNEL::INPUT);
 				break;
@@ -60,7 +61,7 @@ void InputManager::vInitialize() {
 		input.data.move.x = xpos;
 		input.data.move.y = ypos;
 
-		mgr->m_frameRawInputs.push_back(input);
+		mgr->m_frameRawInputs.push(input);
 	});
 
 	glfwSetMouseButtonCallback(gPlatform().getWindow(), [](GLFWwindow *window, int button, int action, int mods) {
@@ -77,14 +78,14 @@ void InputManager::vInitialize() {
 			case GLFW_PRESS:
 				input.type = RawInput::TYPE::PRESS;
 				mgr->setMouseState(button, RawInput::TYPE::PRESS);
-				mgr->m_frameRawInputs.push_back(input);
+				mgr->m_frameRawInputs.push(input);
 				_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
 					   LOG_CHANNEL::INPUT);
 				break;
 			case GLFW_RELEASE:
 				input.type = RawInput::TYPE::RELEASE;
 				mgr->setMouseState(button, RawInput::TYPE::RELEASE);
-				mgr->m_frameRawInputs.push_back(input);
+				mgr->m_frameRawInputs.push(input);
 				_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
 					   LOG_CHANNEL::INPUT);
 				break;
@@ -101,7 +102,7 @@ void InputManager::vInitialize() {
 		input.data.range.x = offsetX;
 		input.data.range.y = offsetY;
 		input.data.range.z = 0;
-		mgr->m_frameRawInputs.push_back(input);
+		mgr->m_frameRawInputs.push(input);
 		_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
 			   LOG_CHANNEL::INPUT);
 	});
@@ -139,7 +140,6 @@ void InputManager::vInitialize() {
 	}
 
 	m_config.reset(nullptr); // free memory
-	m_frameRawInputs.clear();
 
 	gEvent().addListener<InputManager>(GH_HASH("__GH_EVENT_JOYSTICK_STATE_CHANGE"), this, &InputManager::onJoystickStateChange);
 
@@ -190,48 +190,110 @@ void InputManager::update() {
 	for (int i = 0; i <= GH_MAX_JOYSTICK; i++) {
 		updateJoystick(i);
 	}
-	
-	detectChords();
-	detectPlainInputs();
-	m_frameRawInputs.clear();
-}
 
-void InputManager::detectChords() {
-	for (rawInput &input : m_frameRawInputs) {
-		for (auto const &entry : m_inputContexts) {
-			InputContext &context = (*entry.second);
-			if (context.isActive()) {
-				for(auto cItr =  context.m_chords.begin() ; cItr != context.m_chords.end() ; ++cItr) {
-					Chord c = (*cItr);
-					if(c.containsRawInput(input.source, input.type, (RawInput::KEY)input.data.button.key)) {
-						m_postponedRawInputs.push_back(input);
-						//_DEBUG("INPUT POSTPONED " << RawInput::toString(ri.source) << ", " << RawInput::toString(ri.type), LOG_CHANNEL::INPUT);
-						_DEBUG("INPUT POSTPONED " , LOG_CHANNEL::INPUT);
-					}
-				}
-			}
-		}
-	}
-}
 
-void InputManager::detectPlainInputs() {
-	for (rawInput &input : m_frameRawInputs) {
-		for (auto const &entry : m_inputContexts) {
-			InputContext &context = (*entry.second);
-			if (context.isActive()) {
-				U32 callbackId;
-				if (context.getInputMatch(input, &callbackId)) {
-					auto iter = m_inputCallbacks.find(callbackId);
-					if (iter != m_inputCallbacks.end()) {
-						_DEBUG("INPUT MATCH TRIGERRED BY " << RawInput::toString(input.source) << ", " << RawInput::toString(input.type), LOG_CHANNEL::INPUT);
-						iter->second();
-					} else {
-						_WARNING("Input detected but no callback to call", LOG_CHANNEL::INPUT);
-					}
-				}
-			}
-		}
-	}
+    bool inputFoundInChord = false;
+    while(!m_frameRawInputs.empty()) {
+        auto input = m_frameRawInputs.front();
+        inputFoundInChord = false;
+
+        /**
+         * check if input exist in any chord in any active context
+         */
+        for (auto const &entry : m_inputContexts) {
+            InputContext &context = (*entry.second);
+            if (context.isActive()) {
+                for (auto const &chord : context.m_chords) {
+                    if (chord.containsRawInput(input.source, input.type, (RawInput::KEY)input.data.button.key)) {
+                        inputFoundInChord=true;
+                    }
+                }
+            }
+        }
+        if(inputFoundInChord){
+            /**
+             * if input could potentially triggers a chord, it s postponed in another container and remove from the input queue
+             */
+            m_postponedRawInputs.push_back(input);
+            _DEBUG("INPUT POSTPONED : " << RawInput::toString(input.source) << ", " << RawInput::toString(input.type), LOG_CHANNEL::INPUT);
+        }else {
+            /**
+             * trigger regular action for this input
+             */
+            for (auto const &entry : m_inputContexts) {
+                InputContext &context = (*entry.second);
+                if (context.isActive()) {
+                    U32 callbackId;
+                    if (context.getInputMatch(input, &callbackId)) {
+                        auto iter = m_inputCallbacks.find(callbackId);
+                        if (iter != m_inputCallbacks.end()) {
+                            _DEBUG("INPUT MATCH TRIGERRED BY " << RawInput::toString(input.source) << ", " << RawInput::toString(input.type), LOG_CHANNEL::INPUT);
+                            iter->second();
+                        } else {
+                            _WARNING("Input detected but no callback to call", LOG_CHANNEL::INPUT);
+                        }
+                    }
+                }
+            }
+        }
+        m_frameRawInputs.pop();
+    }
+
+    /**
+     * Update and detects chords
+     * btw it's quite ugly
+     */
+    for (auto const &entry : m_inputContexts) {
+        InputContext &context = (*entry.second);
+        if (context.isActive() && !m_postponedRawInputs.empty()) {
+            for (auto const &chord : context.m_chords) {
+                if (chord.size == CHORD_SIZE::_2) {
+                    int a = chord.findFirstInputFrom(m_postponedRawInputs);
+                    int b = chord.findSecondInputFrom(m_postponedRawInputs);
+                    if(a>=0 && b>=0) {
+                        _DEBUG("CHORD DETECTED", LOG_CHANNEL::INPUT);
+                        if(a>b) {
+                            m_postponedRawInputs.erase(m_postponedRawInputs.begin()+a);
+                            m_postponedRawInputs.erase(m_postponedRawInputs.begin()+b);
+                        }else{
+                            m_postponedRawInputs.erase(m_postponedRawInputs.begin()+b);
+                            m_postponedRawInputs.erase(m_postponedRawInputs.begin()+a);
+                        }
+                    }
+                } else if (chord.size == CHORD_SIZE::_3) {
+                    int a = chord.findFirstInputFrom(m_postponedRawInputs);
+                    int b = chord.findSecondInputFrom(m_postponedRawInputs);
+                    int c = chord.findThirdInputFrom(m_postponedRawInputs);
+                    if(a>=0 && b>=0 && c>=0){
+                        _DEBUG("CHORD DETECTED", LOG_CHANNEL::INPUT);
+                        m_postponedRawInputs.erase(m_postponedRawInputs.begin()+a);
+                        m_postponedRawInputs.erase(m_postponedRawInputs.begin()+b);
+                        m_postponedRawInputs.erase(m_postponedRawInputs.begin()+c);
+                        vector<int> pouet = vector<int>(3);
+                        pouet.push_back(a);pouet.push_back(b);pouet.push_back(c);
+                        std::sort(pouet.begin(), pouet.end());
+                        for(auto itr = pouet.rbegin() ; itr!= pouet.rend() ; ++itr) {
+                            int t = (*itr);
+                            m_postponedRawInputs.erase(m_postponedRawInputs.begin()+t);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * apply lifetime on remaining input and remove the too old ones
+     */
+    for(auto itr = m_postponedRawInputs.begin() ; itr!= m_postponedRawInputs.end() ; ) {
+        (*itr).chordDetectionLifetimeMs -= 1000; //TODO sustract the update delta time
+        if((*itr).chordDetectionLifetimeMs<=0){
+            m_postponedRawInputs.erase(itr);
+            _DEBUG("INPUT FOR CHORD DETECTED LIFETIME OVER", LOG_CHANNEL::INPUT);
+        }else{
+            ++itr;
+        }
+    }
 }
 
 void InputManager::onJoystickStateChange(Event *event) {

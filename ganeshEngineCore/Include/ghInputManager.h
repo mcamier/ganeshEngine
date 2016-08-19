@@ -39,7 +39,7 @@ private:
      * Contains all inputs read from the system during the actual frame
      * this vector is cleared atthje end of each frames
      */
-    vector<rawInput> m_frameRawInputs;
+    queue<rawInput> m_frameRawInputs;
 
     /**
 	 * Contains postponed input that belongs to a chord
@@ -100,10 +100,6 @@ public:
 	void update();
 
 private:
-	void detectChords();
-
-	void detectPlainInputs();
-
 	void onJoystickStateChange(Event* event);
 
 	void updateJoystick(int index);
