@@ -1,0 +1,16 @@
+{
+  "resourceLocationType": "folder",
+  "resourcesLocation": "C:/Users/mickael.camier/workspace/ganeshEngine/ganeshEngineDemo/Resources/",
+  "resources": [
+    {
+      "name": "defaultFragmentShader",
+      "importer": "shader",
+      "filename": "fDefault.glsl"
+    },
+    {
+      "name": "defaultVertexShader",
+      "importer": "shader",
+      "filename": "vDefault.glsl"
+    }
+  ]
+}

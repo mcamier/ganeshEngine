@@ -3,7 +3,12 @@
 namespace ganeshEngine {
 
     void ResourceManager::vInitialize() {
-        //m_resourcesMap.insert(pair<U32, shared_ptr<IResource>>(1, r));
+        if(m_configuration) {
+            this->m_resourceLocationType = m_configuration->getResourceLocationType();
+            this->m_resourceLocation = m_configuration->getResourceLocation();
+
+            m_configuration.release();
+        }
     }
 
     void ResourceManager::vDestroy() {

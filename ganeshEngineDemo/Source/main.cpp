@@ -9,6 +9,8 @@
 #include "ghPlatform.h"
 #include "ghHeaders.h"
 #include "ghEvent.h"
+#include "ghResource.h"
+#include "ghConfiguration.h"
 
 #include "ghMath.h"
 #include <glm/glm.hpp>
@@ -176,30 +178,14 @@ public:
  * 
  */
 int main() {
-    LoggerManager::Initialize();
-    kzGameplay gameplay;
-    for (auto &i : allItems) {
-        if (i.m_type == kzItemType::BOSS_ITEM) {
-            gameplay.bossItemPool.push_back(i);
-        } else if (i.m_type == kzItemType::REGULAR_ITEM) {
-            gameplay.regularItemPool.push_back(i);
-        }
-    }
-    _DEBUG("test "<<gameplay.regularItemPool.size(), LOG_CHANNEL::DEFAULT);
-
     LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT;
-    gLogger().addLogger(new ConsoleLogger(LOG_LEVEL::DEBUG, LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT));
-    gLogger().addLogger(new FileLogger(LOG_LEVEL::DEBUG, channels,
-                                       "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/log"));
+    Configuration conf;
+    conf.inputConfigurationFilename = "C:/Users/mickael.camier/workspace/ganeshEngine/ganeshEngineDemo/Resources/inputConfiguration.json";
+    conf.resourceConfigurationFilename = "C:/Users/mickael.camier/workspace/ganeshEngine/ganeshEngineDemo/Resources/resourceConfiguration.json";
+    conf.loggers.push_back(new ConsoleLogger(LOG_LEVEL::DEBUG, channels));
+    conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mickael.camier/workspace/ganeshEngine/ganeshEngineDemo/Resources/log"));
 
-    EventManager::Initialize();
-    Platform::Initialize();
-
-    auto ic = InputManagerConfiguration::loadFromFile(
-            string("C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/inputConfiguration.json"));
-    InputManager::Initialize(move(ic));
-
-    Application::Initialize();
+    Application::Initialize(conf);
     /** After application initialization all singletons used by the engine
      *  are created and initialized, so all engine's customization, plugins
      *  addition should take place here, before the start of the main loop

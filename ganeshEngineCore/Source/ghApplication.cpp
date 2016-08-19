@@ -64,15 +64,19 @@ namespace ganeshEngine {
 
     void Application::vInitialize() {
         LoggerManager::Initialize();
+        for(int i = 0 ; i<m_configuration.loggers.size() ; i++) {
+            gLogger().addLogger(m_configuration.loggers[i]);
+        }
         EventManager::Initialize();
         Platform::Initialize();
-        ResourceManager::Initialize();
+        auto rc = ResourceConfiguration::loadFromFile(m_configuration.resourceConfigurationFilename);
+        ResourceManager::Initialize(move(rc));
         ProfilerManager::Initialize();
-        InputManager::Initialize();
+
+        auto ic = InputManagerConfiguration::loadFromFile(m_configuration.inputConfigurationFilename);
+        InputManager::Initialize(move(ic));
         RendererManager::Initialize();
         Simulation::Initialize();
-
-        auto test = gResource().getResource<Dummy>(1);
 
         program = GLProgram::create(ShaderType::VERTEX,
                                     "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl",
