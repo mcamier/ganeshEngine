@@ -134,7 +134,7 @@ void InputManager::vInitialize() {
 	 * Read and configuration from conf object
 	 */
 	if (m_config != nullptr) {
-		m_rawInputLifetimeChordDetection = m_config->getChordThresholdDetectionMs();
+		//m_rawInputLifetimeChordDetection = m_config->getChordThresholdDetectionUs();
 		vector<unique_ptr<InputContext>> &ictxs = m_config->getInputContexts();
 		for (int i = 0; i < ictxs.size(); i++) {
 			unique_ptr<InputContext> ptr{move(ictxs[i])};
@@ -286,8 +286,9 @@ void InputManager::update(U32 deltaTime) {
      * apply lifetime on remaining input and remove the too old ones
      */
     for(auto itr = m_postponedRawInputs.begin() ; itr!= m_postponedRawInputs.end() ; ) {
+		//TODO BUG HERE
         (*itr).chordDetectionLifetimeMs -= deltaTime;
-        if((*itr).chordDetectionLifetimeMs<=0){
+        if((*itr).chordDetectionLifetimeMs <= 0){
 			triggerPlainInputAction((*itr), deltaTime);
 			m_postponedRawInputs.erase(itr);
             _DEBUG("INPUT FOR CHORD DETECTION LIFETIME OVER", LOG_CHANNEL::INPUT);

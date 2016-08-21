@@ -1,148 +1,160 @@
 #include "ghHeaders.h"
 #include "ghSystem.h"
-
-
-#include "rapidjson/rapidjson.h"
-#include "rapidjson/document.h"
-#include "rapidjson/filereadstream.h"
-#include <cstdio>
+#include "ghResourceConfiguration.h"
+#include "ghResourceImporter.h"
 
 namespace ganeshEngine {
 
 using namespace std;
-using namespace rapidjson;
+
+
+/**
+ * Base class for resource's handler for polymorphism purpose
+ */
+class IResourceHandler {
+public:
+    virtual ~IResourceHandler() {}
+};
+
+
+/**
+ * Resource hold in memory a unique pointer on the resource data
+ */
+template<typename T>
+class ResourceHandler : public IResourceHandler {
+private:
+    T* m_object;
+
+public:
+    ResourceHandler(T* object) : m_object(object) {}
+
+    virtual ~ResourceHandler() {
+        free(m_object);
+    }
+
+    /**
+     * @note The result pointer must not be stored to be reused later
+     *
+     * @return pointer to resource raw data
+     */
+    const T* const getRaw() const {
+        return m_object;
+    }
+};
+
+
+using hIResource = shared_ptr<IResourceHandler>;
+
+template<typename T>
+using hResource = shared_ptr<ResourceHandler<T>>;
+
 
 /**
  *
  */
-class GameResource {
-public:
-	U32 m_resourceId;
-	bool m_bLoaded;
-	void* m_obj;
-};
+class Resource {
+friend class ResourceManager;
 
-enum class ResourceLocationType {
-	FOLDER,
-	ARCHIVE
-};
-
-/**
- *
- */
-class ResourceConfiguration {
-private:
-	ResourceLocationType m_resourceLocationType;
-	string m_resourcesLocation;
-	map<U32, GameResource> m_resources;
-
-	ResourceConfiguration() {}
-public:
-	virtual ~ResourceConfiguration() {}
-
-	static unique_ptr<ResourceConfiguration> loadFromFile(string configFilename) {
-		_DEBUG("Load Resource Configuration : " << configFilename, LOG_CHANNEL::INPUT);
-		ResourceConfiguration *conf = nullptr;
-		Document jsonConfig;
-		char readBuffer[65536];
-
-		FILE *fp = fopen(configFilename.c_str(), "rb");
-		FileReadStream is(fp, readBuffer, sizeof(readBuffer));
-		jsonConfig.ParseStream(is);
-
-		ResourceLocationType resourceLocationType;
-		string resourceLocation = "./";
-
-		const Value &a = jsonConfig;
-		if (!a.IsObject()) {
-			_WARNING("load resource configuration : Root element must be Object", LOG_CHANNEL::DEFAULT);
-			return nullptr;
-		}
-
-		if(a.HasMember("resourceLocationType") && a["resourceLocationType"].IsString()) {
-			string rlts = a["resourceLocationType"].GetString();
-			if(rlts.compare("FOLDER") == 0) {
-				resourceLocationType = ResourceLocationType::FOLDER;
-				_DEBUG("resourceLocationType = FOLDER", LOG_CHANNEL::DEFAULT);
-			} else if(rlts.compare("ARCHIVE") == 0) {
-				resourceLocationType = ResourceLocationType::ARCHIVE;
-				_DEBUG("resourceLocationType = ARCHIVE", LOG_CHANNEL::DEFAULT);
-			} else {
-				_WARNING("resourceLocationType ignored because of wrong value", LOG_CHANNEL::DEFAULT);
-			}
-		}
-
-		if(a.HasMember("resourcesLocation") && a["resourcesLocation"].IsString()) {
-			resourceLocation = a["resourcesLocation"].GetString();
-			_DEBUG("resourcesLocation = " << resourceLocation, LOG_CHANNEL::DEFAULT);
-		}
-
-		if(a.HasMember("resources") && a["resources"].IsArray()) {
-			readResources(a["resources"]);
-		}
-
-		return unique_ptr<ResourceConfiguration>(conf);
-	}
-
-	ResourceLocationType getResourceLocationType() const {
-		return m_resourceLocationType;
-	}
-
-	string getResourceLocation() const {
-		return m_resourcesLocation;
-	}
+protected:
+    U32 m_id;
+    string m_name;
+    string m_filename;
+    string m_importerName;
+    U32 m_importerHashId;
 
 private:
-	static void readResources(const Value &node) {
-		for (SizeType i = 0; i < node.Size(); i++) {
-			readResource(node[i]);
-		}
-	}
+    hIResource m_resourceHandler;
 
-	static void readResource(const Value &node) {
-		if(node.IsObject() && node.HasMember("name") && node.HasMember("importer") && node.HasMember("filename")) {
-			string name = node["name"].GetString();
-			string importer =node["importer"].GetString();
-			string filename = node["filename"].GetString();
-			_DEBUG("resources [" << name << "], importer [" << importer << "], filename [" << filename << "]", LOG_CHANNEL::DEFAULT);
-		}
-		else {
-			_WARNING("Ignored resource", LOG_CHANNEL::DEFAULT);
-		}
-	}
+public:
+    Resource(const string& name, const string& filename, const string& importerName) :
+            m_id(GH_HASH(name)),
+            m_name(name),
+            m_filename(filename),
+            m_importerName(importerName),
+            m_importerHashId(GH_HASH(importerName)) {}
+
+    Resource(const Resource &) = delete;
+    Resource &operator=(const Resource &) = delete;
+
+    const U32 getId() const { return m_id; }
+    const string& getName() const { return m_name; }
+    const string& getFilename() const { return m_filename; }
+    const string& getImporterName() const { return m_importerName; }
+    const U32 getImporterHashId() const { return m_importerHashId; }
+    const hIResource getResourceHandler() const { return m_resourceHandler; }
+
+    bool isLoaded() const { return (m_resourceHandler!=nullptr); }
 };
+
 
 /**
  *
  */
 class ResourceManager : public System<ResourceManager> {
-	friend class System<ResourceManager>;
+    friend class System<ResourceManager>;
 
 private:
-	/**
-	 * Configuration object, holding all informations used to initialization
-	 * the manager
-	 */
-	unique_ptr<ResourceConfiguration> m_configuration;
+    /**
+     * Configuration object, holding all informations used to initialization
+     * the manager
+     */
+    unique_ptr<ResourceConfiguration> m_configuration;
+    ResourceLocationType m_resourceLocationType;
+    string m_resourceLocation;
 
-	ResourceLocationType m_resourceLocationType;
+    map<U32, unique_ptr<Resource>> m_resources;
+    map<U32, IResourceLoader*> m_importers;
 
-	string m_resourceLocation;
-
-	map<U32, GameResource> m_resources;
-
-private:
-	ResourceManager() {}
-	ResourceManager(unique_ptr<ResourceConfiguration> conf) : m_configuration(move(conf)) {}
+    ResourceManager(unique_ptr<ResourceConfiguration> conf) : m_configuration(move(conf)) {}
 
 public:
-	ResourceManager(const ResourceManager &) = delete;
-	ResourceManager &operator=(const ResourceManager &) = delete;
-	virtual ~ResourceManager() {}
+    ResourceManager(const ResourceManager &) = delete;
+
+    ResourceManager &operator=(const ResourceManager &) = delete;
+
+    virtual ~ResourceManager() {}
+
+    template<typename T>
+    hResource<T> getResource(U32 resourceId) {
+        auto itr = m_resources.find(resourceId);
+        if(itr==m_resources.end()) {
+            return nullptr;
+        }
+        const auto& res = itr->second;
+        if(!res->isLoaded()) {
+            //load resource
+            load<T>(resourceId);
+            _DEBUG("Resource missing in memory, load it", LOG_CHANNEL::DEFAULT);
+        }
+        return dynamic_pointer_cast<ResourceHandler<T>>(res->getResourceHandler());
+    }
+
+    void addImporter(string importerName, IResourceLoader* loader) {
+        m_importers.insert(make_pair(GH_HASH(importerName), loader));
+    }
+
+    template<typename T>
+    void load(U32 resourceId) {
+        auto itrRes = m_resources.find(resourceId);
+        if(itrRes == m_resources.end()) {
+            _WARNING("Unable to load the resource with id : " << resourceId, LOG_CHANNEL::DEFAULT);
+            return;
+        }
+        auto& res = itrRes->second;
+
+        auto itrImporter = m_importers.find(res->getImporterHashId());
+        if(itrImporter == m_importers.end()) {
+            _WARNING("Unable to find importer with id : " << resourceId, LOG_CHANNEL::DEFAULT);
+            return;
+        }
+        T* data = reinterpret_cast<T*>((itrImporter->second)->load(res->getFilename()));
+        res->m_resourceHandler = make_shared<ResourceHandler<T>>(data);
+    }
 
 protected:
-	void vInitialize();
-	void vDestroy();
+    void vInitialize();
+
+    void vDestroy();
 };
 
 extern ResourceManager &(*gResource)();

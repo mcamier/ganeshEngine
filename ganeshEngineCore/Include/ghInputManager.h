@@ -71,14 +71,13 @@ private:
 	/**
 	 *
 	 */
-	U32 m_rawInputLifetimeChordDetection = 0;
+	U32 m_rawInputLifetimeChordDetection = 100000000;
 
 protected:
 	void vInitialize() override;
 	void vDestroy() override;
 
 public:
-	InputManager() : m_config(nullptr) {}
 	InputManager(unique_ptr<InputManagerConfiguration> config) : m_config(move(config)) {}
 	InputManager(const InputManager &) = delete;
 	InputManager &operator=(const InputManager &) = delete;

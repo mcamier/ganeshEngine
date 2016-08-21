@@ -9,6 +9,7 @@
 #include "ghInputManager.h"
 #include "ghLoggerManager.h"
 #include "ghResource.h"
+#include "ghResourceConfiguration.h"
 #include "ghGLRendererManager.h"
 #include "ghSkybox.h"
 
