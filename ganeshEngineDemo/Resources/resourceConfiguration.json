@@ -11,6 +11,11 @@
       "name": "defaultVertexShader",
       "importer": "shader",
       "filename": "vDefault.glsl"
+    },
+    {
+      "name": "foobar",
+      "importer": "meshObj",
+      "filename": "foobar.obj"
     }
   ]
 }

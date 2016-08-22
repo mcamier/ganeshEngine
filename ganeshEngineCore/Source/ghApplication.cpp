@@ -5,7 +5,6 @@
 
 #include "ghApplication.h"
 #include "ghProfilerManager.h"
-#include "ghSimulation.h"
 #include "ghInputManager.h"
 #include "ghLoggerManager.h"
 #include "ghResource.h"
@@ -45,10 +44,10 @@ namespace ganeshEngine {
 
             while (accumulator >= dt) {
                 PROFILE("input", gInput().update(dt));
-                PROFILE("simulation", gSimulation().tick(dt));
+                PROFILE("scene", mMainScene->update(dt));
                 PROFILE("event", gEvent().update());
 
-                obj->addY((F32) ((2.0f * cos(totalTime)) * 0.005f));
+
 
                 accumulator -= dt;
                 totalTime += dt;
@@ -57,7 +56,7 @@ namespace ganeshEngine {
              * TODO : use accumulator to lerp the rendering state
              */
             PROFILE("rendering", gRenderer().preRender());
-            PROFILE("rendering", gRenderer().render(mMainScene));
+            PROFILE("rendering", gRenderer().render(mMainScene.get()));
             PROFILE("rendering", gRenderer().postRender());
             gProfiler().update();
         }
@@ -68,61 +67,28 @@ namespace ganeshEngine {
         for(int i = 0 ; i<m_configuration.loggers.size() ; i++) {
             gLogger().addLogger(m_configuration.loggers[i]);
         }
+
         EventManager::Initialize();
+
         Platform::Initialize();
+
         auto rc = ResourceConfiguration::loadFromFile(m_configuration.resourceConfigurationFilename);
         ResourceManager::Initialize(move(rc));
+        //gResource().addImporter("PNG", new PngImporter());
+        //gResource().addImporter("MESH", new MeshObjImporter());
+
         ProfilerManager::Initialize();
 
         auto ic = InputManagerConfiguration::loadFromFile(m_configuration.inputConfigurationFilename);
         InputManager::Initialize(move(ic));
+
         RendererManager::Initialize();
-        Simulation::Initialize();
 
-        program = GLProgram::create(ShaderType::VERTEX,
-                                    "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl",
-                                    ShaderType::FRAGMENT,
-                                    "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
-        tex = new GLTexture();
-
-        unique_ptr<vector<Vertex>> vertices = make_unique<vector<Vertex >>();
-        vertices->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        vertices->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        vertices->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        mesh = new GLMesh(move(vertices), DrawMode::TRIANGLES);
-
-        unique_ptr<vector<Vertex>> vertices2 = make_unique<vector<Vertex >>();
-        vertices2->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        vertices2->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        vertices2->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        mesh2 = new GLMesh(move(vertices2), DrawMode::TRIANGLES);
-
-        model = new GLModel(&program, mesh, tex);
-        model->sendToGC();
-
-        model2 = new GLModel(&program, mesh2, tex);
-        model2->sendToGC();
-
-        Skybox *root = new Skybox();
-
-        obj = new Actor();
-        obj->setModel(model);
-
-        Actor *obj2 = new Actor();
-        obj2->setModel(model2);
-        obj2->setX(1.0f);
-
-        obj->appendChild(obj2);
-
-        Camera *cam = new Camera(4.0f / 3.0f, 80, 1, 100);
-        root->appendChild(cam);
-        root->appendChild(obj);
-        mMainScene.setRoot(root);
-        //mMainScene.setCamera(shared_ptr<Camera>(cam));
+		mMainScene = unique_ptr<Scene>(m_configuration.startScene);
+		mMainScene->vInitialize();
     }
 
     void Application::vDestroy() {
-        Simulation::Destroy();
         RendererManager::Destroy();
         InputManager::Destroy();
         ProfilerManager::Destroy();

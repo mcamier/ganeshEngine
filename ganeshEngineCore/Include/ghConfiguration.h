@@ -3,6 +3,7 @@
 
 #include "ghHeaders.h"
 #include "ghILogger.h"
+#include "ghScene.h"
 
 namespace ganeshEngine {
 
@@ -13,6 +14,7 @@ public:
 	string inputConfigurationFilename;
 	string resourceConfigurationFilename;
 	vector<ILogger*> loggers;
+	Scene* startScene;
 };
 
 }

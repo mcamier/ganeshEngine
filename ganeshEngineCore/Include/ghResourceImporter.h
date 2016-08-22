@@ -2,8 +2,15 @@
 #define GANESHENGINE_GHRESOURCEIMPORTER_H
 
 #include "ghHeaders.h"
+#include <fstream>
 
 namespace ganeshEngine {
+
+using namespace std;
+
+class MeshObj {
+
+};
 
 /**
  *
@@ -29,6 +36,51 @@ protected:
     }
 
     virtual T* specificLoad(string filename) = 0;
+};
+
+class mesh_v{
+public:
+	float x, y, z, w;
+};
+class mesh_vt{
+public:
+	float u, v, w;
+};
+class mesh_vn{
+public:
+	float i, j, k;
+};
+
+class ObjResourceLoader : public ResourceLoader<MeshObj> {
+protected:
+    virtual MeshObj* specificLoad(string filename) {
+		vector<mesh_v> list_v;
+		vector<mesh_vt> list_vt;
+		vector<mesh_vn> list_vn;
+		char test[100];
+
+        std::ifstream infile(filename);
+        std::string line;
+
+        while (std::getline(infile, line))
+        {
+			std::istringstream iline(line);
+			std::string type;
+			iline >> type;
+
+			if(type.compare("v") == 0) {
+				mesh_v _v;
+				iline >> _v.x >> _v.y >> _v.z;
+				if(!iline.eof()){
+					iline >> _v.w;
+				} else {
+					_v.w = 1.0f;
+				}
+				_DEBUG("v", LOG_CHANNEL::DEFAULT);
+			}
+        }
+		_DEBUG("NOK", LOG_CHANNEL::DEFAULT);
+    }
 };
 
 }

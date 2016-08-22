@@ -147,7 +147,7 @@ public:
             _WARNING("Unable to find importer with id : " << resourceId, LOG_CHANNEL::DEFAULT);
             return;
         }
-        T* data = reinterpret_cast<T*>((itrImporter->second)->load(res->getFilename()));
+        T* data = reinterpret_cast<T*>((itrImporter->second)->load(m_resourceLocation + res->getFilename()));
         res->m_resourceHandler = make_shared<ResourceHandler<T>>(data);
     }
 

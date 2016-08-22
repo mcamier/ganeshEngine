@@ -36,7 +36,7 @@ private:
 	 * Later, game could handle several scenes and they should be
 	 * managed by a SceneManager class
 	 */
-	Scene mMainScene;
+	unique_ptr<Scene> mMainScene;
 
 	/**
 	 * The main game clock, will be incremented even if the gameplay
@@ -49,15 +49,6 @@ private:
 	 * cause to extinction of the game
 	 */
 	bool mIsExiting = false;
-
-
-	GLProgram program;
-	GLTexture *tex{nullptr};
-	GLMesh *mesh{nullptr};
-	GLMesh *mesh2{nullptr};
-	GLModel *model{nullptr};
-	GLModel *model2{nullptr};
-	Actor *obj{nullptr};
 
 	Application(Configuration conf) : m_configuration(conf) {}
 
