@@ -1,6 +1,8 @@
 #ifndef GANESHENGINE_GHHEADERS_H
 #define GANESHENGINE_GHHEADERS_H
 
+#include <array>
+#include <queue>
 #include <iostream>
 #include <sstream>
 #include <string>

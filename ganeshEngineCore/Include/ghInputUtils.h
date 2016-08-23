@@ -3,6 +3,7 @@
 
 #include "ghHeaders.h"
 #include <vector>
+#include <cstring>
 #include <functional>
 #include <GLFW/glfw3.h>
 
@@ -25,6 +26,7 @@
 #define GH_BUTTON_MOUSE_LEFT        GLFW_MOUSE_BUTTON_LEFT
 #define GH_BUTTON_MOUSE_RIGHT       GLFW_MOUSE_BUTTON_RIGHT
 #define GH_BUTTON_MOUSE_MIDDLE      GLFW_MOUSE_BUTTON_MIDDLE
+#define GH_BUTTON_MOUSE_SIZE        8
 
 #define GH_BUTTON_KEY_SPACE         32
 #define GH_BUTTON_KEY_APOSTROPHE    39 /* ' */
@@ -160,12 +162,39 @@ namespace ganeshEngine {
 
 using namespace std;
 
+/**
+ *
+ */
 class Joystick {
+private:
+	int m_index;
+	int axeCount;
+	int buttonCount;
+
+	const unsigned char* axes;
+	const float* buttons;
+	float* previousButtons;
+
 public:
-	Joystick() {}
-	virtual ~Joystick() {}
+	Joystick(int index) : m_index(index) {
+		glfwGetJoystickAxes(index, &buttonCount);
+		previousButtons = static_cast<float*>(malloc(buttonCount * sizeof(float)));
+	}
+	virtual ~Joystick() {
+		free(previousButtons);
+	}
+
+	void update() {
+		std::memcpy(previousButtons, buttons, sizeof previousButtons);
+		axes = glfwGetJoystickButtons(m_index, &axeCount);
+		buttons = glfwGetJoystickAxes(m_index, &buttonCount);
+	}
 };
 
+/**
+ * Chord is a combination of two or three pressed at the same time
+ * resulting in one action
+ */
 enum class CHORD_SIZE : int {
 	_2 = 2,
 	_3 = 3
@@ -173,13 +202,15 @@ enum class CHORD_SIZE : int {
 
 class RawInput {
 private:
+	const static char *undefined;
+
 	const static char *sourceMouse;
 	const static char *sourceKeyboard;
 	const static char *sourceJoystick;
 
 	const static char *typePress;
 	const static char *typeRelease;
-	const static char *typeHold;
+	const static char *typeDown;
 	const static char *typeRange;
 	const static char *typeMove;
 
@@ -202,6 +233,7 @@ private:
 	const static char *keyNum9;
 	const static char *keySemicolon;
 	const static char *keyEqual;
+	const static char *keySpace;
 	const static char *keyA;
 	const static char *keyB;
 	const static char *keyC;
@@ -313,24 +345,26 @@ public:
 	enum class SOURCE {
 		MOUSE,
 		KEYBOARD,
-		JOYSTICK
+		JOYSTICK,
+		UNDEFINED
 	};
 
 	/**
 	 * Kind of input
 	 *
-	 * PRESS: when a button get pressed
+	 * PRESS: when a button get pressed, only triggered once, even is key is kept down
 	 * RELEASE: when a button get released
-	 * HOLD: when a button was pressed last frame and is still pressed this frame
+	 * DOWN: when a button is pressed
 	 * RANGE: value between 0 and 1, for instance the xbox controller triggers
 	 * MOVE: 3 dimensional floats
 	 */
 	enum class TYPE {
 		PRESS,
+		DOWN,
 		RELEASE,
-		HOLD,
 		RANGE,
-		MOVE
+		MOVE,
+		UNDEFINED
 	};
 
 	/**
@@ -358,6 +392,7 @@ public:
 		NUM_9 = GH_BUTTON_KEY_9,
 		SEMICOLON = GH_BUTTON_KEY_SEMICOLON,
 		EQUAL = GH_BUTTON_KEY_EQUAL,
+		SPACE = GH_BUTTON_KEY_SPACE,
 		A = GH_BUTTON_KEY_A,
 		B = GH_BUTTON_KEY_B,
 		C = GH_BUTTON_KEY_C,
@@ -459,7 +494,8 @@ public:
 		RIGHT_CONTROL = GH_BUTTON_KEY_RIGHT_CONTROL,
 		RIGHT_ALT = GH_BUTTON_KEY_RIGHT_ALT,
 		RIGHT_SUPER = GH_BUTTON_KEY_RIGHT_SUPER,
-		MENU = GH_BUTTON_KEY_MENU
+		MENU = GH_BUTTON_KEY_MENU,
+		UNDEFINED = 9999
 	};
 
 	/**
@@ -535,6 +571,11 @@ typedef struct rawInput_s {
 	int idx;
 
 	/**
+	 * Remaining lifetime of the input before it could be used to detect chord
+	 */
+	int chordDetectionLifetimeMs;
+
+	/**
 	 * Payload informations
 	 */
 	union datas_u {
@@ -549,12 +590,13 @@ typedef struct rawInput_s {
  */
 class InputMatch {
 private:
-	RawInput::SOURCE m_source;
-	RawInput::TYPE m_type;
-	RawInput::KEY m_key;
-	U32 m_callbackNameHash;
+	RawInput::SOURCE m_source {RawInput::SOURCE::UNDEFINED};
+	RawInput::TYPE m_type {RawInput::TYPE::UNDEFINED};
+	RawInput::KEY m_key {RawInput::KEY::UNDEFINED};
+	U32 m_callbackNameHash {0};
 
 public:
+	InputMatch() {}
 	InputMatch(RawInput::SOURCE source, RawInput::TYPE type, RawInput::KEY key, U32 callbackHash) :
 			m_source(source), m_type(type), m_key(key), m_callbackNameHash(callbackHash) {}
 
@@ -570,12 +612,73 @@ public:
 class Chord {
 public:
 	CHORD_SIZE size;
-	shared_ptr<InputMatch> _1{nullptr};
-	shared_ptr<InputMatch> _2{nullptr};
-	shared_ptr<InputMatch> _3{nullptr};
-	U32 callbackNameHash;
+	InputMatch _1;
+	InputMatch _2;
+	InputMatch _3;
+	U32 m_callbackNameHash;
+
+public:
+	Chord(U32 callbackNameHash, InputMatch i1, InputMatch i2) :
+			size(CHORD_SIZE::_2),
+			_1(i1), _2(i2),
+			m_callbackNameHash(callbackNameHash) {}
+
+	Chord(U32 callbackNameHash, InputMatch i1, InputMatch i2, InputMatch i3) :
+			size(CHORD_SIZE::_3),
+			_1(i1), _2(i2), _3(i3),
+			m_callbackNameHash(callbackNameHash) {}
+
+    bool containsRawInput(RawInput::SOURCE source, RawInput::TYPE type ,RawInput::KEY key) const {
+        if(size == CHORD_SIZE::_3) {
+            return ((_1.getSource() == source && _1.getType() == type && _1.getKey() == key) ||
+                    (_2.getSource() == source && _2.getType() == type && _2.getKey() == key) ||
+                    (_3.getSource() == source && _3.getType() == type && _3.getKey() == key));
+        } else if(size == CHORD_SIZE::_2) {
+            return ((_1.getSource() == source && _1.getType() == type && _1.getKey() == key) ||
+                    (_2.getSource() == source && _2.getType() == type && _2.getKey() == key));
+        }
+        return false;
+    }
+
+    int findFirstInputFrom(vector<rawInput> &listInputs) const {
+        for(int i = 0 ; i<listInputs.size() ; ++i) {
+            auto const& ri = listInputs[i];
+            if(this->_1.getSource() == ri.source &&
+               this->_1.getType() == ri.type &&
+               this->_1.getKey() == ((RawInput::KEY)ri.data.button.key)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int findSecondInputFrom(vector<rawInput> &listInputs) const {
+        for(int i = 0 ; i<listInputs.size() ; ++i) {
+            auto const& ri = listInputs[i];
+            if(this->_2.getSource() == ri.source &&
+               this->_2.getType() == ri.type &&
+               this->_2.getKey() == ((RawInput::KEY)ri.data.button.key)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int findThirdInputFrom(vector<rawInput> &listInputs) const {
+        if(size != CHORD_SIZE::_3) return -1;
+        for(int i = 0 ; i<listInputs.size() ; ++i) {
+            auto const& ri = listInputs[i];
+            if(this->_3.getSource() == ri.source &&
+               this->_3.getType() == ri.type &&
+               this->_3.getKey() == ((RawInput::KEY)ri.data.button.key)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 };
 
+using InputCallbackType = function<void(rawInput ri, U32 frameDuration)>;
 
 }
 

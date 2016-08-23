@@ -1,58 +1,93 @@
 {
-   "chord": {
-      "threshold_detection_ms": 16
-   },
-   "contexts": [
-      {
-	 "name": "default",
-	 "chords": [
-	    {
-	       "callbackName": "ACTION_323",
-	       "_1": {
-		  "source": "MOUSE",
-		  "type": "MOVE",
-		  "identifier": "A"
-	       },
-	       "_2": {
-		  "source": "MOUSE",
-		  "type": "MOVE",
-		  "identifier": "A"
-	       }
-	    }
-	 ],
-	 "matches": [
-	    {
-	       "source": "KEYBOARD",
-	       "type": "PRESS",
-	       "identifier": "A",
-	       "callbackName": "ACTION_1"
-	    },
-	    {
-	       "source": "KEYBOARD",
-	       "type": "RELEASE",
-	       "identifier": "B",
-	       "callbackName": "ACTION_2"
-	    },
-	    {
-	       "source": "KEYBOARD",
-	       "type": "HOLD",
-	       "identifier": "C",
-	       "callbackName": "_ACTION_3"
-	    },
-	    {
-	       "source": "MOUSE",
-	       "type": "MOVE",
-	       "identifier": "MOUSE_LEFT",
-	       "callbackName": "_ACTION_4"
-	    },
-	    {
-	       "source": "MOUSE",
-	       "type": "PRESS",
-	       "identifier": "MOUSE_LEFT",
-	       "callbackName": "_ACTION_5"
-	    }
-
-	 ]
-      }
-   ]
+  "chord": {
+    "threshold_detection_us": 100000000
+  },
+  "contexts": [
+    {
+      "name": "kzInGame",
+      "chords": [
+        {
+          "callbackName": "kzTestChord",
+          "_1": {
+            "source": "KEYBOARD",
+            "type": "PRESS",
+            "identifier": "A"
+          },
+          "_2": {
+            "source": "KEYBOARD",
+            "type": "PRESS",
+            "identifier": "S"
+          }
+        }
+      ],
+      "matches": [
+        {
+          "source": "KEYBOARD",
+          "type": "DOWN",
+          "identifier": "UP",
+          "callbackName": "kzActionPlayerGoUp"
+        },
+        {
+          "source": "KEYBOARD",
+          "type": "DOWN",
+          "identifier": "DOWN",
+          "callbackName": "kzActionPlayerGoDown"
+        },
+        {
+          "source": "KEYBOARD",
+          "type": "DOWN",
+          "identifier": "LEFT",
+          "callbackName": "kzActionPlayerGoLeft"
+        },
+        {
+          "source": "KEYBOARD",
+          "type": "DOWN",
+          "identifier": "RIGHT",
+          "callbackName": "kzActionPlayerGoRight"
+        },
+        {
+          "source": "KEYBOARD",
+          "type": "DOWN",
+          "identifier": "SPACE",
+          "callbackName": "kzActionPlayerFire"
+        },
+        {
+          "source": "KEYBOARD",
+          "type": "DOWN",
+          "identifier": "ENTER",
+          "callbackName": "kzActionPlayerAction"
+        }
+      ]
+    },
+    {
+      "name": "kzInMenu",
+      "chords": [],
+      "matches": [
+        {
+          "source": "KEYBOARD",
+          "type": "PRESS",
+          "identifier": "UP",
+          "callbackName": "kzActionMenuUp"
+        },
+        {
+          "source": "KEYBOARD",
+          "type": "PRESS",
+          "identifier": "DOWN",
+          "callbackName": "kzActionMenuDown"
+        },
+        {
+          "source": "KEYBOARD",
+          "type": "PRESS",
+          "identifier": "ENTER",
+          "callbackName": "kzActionMenuEnter"
+        },
+        {
+          "source": "KEYBOARD",
+          "type": "PRESS",
+          "identifier": "BACKSPACE",
+          "callbackName": "kzActionMenuExit"
+        }
+      ]
+    }
+  ]
 }

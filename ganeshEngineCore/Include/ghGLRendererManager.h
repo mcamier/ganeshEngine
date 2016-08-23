@@ -37,7 +37,7 @@ namespace ganeshEngine {
 
         void preRender();
 
-        void render(Scene &scene);
+        void render(Scene *scene);
 
         void postRender();
 

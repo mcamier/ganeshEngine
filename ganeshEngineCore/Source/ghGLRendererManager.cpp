@@ -16,8 +16,8 @@ namespace ganeshEngine {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void RendererManager::render(Scene &scene) {
-        scene.render();
+    void RendererManager::render(Scene *scene) {
+        scene->render();
     }
 
     void RendererManager::postRender() {

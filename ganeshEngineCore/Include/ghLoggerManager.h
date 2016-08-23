@@ -23,7 +23,7 @@ namespace ganeshEngine {
          *
          * @todo replace raw pointer with std::unique_ptr<ILogger>
          */
-        list<ILogger *> mLoggers;
+        vector<ILogger*> mLoggers;
 
         LoggerManager() {}
 
@@ -39,7 +39,7 @@ namespace ganeshEngine {
          *
          * @todo replace raw pointer with std::unique_ptr<ILogger>
          */
-        void addLogger(ILogger *logger);
+        void addLogger(ILogger* logger);
 
         /**
          * Dispatch a log among all the managed loggers

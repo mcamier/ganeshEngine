@@ -1,6 +1,7 @@
 #include "ghInputUtils.h"
 
 namespace ganeshEngine {
+const char *RawInput::undefined = "UNDEFINED";
 
 const char *RawInput::sourceMouse = "MOUSE";
 const char *RawInput::sourceKeyboard = "KEYBOARD";
@@ -8,7 +9,7 @@ const char *RawInput::sourceJoystick = "JOYSTICK";
 
 const char *RawInput::typePress = "PRESS";
 const char *RawInput::typeRelease = "RELEASE";
-const char *RawInput::typeHold = "HOLD";
+const char *RawInput::typeDown = "DOWN";
 const char *RawInput::typeRange = "RANGE";
 const char *RawInput::typeMove = "MOVE";
 
@@ -31,6 +32,7 @@ const char *RawInput::keyNum8 = "NUM_8";
 const char *RawInput::keyNum9 = "NUM_9";
 const char *RawInput::keySemicolon = "SEMICOLON";
 const char *RawInput::keyEqual = "EQUAL";
+const char *RawInput::keySpace = "SPACE";
 const char *RawInput::keyA = "A";
 const char *RawInput::keyB = "B";
 const char *RawInput::keyC = "C";
@@ -139,35 +141,41 @@ const char *RawInput::toString<RawInput::SOURCE>(const RawInput::SOURCE value) {
 	if (value == RawInput::SOURCE::MOUSE) return RawInput::sourceMouse;
 	if (value == RawInput::SOURCE::KEYBOARD) return RawInput::sourceKeyboard;
 	if (value == RawInput::SOURCE::JOYSTICK) return RawInput::sourceJoystick;
+	if (value == RawInput::SOURCE::UNDEFINED) return RawInput::undefined;
 }
 
 template<>
 const char *RawInput::toString<RawInput::TYPE>(const RawInput::TYPE value) {
 	if (value == RawInput::TYPE::PRESS) return RawInput::typePress;
 	if (value == RawInput::TYPE::RELEASE) return RawInput::typeRelease;
-	if (value == RawInput::TYPE::HOLD) return RawInput::typeHold;
+	if (value == RawInput::TYPE::DOWN) return RawInput::typeDown;
 	if (value == RawInput::TYPE::RANGE) return RawInput::typeRange;
 	if (value == RawInput::TYPE::MOVE) return RawInput::typeMove;
+	if (value == RawInput::TYPE::UNDEFINED) return RawInput::undefined;
 }
 
-//TODO template<> const char* RawInput::toString<RawInput::KEY>(const RawInput::KEY value)
+template<>
+const char* RawInput::toString<RawInput::KEY>(const RawInput::KEY value) {
+	if (value == RawInput::KEY::UNDEFINED) return RawInput::undefined;
+	return "to be implemented";
+}
 
 template<>
 RawInput::SOURCE RawInput::fromString<RawInput::SOURCE>(const char *value) {
 	if (strcmp(value, sourceMouse) == 0) return RawInput::SOURCE::MOUSE;
 	if (strcmp(value, sourceKeyboard) == 0) return RawInput::SOURCE::KEYBOARD;
 	if (strcmp(value, sourceJoystick) == 0) return RawInput::SOURCE::JOYSTICK;
-	assert(false);
+	return RawInput::SOURCE::UNDEFINED;
 }
 
 template<>
 RawInput::TYPE RawInput::fromString<RawInput::TYPE>(const char *value) {
 	if (strcmp(value, typePress) == 0) return RawInput::TYPE::PRESS;
 	if (strcmp(value, typeRelease) == 0) return RawInput::TYPE::RELEASE;
-	if (strcmp(value, typeHold) == 0) return RawInput::TYPE::HOLD;
+	if (strcmp(value, typeDown) == 0) return RawInput::TYPE::DOWN;
 	if (strcmp(value, typeRange) == 0) return RawInput::TYPE::RANGE;
 	if (strcmp(value, typeMove) == 0) return RawInput::TYPE::MOVE;
-	assert(false);
+	return RawInput::TYPE::UNDEFINED;
 }
 
 template<>
@@ -191,6 +199,7 @@ RawInput::KEY RawInput::fromString<RawInput::KEY>(const char *value) {
 	if (strcmp(value, keyNum9) == 0) return RawInput::KEY::NUM_9;
 	if (strcmp(value, keySemicolon) == 0) return RawInput::KEY::SEMICOLON;
 	if (strcmp(value, keyEqual) == 0) return RawInput::KEY::EQUAL;
+	if (strcmp(value, keySpace) == 0) return RawInput::KEY::SPACE;
 	if (strcmp(value, keyA) == 0) return RawInput::KEY::A;
 	if (strcmp(value, keyB) == 0) return RawInput::KEY::B;
 	if (strcmp(value, keyC) == 0) return RawInput::KEY::C;
@@ -293,7 +302,7 @@ RawInput::KEY RawInput::fromString<RawInput::KEY>(const char *value) {
 	if (strcmp(value, keyRightAlt) == 0) return RawInput::KEY::RIGHT_ALT;
 	if (strcmp(value, keyRightSuper) == 0) return RawInput::KEY::RIGHT_SUPER;
 	if (strcmp(value, keyMenu) == 0) return RawInput::KEY::MENU;
-	assert(false);
+	return RawInput::KEY::UNDEFINED;
 }
 
 RawInput::SOURCE InputMatch::getSource() const {

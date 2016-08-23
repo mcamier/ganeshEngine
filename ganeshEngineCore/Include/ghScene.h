@@ -61,7 +61,8 @@ namespace ganeshEngine {
         /**
          *
          */
-        virtual void update() {}
+        virtual void update(int deltaTime) {}
+        virtual void vInitialize() = 0;
     };
 
 }

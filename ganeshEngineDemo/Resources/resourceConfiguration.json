@@ -1,0 +1,41 @@
+{
+  "resourceLocationType": "folder",
+  "resourcesLocation": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/",
+  "resources": [
+    {
+      "name": "defaultFragmentShader",
+      "loaderName": "GL_SHADER",
+      "filename": "fDefault.glsl",
+      "eagerLoading": false,
+      "metadatas": [
+        {
+          "key": "shaderType",
+          "value": "fragment"
+        }
+      ]
+    },
+    {
+      "name": "defaultVertexShader",
+      "loaderName": "GL_SHADER",
+      "filename": "vDefault.glsl",
+      "eagerLoading": false,
+      "metadatas": [
+        {
+          "key": "shaderType",
+          "value": "vertex"
+        }
+      ]
+    },
+    {
+      "name": "defaultShaderProgram",
+      "loaderName": "GL_PROGRAM",
+      "filename": ""
+    },
+    {
+      "name": "foobar",
+      "loaderName": "MESH_OBJ",
+      "filename": "foobar.obj",
+      "eagerLoading": true
+    }
+  ]
+}
