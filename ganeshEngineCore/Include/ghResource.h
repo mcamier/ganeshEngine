@@ -3,6 +3,8 @@
 #include "ghResourceConfiguration.h"
 #include "ghResourceImporter.h"
 
+#include <type_traits>
+
 namespace ganeshEngine {
 
 using namespace std;
@@ -13,6 +15,7 @@ using namespace std;
  */
 class IResourceHandler {
 public:
+    // needed to polymorphism and dynamic_cast/dynamic_pointer_cast
     virtual ~IResourceHandler() {}
 };
 
@@ -61,17 +64,20 @@ protected:
     string m_filename;
     string m_importerName;
     U32 m_importerHashId;
+    map<U32, resourceMetadata> m_metadatas;
 
 private:
     hIResource m_resourceHandler;
 
 public:
-    Resource(const string& name, const string& filename, const string& importerName) :
+    Resource(const string& name, const string& filename, const string& importerName, map<U32, resourceMetadata> metadatas) :
             m_id(GH_HASH(name)),
             m_name(name),
             m_filename(filename),
             m_importerName(importerName),
-            m_importerHashId(GH_HASH(importerName)) {}
+            m_importerHashId(GH_HASH(importerName)),
+            m_metadatas(metadatas) {
+    }
 
     Resource(const Resource &) = delete;
     Resource &operator=(const Resource &) = delete;
@@ -83,6 +89,13 @@ public:
     const U32 getImporterHashId() const { return m_importerHashId; }
     const hIResource getResourceHandler() const { return m_resourceHandler; }
 
+    const string* getMetadata(string name) {
+        auto itr = m_metadatas.find(GH_HASH(name));
+        if(itr == m_metadatas.end()) {
+            return nullptr;
+        }
+        return &(itr->second.value);
+    }
     bool isLoaded() const { return (m_resourceHandler!=nullptr); }
 };
 
@@ -102,7 +115,7 @@ private:
     ResourceLocationType m_resourceLocationType;
     string m_resourceLocation;
 
-    map<U32, unique_ptr<Resource>> m_resources;
+    map<U32, Resource> m_resources;
     map<U32, IResourceLoader*> m_importers;
 
     ResourceManager(unique_ptr<ResourceConfiguration> conf) : m_configuration(move(conf)) {}
@@ -121,12 +134,11 @@ public:
             return nullptr;
         }
         const auto& res = itr->second;
-        if(!res->isLoaded()) {
-            //load resource
-            load<T>(resourceId);
+        if(!res.isLoaded()) {
             _DEBUG("Resource missing in memory, load it", LOG_CHANNEL::DEFAULT);
+            load<T>(resourceId);
         }
-        return dynamic_pointer_cast<ResourceHandler<T>>(res->getResourceHandler());
+        return dynamic_pointer_cast<ResourceHandler<T>>(res.getResourceHandler());
     }
 
     void addImporter(string importerName, IResourceLoader* loader) {
@@ -142,13 +154,17 @@ public:
         }
         auto& res = itrRes->second;
 
-        auto itrImporter = m_importers.find(res->getImporterHashId());
+        auto itrImporter = m_importers.find(res.getImporterHashId());
         if(itrImporter == m_importers.end()) {
             _WARNING("Unable to find importer with id : " << resourceId, LOG_CHANNEL::DEFAULT);
             return;
         }
-        T* data = reinterpret_cast<T*>((itrImporter->second)->load(m_resourceLocation + res->getFilename()));
-        res->m_resourceHandler = make_shared<ResourceHandler<T>>(data);
+        T* data = reinterpret_cast<T*>((itrImporter->second)->load(res));
+        if(is_base_of<GCResource, T>::value) {
+            _DEBUG("resource loaded to GC", LOG_CHANNEL::DEFAULT);
+            data->sendToGC();
+        }
+        res.m_resourceHandler = make_shared<ResourceHandler<T>>(data);
     }
 
 protected:

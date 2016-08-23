@@ -13,11 +13,17 @@ namespace ganeshEngine {
 using namespace std;
 using namespace rapidjson;
 
-struct resourceEntry {
+typedef struct resourceMetadata_s {
+    string name;
+    string value;
+} resourceMetadata;
+
+typedef struct resourceEntry_s {
     string name;
     string filename;
     string importerName;
-};
+    map<U32, resourceMetadata> metadatas;
+} resourceEntry;
 
 enum class ResourceLocationType {
     FOLDER,
@@ -96,20 +102,38 @@ public:
     }
 
 private:
-    static void readResources(const Value &node, ResourceConfiguration* conf) {
+    static void readResources(const Value &node, ResourceConfiguration *conf) {
         for (SizeType i = 0; i < node.Size(); i++) {
             readResource(node[i], conf);
         }
     }
 
-    static void readResource(const Value &node, ResourceConfiguration* conf) {
+    static void readResource(const Value &node, ResourceConfiguration *conf) {
         if (node.IsObject() && node.HasMember("name") && node.HasMember("importer") && node.HasMember("filename")) {
             resourceEntry re;
             re.name = node["name"].GetString();
             re.filename = node["filename"].GetString();
             re.importerName = node["importer"].GetString();
+
+            if (node.HasMember("metadatas") && node["metadatas"].IsArray()) {
+                for (SizeType i = 0; i < node["metadatas"].Size(); i++) {
+                    const Value& metas = node["metadatas"][i];
+                    if (metas.HasMember("key") && metas.HasMember("value") &&
+                            metas["key"].IsString() && metas["value"].IsString()) {
+                        resourceMetadata metadata;
+                        metadata.name = metas["key"].GetString();
+                        metadata.name = metas ["value"].GetString();
+                        re.metadatas.insert(make_pair(GH_HASH(metadata.name), metadata));
+                    }
+                    else {
+                        _WARNING("Ignored resource's metadata", LOG_CHANNEL::DEFAULT);
+                    }
+                }
+            }
+
             conf->m_resources.push_back(re);
-            _DEBUG("resources [" << re.name << "], importer [" << re.importerName << "], filename [" << re.filename << "]",
+            _DEBUG("resources [" << re.name << "], importer [" << re.importerName << "], filename [" << re.filename
+                                 << "]",
                    LOG_CHANNEL::DEFAULT);
         } else {
             _WARNING("Ignored resource", LOG_CHANNEL::DEFAULT);

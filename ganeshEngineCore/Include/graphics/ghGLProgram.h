@@ -54,6 +54,10 @@ namespace ganeshEngine {
 
         void setUniform(const char *name, mat4 value);
 
+        bool sendToGC() const;
+
+        bool freeFromGC() const;
+
     private:
         template<typename... S>
         static GLProgram create(GLProgram &program, GLShader &shader, S &... rest) {
@@ -75,16 +79,16 @@ namespace ganeshEngine {
 
         template<typename... F>
         static GLProgram create(GLProgram &program, ShaderType type, const char *filename, F... rest) {
-            GLShader shader = GLShader::fromFile(type, filename);
-            shader.doCompile();
+            GLShader* shader = GLShader::fromFile(type, filename);
+            shader->doCompile();
             /// check if shader compilation is successfull, fail creation if not
-            if (shader.getStatus() != ShaderStatus::COMPILED) {
+            if (shader->getStatus() != ShaderStatus::COMPILED) {
                 throw std::exception();
             }
-            glAttachShader(program.mInternalId, shader.mInternalId);
+            glAttachShader(program.mInternalId, shader->mInternalId);
             GLProgram p = GLProgram::create(program, rest...);
             if (program.mStatus == GLProgramStatus::COMPILED) {
-                glDetachShader(program.mInternalId, shader.mInternalId);
+                glDetachShader(program.mInternalId, shader->mInternalId);
             }
             return program;
         }

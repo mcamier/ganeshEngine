@@ -10,7 +10,7 @@ void ResourceManager::vInitialize() {
         for(resourceEntry& re : m_configuration->getResourceEntries()) {
             m_resources.insert(make_pair(
                     GH_HASH(re.name),
-                    make_unique<Resource>(re.name, re.filename, re.importerName)
+                    Resource(re.name, re.filename, re.importerName, re.metadatas)
             ));
         }
         m_configuration.release();

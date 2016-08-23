@@ -74,8 +74,8 @@ namespace ganeshEngine {
 
         auto rc = ResourceConfiguration::loadFromFile(m_configuration.resourceConfigurationFilename);
         ResourceManager::Initialize(move(rc));
-        //gResource().addImporter("PNG", new PngImporter());
-        //gResource().addImporter("MESH", new MeshObjImporter());
+        gResource().addImporter("shader", new GLShaderResourceLoader());
+        gResource().addImporter("shaderProgram", new GLProgramResourceLoader());
 
         ProfilerManager::Initialize();
 

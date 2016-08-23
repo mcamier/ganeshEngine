@@ -21,8 +21,7 @@ set(GL_LIBS
         GLEW_1130)
 
 set(SOURCE_FILES
-   "Source/main.cpp"
-   "Source/kzGameplay.cpp")
+   "Source/main.cpp")
 
 SET_SOURCE_FILES_PROPERTIES( ${SOURCE_FILES} PROPERTIES LANGUAGE CXX )
 add_executable(${ExeName} ${SOURCE_FILES})

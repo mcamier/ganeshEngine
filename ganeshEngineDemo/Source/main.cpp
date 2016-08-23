@@ -18,7 +18,6 @@
 #include "ghMath.h"
 #include <glm/glm.hpp>
 
-#include "kzGameplay.h"
 
 using namespace std;
 using namespace glm;
@@ -26,65 +25,68 @@ using namespace ganeshEngine;
 
 class MainScene : public Scene {
 private:
-	GLProgram program;
-	GLTexture *tex{nullptr};
-	GLMesh *mesh{nullptr};
-	GLMesh *mesh2{nullptr};
-	GLModel *model{nullptr};
-	GLModel *model2{nullptr};
-	Actor *obj{nullptr};
+    hResource <GLShader> _shader;
+    GLProgram program;
+    GLTexture *tex{nullptr};
+    GLMesh *mesh{nullptr};
+    GLMesh *mesh2{nullptr};
+    GLModel *model{nullptr};
+    GLModel *model2{nullptr};
+    Actor *obj{nullptr};
 
-	U64 totalTime = 0;
+    U64 totalTime = 0;
 public:
-	MainScene() : Scene() {}
+    MainScene() : Scene() {}
 
-	void vInitialize() override {
-		program = GLProgram::create(ShaderType::VERTEX,
-									"C:/Users/mickael.camier/workspace/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl",
-									ShaderType::FRAGMENT,
-									"C:/Users/mickael.camier/workspace/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
-		tex = new GLTexture();
+    void vInitialize() override {
+        _shader = gResource().getResource<GLShader>(GH_HASH("defaultVertexShader"));
 
-		unique_ptr<vector<Vertex>> vertices = make_unique<vector<Vertex >>();
-		vertices->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-		vertices->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-		vertices->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-		mesh = new GLMesh(move(vertices), DrawMode::TRIANGLES);
+        program = GLProgram::create(ShaderType::VERTEX,
+                                    "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl",
+                                    ShaderType::FRAGMENT,
+                                    "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
+        tex = new GLTexture();
 
-		unique_ptr<vector<Vertex>> vertices2 = make_unique<vector<Vertex >>();
-		vertices2->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-		vertices2->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-		vertices2->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-		mesh2 = new GLMesh(move(vertices2), DrawMode::TRIANGLES);
+        unique_ptr<vector<Vertex>> vertices = make_unique<vector<Vertex >>();
+        vertices->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
+        vertices->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
+        vertices->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
+        mesh = new GLMesh(move(vertices), DrawMode::TRIANGLES);
 
-		model = new GLModel(&program, mesh, tex);
-		model->sendToGC();
+        unique_ptr<vector<Vertex>> vertices2 = make_unique<vector<Vertex >>();
+        vertices2->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
+        vertices2->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
+        vertices2->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
+        mesh2 = new GLMesh(move(vertices2), DrawMode::TRIANGLES);
 
-		model2 = new GLModel(&program, mesh2, tex);
-		model2->sendToGC();
+        model = new GLModel(&program, mesh, tex);
+        model->sendToGC();
 
-		Skybox *root = new Skybox();
+        model2 = new GLModel(&program, mesh2, tex);
+        model2->sendToGC();
 
-		obj = new Actor();
-		obj->setModel(model);
+        Skybox *root = new Skybox();
 
-		Actor *obj2 = new Actor();
-		obj2->setModel(model2);
-		obj2->setX(1.0f);
+        obj = new Actor();
+        obj->setModel(model);
 
-		obj->appendChild(obj2);
+        Actor *obj2 = new Actor();
+        obj2->setModel(model2);
+        obj2->setX(1.0f);
 
-		Camera *cam = new Camera(4.0f / 3.0f, 80, 1, 100);
-		root->appendChild(cam);
-		root->appendChild(obj);
-	}
+        obj->appendChild(obj2);
+
+        Camera *cam = new Camera(4.0f / 3.0f, 80, 1, 100);
+        root->appendChild(cam);
+        root->appendChild(obj);
+        this->setRoot(root);
+    }
 
     void update(int deltaTime) override {
-		totalTime+=deltaTime;
-		obj->addY((F32) ((2.0f * cos(totalTime)) * 0.005f));
-	}
+        totalTime += deltaTime;
+        obj->addY((F32) ((2.0f * cos(totalTime)) * 0.005f));
+    }
 };
-
 
 int main() {
     LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT;
