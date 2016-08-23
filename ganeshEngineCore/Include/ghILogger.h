@@ -18,11 +18,12 @@ enum LOG_LEVEL {
  *
  */
 enum class LOG_CHANNEL : int {
-	DEFAULT = 0x00001,
-	RENDER = 0x00010,
-	PHYSICS = 0x00100,
-	INPUT = 0x01000,
-	AI = 0x10000
+	DEFAULT 	= 0x000001,
+	RENDER 		= 0x000010,
+	PHYSICS 	= 0x000100,
+	INPUT 		= 0x001000,
+	AI 			= 0x010000,
+	RESOURCE 	= 0x100000
 };
 
 using _LC = std::underlying_type_t<LOG_CHANNEL>;

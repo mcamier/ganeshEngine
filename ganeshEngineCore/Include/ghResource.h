@@ -1,177 +1,57 @@
-#include "ghHeaders.h"
-#include "ghSystem.h"
-#include "ghResourceConfiguration.h"
-#include "ghResourceImporter.h"
+#ifndef GANESHENGINE_GHRESOURCE_H
+#define GANESHENGINE_GHRESOURCE_H
 
-#include <type_traits>
+#include "ghHeaders.h"
 
 namespace ganeshEngine {
 
-using namespace std;
-
-
 /**
- * Base class for resource's handler for polymorphism purpose
- */
-class IResourceHandler {
-public:
-    // needed to polymorphism and dynamic_cast/dynamic_pointer_cast
-    virtual ~IResourceHandler() {}
-};
-
-
-/**
- * Resource hold in memory a unique pointer on the resource data
- */
-template<typename T>
-class ResourceHandler : public IResourceHandler {
-private:
-    T* m_object;
-
-public:
-    ResourceHandler(T* object) : m_object(object) {}
-
-    virtual ~ResourceHandler() {
-        free(m_object);
-    }
-
-    /**
-     * @note The result pointer must not be stored to be reused later
-     *
-     * @return pointer to resource raw data
-     */
-    const T* const getRaw() const {
-        return m_object;
-    }
-};
-
-
-using hIResource = shared_ptr<IResourceHandler>;
-
-template<typename T>
-using hResource = shared_ptr<ResourceHandler<T>>;
-
-
-/**
- *
+ * All Object that could be used as resource should
+ * inherit this base class
  */
 class Resource {
-friend class ResourceManager;
-
-protected:
-    U32 m_id;
-    string m_name;
-    string m_filename;
-    string m_importerName;
-    U32 m_importerHashId;
-    map<U32, resourceMetadata> m_metadatas;
-
 private:
-    hIResource m_resourceHandler;
+    /** Specify whether resource need to be uploaded to GC to be properly used */
+    bool m_needGcInit;
+
+    /** Specify whether resource is already uploaded in GC memory */
+    bool m_isGcLoaded;
 
 public:
-    Resource(const string& name, const string& filename, const string& importerName, map<U32, resourceMetadata> metadatas) :
-            m_id(GH_HASH(name)),
-            m_name(name),
-            m_filename(filename),
-            m_importerName(importerName),
-            m_importerHashId(GH_HASH(importerName)),
-            m_metadatas(metadatas) {
-    }
+    Resource() : m_needGcInit(false), m_isGcLoaded(false) {}
+
+    Resource(bool needGcInit) : m_needGcInit(needGcInit), m_isGcLoaded(false) {}
 
     Resource(const Resource &) = delete;
+
     Resource &operator=(const Resource &) = delete;
 
-    const U32 getId() const { return m_id; }
-    const string& getName() const { return m_name; }
-    const string& getFilename() const { return m_filename; }
-    const string& getImporterName() const { return m_importerName; }
-    const U32 getImporterHashId() const { return m_importerHashId; }
-    const hIResource getResourceHandler() const { return m_resourceHandler; }
+    virtual ~Resource() {}
 
-    const string* getMetadata(string name) {
-        auto itr = m_metadatas.find(GH_HASH(name));
-        if(itr == m_metadatas.end()) {
-            return nullptr;
-        }
-        return &(itr->second.value);
-    }
-    bool isLoaded() const { return (m_resourceHandler!=nullptr); }
-};
-
-
-/**
- *
- */
-class ResourceManager : public System<ResourceManager> {
-    friend class System<ResourceManager>;
-
-private:
     /**
-     * Configuration object, holding all informations used to initialization
-     * the manager
+     * Load the resource to GC memory
+     * @return True is upload to GC happened without trouble, false otherwise
      */
-    unique_ptr<ResourceConfiguration> m_configuration;
-    ResourceLocationType m_resourceLocationType;
-    string m_resourceLocation;
+    virtual bool sendToGc() const { return true; };
 
-    map<U32, Resource> m_resources;
-    map<U32, IResourceLoader*> m_importers;
+    /**
+     * Remove the resource from the GC memory, this object still unchanged
+     * @return True is memory freeing happened without trouble, false otherwise
+     */
+    virtual bool freeFromGc() const { return true; };
 
-    ResourceManager(unique_ptr<ResourceConfiguration> conf) : m_configuration(move(conf)) {}
+    /**
+     * Indicates if resource is loaded on GC's memory
+     * @return true if loaded, false otherwise
+     */
+    inline bool isGcLoaded() const { return m_isGcLoaded; }
 
-public:
-    ResourceManager(const ResourceManager &) = delete;
-
-    ResourceManager &operator=(const ResourceManager &) = delete;
-
-    virtual ~ResourceManager() {}
-
-    template<typename T>
-    hResource<T> getResource(U32 resourceId) {
-        auto itr = m_resources.find(resourceId);
-        if(itr==m_resources.end()) {
-            return nullptr;
-        }
-        const auto& res = itr->second;
-        if(!res.isLoaded()) {
-            _DEBUG("Resource missing in memory, load it", LOG_CHANNEL::DEFAULT);
-            load<T>(resourceId);
-        }
-        return dynamic_pointer_cast<ResourceHandler<T>>(res.getResourceHandler());
-    }
-
-    void addImporter(string importerName, IResourceLoader* loader) {
-        m_importers.insert(make_pair(GH_HASH(importerName), loader));
-    }
-
-    template<typename T>
-    void load(U32 resourceId) {
-        auto itrRes = m_resources.find(resourceId);
-        if(itrRes == m_resources.end()) {
-            _WARNING("Unable to load the resource with id : " << resourceId, LOG_CHANNEL::DEFAULT);
-            return;
-        }
-        auto& res = itrRes->second;
-
-        auto itrImporter = m_importers.find(res.getImporterHashId());
-        if(itrImporter == m_importers.end()) {
-            _WARNING("Unable to find importer with id : " << resourceId, LOG_CHANNEL::DEFAULT);
-            return;
-        }
-        T* data = reinterpret_cast<T*>((itrImporter->second)->load(res));
-        if(is_base_of<GCResource, T>::value) {
-            _DEBUG("resource loaded to GC", LOG_CHANNEL::DEFAULT);
-            data->sendToGC();
-        }
-        res.m_resourceHandler = make_shared<ResourceHandler<T>>(data);
-    }
-
-protected:
-    void vInitialize();
-
-    void vDestroy();
+    /**
+     * Indicates if resource need to be loaded on GC's memory
+     * @return true if resource need to be loaded, false otherwise
+     */
+    inline bool needGcLoad() const { return m_needGcInit; }
 };
 
-extern ResourceManager &(*gResource)();
 }
+#endif //GANESHENGINE_GHRESOURCE_H

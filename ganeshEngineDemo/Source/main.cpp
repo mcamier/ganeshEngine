@@ -10,8 +10,8 @@
 #include "ghPlatform.h"
 #include "ghHeaders.h"
 #include "ghEvent.h"
-#include "ghResource.h"
-#include "ghResourceImporter.h"
+#include "ghResourceManager.h"
+#include "ghResourceLoader.h"
 #include "ghConfiguration.h"
 #include "ghScene.h"
 
@@ -25,7 +25,6 @@ using namespace ganeshEngine;
 
 class MainScene : public Scene {
 private:
-    hResource <GLShader> _shader;
     GLProgram program;
     GLTexture *tex{nullptr};
     GLMesh *mesh{nullptr};
@@ -39,8 +38,6 @@ public:
     MainScene() : Scene() {}
 
     void vInitialize() override {
-        _shader = gResource().getResource<GLShader>(GH_HASH("defaultVertexShader"));
-
         program = GLProgram::create(ShaderType::VERTEX,
                                     "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl",
                                     ShaderType::FRAGMENT,
@@ -88,6 +85,36 @@ public:
     }
 };
 
+class MeshObj : public Resource {
+};
+
+class Shader : public Resource {
+};
+
+class Program : public Resource {
+};
+
+class MeshObjLoader : public ResourceLoader {
+protected:
+    unique_ptr<Resource> load(const char *string) const {
+        return make_unique<MeshObj>();
+    }
+};
+
+class ShaderLoader : public ResourceLoader {
+protected:
+    unique_ptr<Resource> load(const char *string) const {
+        return make_unique<Shader>();
+    }
+};
+
+class ProgramLoader : public ResourceLoader {
+protected:
+    unique_ptr<Resource> load(const char *string) const {
+        return make_unique<Program>();
+    }
+};
+
 int main() {
     LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT;
     Configuration conf;
@@ -95,6 +122,9 @@ int main() {
     conf.resourceConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/resourceConfiguration.json";
     conf.loggers.push_back(new ConsoleLogger(LOG_LEVEL::DEBUG, channels));
     conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/log"));
+    conf.customResourceLoaders.insert(make_pair(GH_HASH("MESH_OBJ"), new MeshObjLoader()));
+    conf.customResourceLoaders.insert(make_pair(GH_HASH("GL_SHADER"), new ShaderLoader()));
+    conf.customResourceLoaders.insert(make_pair(GH_HASH("GL_PROGRAM"), new ProgramLoader()));
 	conf.startScene = new MainScene();
 
     Application::Initialize(conf);

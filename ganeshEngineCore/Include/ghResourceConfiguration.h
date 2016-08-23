@@ -21,7 +21,8 @@ typedef struct resourceMetadata_s {
 typedef struct resourceEntry_s {
     string name;
     string filename;
-    string importerName;
+    string loaderName;
+    bool eagerLoading;
     map<U32, resourceMetadata> metadatas;
 } resourceEntry;
 
@@ -109,11 +110,15 @@ private:
     }
 
     static void readResource(const Value &node, ResourceConfiguration *conf) {
-        if (node.IsObject() && node.HasMember("name") && node.HasMember("importer") && node.HasMember("filename")) {
+        if (node.IsObject() && node.HasMember("name") && node.HasMember("loaderName") && node.HasMember("filename")) {
             resourceEntry re;
             re.name = node["name"].GetString();
             re.filename = node["filename"].GetString();
-            re.importerName = node["importer"].GetString();
+            re.loaderName = node["loaderName"].GetString();
+
+            if(node.HasMember("eagerLoading") && node["eagerLoading"].IsBool()){
+                re.eagerLoading = node["eagerLoading"].GetBool();
+            }
 
             if (node.HasMember("metadatas") && node["metadatas"].IsArray()) {
                 for (SizeType i = 0; i < node["metadatas"].Size(); i++) {
@@ -132,7 +137,7 @@ private:
             }
 
             conf->m_resources.push_back(re);
-            _DEBUG("resources [" << re.name << "], importer [" << re.importerName << "], filename [" << re.filename
+            _DEBUG("resources [" << re.name << "], importer [" << re.loaderName << "], filename [" << re.filename
                                  << "]",
                    LOG_CHANNEL::DEFAULT);
         } else {

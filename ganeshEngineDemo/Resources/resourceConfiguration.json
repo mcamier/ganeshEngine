@@ -4,8 +4,9 @@
   "resources": [
     {
       "name": "defaultFragmentShader",
-      "importer": "shader",
+      "loaderName": "GL_SHADER",
       "filename": "fDefault.glsl",
+      "eagerLoading": false,
       "metadatas": [
         {
           "key": "shaderType",
@@ -15,8 +16,9 @@
     },
     {
       "name": "defaultVertexShader",
-      "importer": "shader",
+      "loaderName": "GL_SHADER",
       "filename": "vDefault.glsl",
+      "eagerLoading": false,
       "metadatas": [
         {
           "key": "shaderType",
@@ -26,13 +28,14 @@
     },
     {
       "name": "defaultShaderProgram",
-      "importer": "shaderProgram",
+      "loaderName": "GL_PROGRAM",
       "filename": ""
     },
     {
       "name": "foobar",
-      "importer": "meshObj",
-      "filename": "foobar.obj"
+      "loaderName": "MESH_OBJ",
+      "filename": "foobar.obj",
+      "eagerLoading": true
     }
   ]
 }

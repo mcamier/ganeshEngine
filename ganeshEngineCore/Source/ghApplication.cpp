@@ -7,7 +7,7 @@
 #include "ghProfilerManager.h"
 #include "ghInputManager.h"
 #include "ghLoggerManager.h"
-#include "ghResource.h"
+#include "ghResourceManager.h"
 #include "ghResourceConfiguration.h"
 #include "ghGLRendererManager.h"
 #include "ghSkybox.h"
@@ -73,9 +73,8 @@ namespace ganeshEngine {
         Platform::Initialize();
 
         auto rc = ResourceConfiguration::loadFromFile(m_configuration.resourceConfigurationFilename);
-        ResourceManager::Initialize(move(rc));
-        gResource().addImporter("shader", new GLShaderResourceLoader());
-        gResource().addImporter("shaderProgram", new GLProgramResourceLoader());
+        ResourceManager::Initialize(move(rc), m_configuration.customResourceLoaders);
+
 
         ProfilerManager::Initialize();
 
