@@ -342,11 +342,11 @@ public:
 	/**
 	 * Supported input devices
 	 */
-	enum class SOURCE {
-		MOUSE,
-		KEYBOARD,
-		JOYSTICK,
-		UNDEFINED
+	enum class SOURCE : int {
+		MOUSE = 1,
+		KEYBOARD = 2,
+		JOYSTICK = 3,
+		UNDEFINED = 0
 	};
 
 	/**
@@ -358,13 +358,13 @@ public:
 	 * RANGE: value between 0 and 1, for instance the xbox controller triggers
 	 * MOVE: 3 dimensional floats
 	 */
-	enum class TYPE {
-		PRESS,
-		DOWN,
-		RELEASE,
-		RANGE,
-		MOVE,
-		UNDEFINED
+	enum class TYPE : int {
+		PRESS = 1,
+		DOWN = 2,
+		RELEASE = 3,
+		RANGE = 4,
+		MOVE = 5,
+		UNDEFINED = 0
 	};
 
 	/**
@@ -597,6 +597,11 @@ private:
 
 public:
 	InputMatch() {}
+
+	InputMatch(const InputMatch& other)  :
+			m_source(other.m_source), m_type(other.m_type), m_key(other.m_key), m_callbackNameHash(other.m_callbackNameHash) {
+	}
+
 	InputMatch(RawInput::SOURCE source, RawInput::TYPE type, RawInput::KEY key, U32 callbackHash) :
 			m_source(source), m_type(type), m_key(key), m_callbackNameHash(callbackHash) {}
 

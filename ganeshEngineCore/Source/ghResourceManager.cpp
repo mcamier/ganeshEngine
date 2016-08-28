@@ -13,6 +13,12 @@ void ResourceManager::vInitialize() {
             auto loadersItr = m_loaders.find(GH_HASH(entry.loaderName));
             if (loadersItr != m_loaders.end()) {
                 auto ptr = make_shared<ResourceWrapper>(entry.name, entry.filename, loadersItr->second, entry.eagerLoading);
+
+                if(ptr->isEagerLoadAllowed()) {
+                    _DEBUG("eager loading for resource : "<<ptr->getName(), LOG_CHANNEL::RESOURCE);
+                    ptr->load();
+                }
+
                 m_resources.insert(make_pair(GH_HASH(entry.name), ptr));
             } else {
                 _ERROR("Resource doesn't have valid loader present", LOG_CHANNEL::RESOURCE);

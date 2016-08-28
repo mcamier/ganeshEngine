@@ -77,21 +77,40 @@ public:
         root->appendChild(cam);
         root->appendChild(obj);
         this->setRoot(root);
+
+        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveUp"), this, &MainScene::goUp);
+
+        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveDown"), this, &MainScene::goDown);
+
+        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveLeft"), this, &MainScene::goLeft);
+
+        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveRight"), this, &MainScene::goRight);
     }
 
-    void update(int deltaTime) override {
-        totalTime += deltaTime;
-        obj->addY((F32) ((2.0f * cos(totalTime)) * 0.005f));
+    void update(int deltaTime) override {}
+
+    void goUp(rawInput ri, U32 deltaTime) {
+        float move = ((float)deltaTime/1000000000.0f) * 1.0f;
+        obj->addY(-move);
+    }
+
+    void goDown(rawInput ri, U32 deltaTime) {
+        float move = ((float)deltaTime/1000000000.0f) * 1.0f;
+        obj->addY(move);
+    }
+
+    void goRight(rawInput ri, U32 deltaTime) {
+        float move = ((float)deltaTime/1000000000.0f) * 1.0f;
+        obj->addX(move);
+    }
+
+    void goLeft(rawInput ri, U32 deltaTime) {
+        float move = ((float)deltaTime/1000000000.0f) * 1.0f;
+        obj->addX(-move);
     }
 };
 
 class MeshObj : public Resource {
-};
-
-class Shader : public Resource {
-};
-
-class Program : public Resource {
 };
 
 class MeshObjLoader : public ResourceLoader {
@@ -104,19 +123,13 @@ protected:
 class ShaderLoader : public ResourceLoader {
 protected:
     unique_ptr<Resource> load(const char *string) const {
-        return make_unique<Shader>();
+        return nullptr;
     }
 };
 
-class ProgramLoader : public ResourceLoader {
-protected:
-    unique_ptr<Resource> load(const char *string) const {
-        return make_unique<Program>();
-    }
-};
 
 int main() {
-    LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT;
+    LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT | LOG_CHANNEL::RESOURCE;
     Configuration conf;
     conf.inputConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/inputConfiguration.json";
     conf.resourceConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/resourceConfiguration.json";
@@ -124,7 +137,6 @@ int main() {
     conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/log"));
     conf.customResourceLoaders.insert(make_pair(GH_HASH("MESH_OBJ"), new MeshObjLoader()));
     conf.customResourceLoaders.insert(make_pair(GH_HASH("GL_SHADER"), new ShaderLoader()));
-    conf.customResourceLoaders.insert(make_pair(GH_HASH("GL_PROGRAM"), new ProgramLoader()));
 	conf.startScene = new MainScene();
 
     Application::Initialize(conf);

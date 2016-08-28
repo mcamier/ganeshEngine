@@ -8,15 +8,6 @@ namespace ganeshEngine {
 using namespace std;
 using namespace glm;
 
-/**
- * Contract for object/resource which could be uploaded to GC's
- * memory
- */
-class GCResource {
-public:
-    virtual bool sendToGC() const = 0;
-    virtual bool freeFromGC() const = 0;
-};
 
 enum class DrawMode : GLenum {
     POINTS = GL_POINTS,

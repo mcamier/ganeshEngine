@@ -79,7 +79,7 @@ namespace ganeshEngine {
         ProfilerManager::Initialize();
 
         auto ic = InputManagerConfiguration::loadFromFile(m_configuration.inputConfigurationFilename);
-        InputManager::Initialize(move(ic));
+        InputManager::Initialize(ic);
 
         RendererManager::Initialize();
 

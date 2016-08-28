@@ -32,13 +32,13 @@ public:
      * Load the resource to GC memory
      * @return True is upload to GC happened without trouble, false otherwise
      */
-    virtual bool sendToGc() const { return true; };
+    virtual bool sendToGc() { return true; };
 
     /**
      * Remove the resource from the GC memory, this object still unchanged
      * @return True is memory freeing happened without trouble, false otherwise
      */
-    virtual bool freeFromGc() const { return true; };
+    virtual bool freeFromGc() { return true; };
 
     /**
      * Indicates if resource is loaded on GC's memory

@@ -10,6 +10,13 @@ shared_ptr<Resource> ResourceWrapper::getData() const {
     return this->data;
 }
 
+bool ResourceWrapper::isEagerLoadAllowed() const {
+    return this->eagerLoading;
+}
+const string& ResourceWrapper::getName() const {
+    return this->name;
+}
+
 bool ResourceWrapper::isLoaded() const {
     if (data != nullptr) {
         if (data->needGcLoad() && !data->isGcLoaded()) {

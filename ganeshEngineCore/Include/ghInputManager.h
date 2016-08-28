@@ -21,7 +21,7 @@ private:
 	 * Configuration object used during the initialization step of the object
 	 * Contains the game's inputContext filled with input chord and/or input matches
 	 */
-	unique_ptr<InputManagerConfiguration> m_config;
+	InputManagerConfiguration m_config;
 
 	/**
 	 * List of the registered input contexts in the manager
@@ -78,7 +78,7 @@ protected:
 	void vDestroy() override;
 
 public:
-	InputManager(unique_ptr<InputManagerConfiguration> config) : m_config(move(config)) {}
+	InputManager(InputManagerConfiguration config) : m_config(config) {}
 	InputManager(const InputManager &) = delete;
 	InputManager &operator=(const InputManager &) = delete;
 
@@ -95,11 +95,24 @@ public:
 	 */
 	void registerInputContext(unique_ptr<InputContext> inputContext);
 
+
 	/**
 	 */
 	void registerInputCallback(U32 callbackHash, InputCallbackType callback);
 
 	/**
+	 *
+	 * @param callbackHash
+	 * @param object
+	 * @param TMethod
+	 */
+	template<class T>
+	void registerInputCallback(U32 callbackHash, T *object, void (T::*TMethod)(rawInput ri, U32 deltaTime)) {
+		auto f = std::bind(TMethod, object, placeholders::_1, placeholders::_2);
+		m_inputCallbacks.insert(make_pair(callbackHash, f));
+	}
+
+/**
 	 *
 	 */
 	void update(U32 frameDuration);

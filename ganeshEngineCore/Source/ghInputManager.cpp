@@ -37,16 +37,14 @@ void InputManager::vInitialize() {
 				input.type = RawInput::TYPE::PRESS;
 				mgr->setKeyboardState(key, RawInput::TYPE::PRESS);
 				mgr->m_frameRawInputs.push(input);
-				_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
-					   LOG_CHANNEL::INPUT);
+				//_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
 				break;
 			}
 			case GLFW_RELEASE: {
 				input.type = RawInput::TYPE::RELEASE;
 				mgr->setKeyboardState(key, RawInput::TYPE::RELEASE);
 				mgr->m_frameRawInputs.push(input);
-				_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
-					   LOG_CHANNEL::INPUT);
+				//_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
 				break;
 			}
 		}
@@ -82,15 +80,13 @@ void InputManager::vInitialize() {
 				input.type = RawInput::TYPE::PRESS;
 				mgr->setMouseState(button, RawInput::TYPE::PRESS);
 				mgr->m_frameRawInputs.push(input);
-				_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
-					   LOG_CHANNEL::INPUT);
+				//_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
 				break;
 			case GLFW_RELEASE:
 				input.type = RawInput::TYPE::RELEASE;
 				mgr->setMouseState(button, RawInput::TYPE::RELEASE);
 				mgr->m_frameRawInputs.push(input);
-				_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
-					   LOG_CHANNEL::INPUT);
+				//_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
 				break;
 		}
 	});
@@ -107,13 +103,10 @@ void InputManager::vInitialize() {
 		input.data.range.y = offsetY;
 		input.data.range.z = 0;
 		mgr->m_frameRawInputs.push(input);
-		_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]",
-			   LOG_CHANNEL::INPUT);
+		//_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
 	});
 
-	/**
-	 * Add default input detection to exit the game when ESC is pressed
-	 */
+	/** Add default input detection to exit the game when ESC is pressed */
 	unique_ptr<InputContext> inputContext = make_unique<InputContext>(GH_HASH("__GH_INPUT_CONTEXT_SYSTEM"));
 	int id = inputContext->getId();
 	InputMatch *inputMatch = new InputMatch(
@@ -121,7 +114,7 @@ void InputManager::vInitialize() {
 			RawInput::TYPE::PRESS,
 			(RawInput::KEY) GH_BUTTON_KEY_ESCAPE,
 			GH_HASH("__GH_INPUT_EXIT_GAME"));
-	inputContext->registerMatch(unique_ptr<InputMatch>(inputMatch));
+	inputContext->registerMatch(*inputMatch);
 
 	this->registerInputCallback(GH_HASH("__GH_INPUT_EXIT_GAME"), [](rawInput ri, U32 deltaTime) {
 		gApp().shutdown();
@@ -130,21 +123,17 @@ void InputManager::vInitialize() {
 	this->registerInputContext(move(inputContext));
 	this->activeContext(id, true);
 
-	/**
-	 * Read and configuration from conf object
-	 */
-	if (m_config != nullptr) {
-		//m_rawInputLifetimeChordDetection = m_config->getChordThresholdDetectionUs();
-		vector<unique_ptr<InputContext>> &ictxs = m_config->getInputContexts();
-		for (int i = 0; i < ictxs.size(); i++) {
-			unique_ptr<InputContext> ptr{move(ictxs[i])};
-			int id = ptr->getId();
-			m_inputContexts.insert(pair<int, unique_ptr<InputContext>>(id, move(ptr)));
-			activeContext(id, true);
-		}
-	}
-
-	m_config.reset(nullptr); // free memory
+	/** Read and configuration from conf object */
+    _DEBUG("############################", LOG_CHANNEL::INPUT);
+    m_config.dump();
+    m_rawInputLifetimeChordDetection = m_config.getChordThresholdDetectionUs();
+    vector<InputContext*> &ictxs = m_config.getInputContexts();
+    for (int i = 0; i < ictxs.size(); i++) {
+        InputContext* ptr = ictxs[i];
+        int id = ptr->getId();
+        m_inputContexts.insert(pair<int, unique_ptr<InputContext>>(id, unique_ptr<InputContext>(ptr)));
+        activeContext(id, true);
+    }
 
 	gEvent().addListener<InputManager>(GH_HASH("__GH_EVENT_JOYSTICK_STATE_CHANGE"), this, &InputManager::onJoystickStateChange);
 
@@ -191,10 +180,8 @@ void InputManager::registerInputCallback(U32 callbackHash, InputCallbackType cal
 }
 
 void InputManager::update(U32 deltaTime) {
-	/**
-	 * Detection of held key, I dont rely on GLFW action repeat because
-	 * of the delay between press and the firist triggered hold input
-	 */
+	/** Detection of held key, I dont rely on GLFW action repeat because of the
+	 * delay between press and the firist triggered hold input */
 	updateStates(m_keyboardButtonsState, GH_BUTTON_ARRAY_SIZE);
 	updateStates(m_mouseButtonsState, GH_BUTTON_MOUSE_SIZE);
 
@@ -205,15 +192,12 @@ void InputManager::update(U32 deltaTime) {
 		}
 	}
 
-
     bool inputFoundInChord = false;
     while(!m_frameRawInputs.empty()) {
         auto input = m_frameRawInputs.front();
         inputFoundInChord = false;
 
-        /**
-         * check if input exist in any chord in any active context
-         */
+        /** check if input exist in any chord in any active context */
         for (auto const &entry : m_inputContexts) {
             InputContext &context = (*entry.second);
             if (context.isActive()) {
@@ -225,15 +209,12 @@ void InputManager::update(U32 deltaTime) {
             }
         }
         if(inputFoundInChord){
-            /**
-             * if input could potentially triggers a chord, it s postponed in another container and remove from the input queue
-             */
+            /** if input could potentially triggers a chord, it is postponed in another container and
+             * removed from the input queue */
             m_postponedRawInputs.push_back(input);
             _DEBUG("INPUT POSTPONED : " << RawInput::toString(input.source) << ", " << RawInput::toString(input.type), LOG_CHANNEL::INPUT);
         }else {
-            /**
-             * trigger regular action for this input
-             */
+            /** trigger regular action for this input */
 			triggerPlainInputAction(input, deltaTime);
         }
         m_frameRawInputs.pop();
@@ -306,7 +287,7 @@ void InputManager::triggerPlainInputAction(rawInput ri, U32 deltaTime) {
 			if (context.getInputMatch(ri, &callbackId)) {
 				auto iter = m_inputCallbacks.find(callbackId);
 				if (iter != m_inputCallbacks.end()) {
-					_DEBUG("INPUT MATCH TRIGERRED BY " << RawInput::toString(ri.source) << ", " << RawInput::toString(ri.type), LOG_CHANNEL::INPUT);
+					_DEBUG("INPUT MATCH TRIGERRED BY " << RawInput::toString(ri.source) << ", " << RawInput::toString(ri.type) << ", " << ri.data.button.key, LOG_CHANNEL::INPUT);
 					iter->second(ri, deltaTime);
 				} else {
 					_WARNING("Input detected but no callback to call", LOG_CHANNEL::INPUT);
@@ -351,10 +332,10 @@ void InputManager::setMouseState(int button, RawInput::TYPE type) {
 void InputManager::updateStates(rawInput target[], int size) {
 	for (int i = 0; i < size; i++) {
 		if (target[i].type == RawInput::TYPE::PRESS) {
-			target[i].type = RawInput::TYPE::DOWN;
-			_DEBUG("rawInput registered : [" << RawInput::toString(target[i].source) << "] [" << RawInput::toString(target[i].type) << "]", LOG_CHANNEL::INPUT);
+            target[i].type = RawInput::TYPE::DOWN;
+            m_frameRawInputs.push(target[i]);
 		} else if (target[i].type == RawInput::TYPE::DOWN) {
-			_DEBUG("rawInput registered : [" << RawInput::toString(target[i].source) << "] [" << RawInput::toString(target[i].type) << "]", LOG_CHANNEL::INPUT);
+            m_frameRawInputs.push(target[i]);
 		}
 	}
 }

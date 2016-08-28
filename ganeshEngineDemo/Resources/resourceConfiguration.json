@@ -1,6 +1,8 @@
 {
   "resourceLocationType": "folder",
+
   "resourcesLocation": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/",
+
   "resources": [
     {
       "name": "defaultFragmentShader",
@@ -25,11 +27,6 @@
           "value": "vertex"
         }
       ]
-    },
-    {
-      "name": "defaultShaderProgram",
-      "loaderName": "GL_PROGRAM",
-      "filename": ""
     },
     {
       "name": "foobar",

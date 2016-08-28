@@ -3,6 +3,7 @@
 
 #include "../ghHeaders.h"
 #include "ghHeaders.h"
+#include "../ghResource.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -32,7 +33,7 @@ enum class ShaderStatus {
 };
 
 
-class GLShader : public GCResource {
+class GLShader : public Resource {
     friend class GLProgram;
 
 private:
@@ -66,11 +67,9 @@ public:
 
     static GLShader* fromFile(ShaderType type, const char *filename);
 
-    void doCompile();
+    bool sendToGc() override;
 
-    bool sendToGC() const;
-
-    bool freeFromGC() const;
+    bool freeFromGc() override;
 
     /**
      *

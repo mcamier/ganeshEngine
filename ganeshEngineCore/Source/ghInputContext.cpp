@@ -9,8 +9,8 @@ namespace ganeshEngine {
     InputContext::~InputContext() {
     }
 
-    void InputContext::registerMatch(unique_ptr<InputMatch> inputMatch) {
-        m_inputMatches.push_back(move(inputMatch));
+    void InputContext::registerMatch(InputMatch inputMatch) {
+        m_inputMatches.push_back(inputMatch);
     }
 
     void InputContext::registerChord(Chord chord) {
@@ -18,30 +18,37 @@ namespace ganeshEngine {
     }
 
     bool InputContext::getInputMatch(rawInput &rawInput, U32 *callbackId) const {
+        _DEBUG("-> " << RawInput::toString(rawInput.source) << ",  " << RawInput::toString(rawInput.type), LOG_CHANNEL::INPUT);
         for (const auto &match : m_inputMatches) {
             if (rawInput.type == RawInput::TYPE::MOVE) {
-                if (match->getType() == rawInput.type &&
-                    match->getSource() == rawInput.source) {
-                    *callbackId = match->getCallbackHash();
+                if (match.getType() == rawInput.type &&
+                    match.getSource() == rawInput.source) {
+                    *callbackId = match.getCallbackHash();
                     return true;
                 }
             }
 
             if (rawInput.type == RawInput::TYPE::PRESS ||
-                rawInput.type == RawInput::TYPE::RELEASE ||
-                rawInput.type == RawInput::TYPE::DOWN) {
+                rawInput.type == RawInput::TYPE::RELEASE) {
 
-                if (match->getType() == rawInput.type &&
-                    match->getSource() == rawInput.source &&
-                    match->getKey() == (RawInput::KEY) rawInput.data.button.key) {
-                    *callbackId = match->getCallbackHash();
+                if (match.getType() == rawInput.type &&
+                    match.getSource() == rawInput.source &&
+                    match.getKey() == (RawInput::KEY) rawInput.data.button.key) {
+                    *callbackId = match.getCallbackHash();
+                    return true;
+                }
+            } else if(rawInput.type == RawInput::TYPE::DOWN) {
+                if ( (match.getType() == RawInput::TYPE::DOWN || match.getType() == RawInput::TYPE::PRESS) &&
+                    match.getSource() == rawInput.source &&
+                    match.getKey() == (RawInput::KEY) rawInput.data.button.key) {
+                    *callbackId = match.getCallbackHash();
                     return true;
                 }
             } else {
-                if (match->getType() == rawInput.type &&
-                    match->getSource() == rawInput.source &&
-                    match->getKey() == (RawInput::KEY) rawInput.data.button.key) {
-                    *callbackId = match->getCallbackHash();
+                if (match.getType() == rawInput.type &&
+                    match.getSource() == rawInput.source &&
+                    match.getKey() == (RawInput::KEY) rawInput.data.button.key) {
+                    *callbackId = match.getCallbackHash();
                     return true;
                 }
             }

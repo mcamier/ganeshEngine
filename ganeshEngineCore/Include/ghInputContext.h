@@ -14,6 +14,7 @@ namespace ganeshEngine {
 
     class InputContext {
         friend class InputManager;
+        friend class InputManagerConfiguration;
 
     private:
         /**
@@ -30,7 +31,7 @@ namespace ganeshEngine {
         /**
          * List of registered inputs in the context
          */
-        vector<unique_ptr<InputMatch>> m_inputMatches;
+        vector<InputMatch> m_inputMatches;
 
         /**
          */
@@ -55,7 +56,7 @@ namespace ganeshEngine {
          *
          * @param inputMatch
          */
-        void registerMatch(unique_ptr<InputMatch> inputMatch);
+        void registerMatch(InputMatch inputMatch);
 
         /**
          *

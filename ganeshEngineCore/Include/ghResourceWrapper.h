@@ -62,6 +62,19 @@ public:
     bool isLoaded() const;
 
     /**
+     * Indicates whether the underlying Resource can be loaded ASAP by the resource
+     * manager
+     * @return true if eager load allowed, false otherwise
+     */
+    bool isEagerLoadAllowed() const;
+
+    /**
+     * Getter of the resource's name
+     * @return name of the resource
+     */
+    const string& getName() const;
+
+    /**
      * Load the underlying resource with the embedded resourceLoader
      */
     void load();

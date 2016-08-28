@@ -18,13 +18,13 @@ GLShader* GLShader::fromFile(ShaderType type, const char *filename) {
     return new GLShader(type, content);
 }
 
-void GLShader::doCompile() {
+bool GLShader::sendToGc() {
     GLuint shaderId = glCreateShader((GLenum) mType);
     const char *content = mSource.c_str();
     glShaderSource(shaderId, 1, (const GLchar **) &content, nullptr);
     glCompileShader(shaderId);
 
-    /// error check
+    /** error check */
     GLint isCompiled = 0;
     glGetShaderiv(shaderId, GL_COMPILE_STATUS, &isCompiled);
     if (isCompiled == GL_FALSE) {
@@ -37,22 +37,20 @@ void GLShader::doCompile() {
         _ERROR(strInfoLog, LOG_CHANNEL::RENDER);
         delete[] strInfoLog;
         mStatus = ShaderStatus::FAILED;
+
+        return false;
     } else if (isCompiled == GL_TRUE) {
         mStatus = ShaderStatus::COMPILED;
     }
     mInternalId = shaderId;
-}
 
-bool GLShader::sendToGC() const {
-    //TODO implementation
     return true;
 }
 
-bool GLShader::freeFromGC() const {
-    //TODO implementation
+bool GLShader::freeFromGc() {
+    // TODO
     return true;
 }
-
 
 const ShaderType GLShader::getType() const {
     return mType;
