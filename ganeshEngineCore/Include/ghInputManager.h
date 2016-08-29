@@ -17,108 +17,81 @@ class InputManager : public System<InputManager> {
 	friend class System<InputManager>;
 
 private:
-	/**
-	 * Configuration object used during the initialization step of the object
+	/** Configuration object used during the initialization step of the object
 	 * Contains the game's inputContext filled with input chord and/or input matches
 	 */
 	InputManagerConfiguration m_config;
 
-	/**
-	 * List of the registered input contexts in the manager
+	/** List of the registered input contexts in the manager
 	 * Multiple inputContext could be active at the same time
 	 */
 	map<U32, unique_ptr<InputContext>> m_inputContexts;
 
-	/**
-	 * Map of input corresponding actions in the game
+	/** Map of input corresponding actions in the game
 	 * the key is the hash of the actual name of the input action, the value is
 	 * function called when input action is triggered
 	 */
 	map<U32, InputCallbackType> m_inputCallbacks;
 
-    /**
-     * Contains all inputs read from the system during the actual frame
-     * this vector is cleared atthje end of each frames
+    /** Contains all inputs read from the system during the current frame
+     * this vector is cleared at thje end of each frames
      */
     queue<rawInput> m_frameRawInputs;
 
-    /**
-	 * Contains postponed input that belongs to a chord
+    /** Contains postponed input that belongs to a chord
      * This list contains input for maybe several frame, the time needed to detecte a valid chord
      * or when input chord detection lifetime is over
 	 */
     vector<rawInput> m_postponedRawInputs;
 
-    /**
-     * Array used to store each keyboard buttons state
+    /** Array used to store each keyboard buttons state
      * Only used to determine if button is held down (was pressed once but not yet
      * released)
      */
 	rawInput m_keyboardButtonsState[GH_BUTTON_ARRAY_SIZE];
 
-    /**
-     * Array used to store each mouse buttons state
+    /** Array used to store each mouse buttons state
      * Only used to determine if button is held down (was pressed once but not yet
      * released)
      */
 	rawInput m_mouseButtonsState[GH_BUTTON_MOUSE_SIZE];
 
-	/**
-	 * Joystick object responsible of storing the joystick's state
+	/** Joystick object responsible of storing the joystick's state
 	 */
 	array<Joystick*, GH_MAX_JOYSTICK> m_joystick;
 
-	/**
-	 *
-	 */
-	U32 m_rawInputLifetimeChordDetection = 100000000;
 
 protected:
 	void vInitialize() override;
 	void vDestroy() override;
 
+
 public:
-	InputManager(InputManagerConfiguration config) : m_config(config) {}
+	InputManager(InputManagerConfiguration config) : m_config(config) {
+		m_postponedRawInputs = vector<rawInput>();
+		m_frameRawInputs = queue<rawInput>();
+		m_inputContexts = map<U32, unique_ptr<InputContext>>();
+		m_inputCallbacks = map<U32, InputCallbackType>();
+	}
 	InputManager(const InputManager &) = delete;
 	InputManager &operator=(const InputManager &) = delete;
 
-	/**
-	 *
-	 * @param id
-	 * @param active
-	 */
 	void activeContext(int id, bool active);
 
-	/**
-	 *
-	 * @param inputContext
-	 */
 	void registerInputContext(unique_ptr<InputContext> inputContext);
 
-
-	/**
-	 */
 	void registerInputCallback(U32 callbackHash, InputCallbackType callback);
 
-	/**
-	 *
-	 * @param callbackHash
-	 * @param object
-	 * @param TMethod
-	 */
 	template<class T>
-	void registerInputCallback(U32 callbackHash, T *object, void (T::*TMethod)(rawInput ri, U32 deltaTime)) {
+	void registerInputCallback(U32 callbackHash, T *object, void (T::*TMethod)(rawInput ri, float deltaTime)) {
 		auto f = std::bind(TMethod, object, placeholders::_1, placeholders::_2);
 		m_inputCallbacks.insert(make_pair(callbackHash, f));
 	}
 
-/**
-	 *
-	 */
-	void update(U32 frameDuration);
+	void update(float frameDuration);
 
 private:
-	void triggerPlainInputAction(rawInput ri, U32 deltaTime);
+	void triggerPlainInputAction(rawInput ri, float deltaTime);
 
 	void onJoystickStateChange(Event* event);
 

@@ -12,12 +12,14 @@ void InputManager::vInitialize() {
 		m_keyboardButtonsState[i].idx = 0;
 		m_keyboardButtonsState[i].source = RawInput::SOURCE::KEYBOARD;
 		m_keyboardButtonsState[i].type = RawInput::TYPE::RELEASE;
+		m_keyboardButtonsState[i].key = (RawInput::KEY)i;
 	}
 
 	for (int i = 0; i < GH_BUTTON_MOUSE_SIZE; i++) {
 		m_mouseButtonsState[i].idx = 0;
 		m_mouseButtonsState[i].source = RawInput::SOURCE::MOUSE;
 		m_mouseButtonsState[i].type = RawInput::TYPE::RELEASE;
+		m_mouseButtonsState[i].key = (RawInput::KEY)i;
 	}
 
 	glfwSetWindowUserPointer(gPlatform().getWindow(), this);
@@ -26,10 +28,9 @@ void InputManager::vInitialize() {
 		rawInput input;
 		input.idx = 0;
 		input.timestamp = 0;
-		input.chordDetectionLifetimeMs = mgr->m_rawInputLifetimeChordDetection;
+		input.chordDetectionLifetimeS = Chord::DETECTION_DURATION_SECOND;
 		input.source = RawInput::SOURCE::KEYBOARD;
-		input.data.button.key = key;
-		input.data.button.scancode = scancde;
+		input.key = (RawInput::KEY)key;
 		input.data.button.mods = mods;
 
 		switch (action) {
@@ -37,14 +38,12 @@ void InputManager::vInitialize() {
 				input.type = RawInput::TYPE::PRESS;
 				mgr->setKeyboardState(key, RawInput::TYPE::PRESS);
 				mgr->m_frameRawInputs.push(input);
-				//_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
 				break;
 			}
 			case GLFW_RELEASE: {
 				input.type = RawInput::TYPE::RELEASE;
 				mgr->setKeyboardState(key, RawInput::TYPE::RELEASE);
 				mgr->m_frameRawInputs.push(input);
-				//_DEBUG("rawInput registered : [" << RawInput::toString(input.source) << "] [" << RawInput::toString(input.type) << "]", LOG_CHANNEL::INPUT);
 				break;
 			}
 		}
@@ -55,7 +54,7 @@ void InputManager::vInitialize() {
 		rawInput input;
 		input.idx = 0;
 		input.timestamp = 0;
-		input.chordDetectionLifetimeMs = mgr->m_rawInputLifetimeChordDetection;
+		input.chordDetectionLifetimeS = Chord::DETECTION_DURATION_SECOND;
 		input.source = RawInput::SOURCE::MOUSE;
 		input.type = RawInput::TYPE::MOVE;
 		input.data.move.x = xpos;
@@ -69,10 +68,9 @@ void InputManager::vInitialize() {
 		rawInput input;
 		input.idx = 0;
 		input.timestamp = 0;
-		input.chordDetectionLifetimeMs = mgr->m_rawInputLifetimeChordDetection;
+		input.chordDetectionLifetimeS = Chord::DETECTION_DURATION_SECOND;
 		input.source = RawInput::SOURCE::MOUSE;
-		input.data.button.key = button;
-		input.data.button.scancode = button;
+		input.key = (RawInput::KEY)button;
 		input.data.button.mods = mods;
 
 		switch (action) {
@@ -96,7 +94,7 @@ void InputManager::vInitialize() {
 		rawInput input;
 		input.idx = 0;
 		input.timestamp = 0;
-		input.chordDetectionLifetimeMs = mgr->m_rawInputLifetimeChordDetection;
+		input.chordDetectionLifetimeS = Chord::DETECTION_DURATION_SECOND;
 		input.source = RawInput::SOURCE::MOUSE;
 		input.type = RawInput::TYPE::RANGE;
 		input.data.range.x = offsetX;
@@ -116,7 +114,7 @@ void InputManager::vInitialize() {
 			GH_HASH("__GH_INPUT_EXIT_GAME"));
 	inputContext->registerMatch(*inputMatch);
 
-	this->registerInputCallback(GH_HASH("__GH_INPUT_EXIT_GAME"), [](rawInput ri, U32 deltaTime) {
+	this->registerInputCallback(GH_HASH("__GH_INPUT_EXIT_GAME"), [](rawInput ri, float deltaTime) {
 		gApp().shutdown();
 	});
 
@@ -126,7 +124,6 @@ void InputManager::vInitialize() {
 	/** Read and configuration from conf object */
     _DEBUG("############################", LOG_CHANNEL::INPUT);
     m_config.dump();
-    m_rawInputLifetimeChordDetection = m_config.getChordThresholdDetectionUs();
     vector<InputContext*> &ictxs = m_config.getInputContexts();
     for (int i = 0; i < ictxs.size(); i++) {
         InputContext* ptr = ictxs[i];
@@ -179,7 +176,7 @@ void InputManager::registerInputCallback(U32 callbackHash, InputCallbackType cal
 	m_inputCallbacks.insert(make_pair(callbackHash, callback));
 }
 
-void InputManager::update(U32 deltaTime) {
+void InputManager::update(float deltaTime) {
 	/** Detection of held key, I dont rely on GLFW action repeat because of the
 	 * delay between press and the firist triggered hold input */
 	updateStates(m_keyboardButtonsState, GH_BUTTON_ARRAY_SIZE);
@@ -202,7 +199,7 @@ void InputManager::update(U32 deltaTime) {
             InputContext &context = (*entry.second);
             if (context.isActive()) {
                 for (auto const &chord : context.m_chords) {
-                    if (chord.containsRawInput(input.source, input.type, (RawInput::KEY)input.data.button.key)) {
+                    if (chord.containsRawInput(input.source, input.type, input.key)) {
                         inputFoundInChord=true;
                     }
                 }
@@ -240,6 +237,14 @@ void InputManager::update(U32 deltaTime) {
                             m_postponedRawInputs.erase(m_postponedRawInputs.begin()+b);
                             m_postponedRawInputs.erase(m_postponedRawInputs.begin()+a);
                         }
+
+						auto iter = m_inputCallbacks.find(chord.m_callbackNameHash);
+						if (iter != m_inputCallbacks.end()) {
+							iter->second(rawInput(), deltaTime);
+						} else {
+							_WARNING("Input chord detected but no callback to call", LOG_CHANNEL::INPUT);
+						}
+
                     }
                 } else if (chord.size == CHORD_SIZE::_3) {
                     int a = chord.findFirstInputFrom(m_postponedRawInputs);
@@ -257,6 +262,13 @@ void InputManager::update(U32 deltaTime) {
                             int t = (*itr);
                             m_postponedRawInputs.erase(m_postponedRawInputs.begin()+t);
                         }
+
+						auto iter = m_inputCallbacks.find(chord.m_callbackNameHash);
+						if (iter != m_inputCallbacks.end()) {
+							iter->second(rawInput(), deltaTime);
+						} else {
+							_WARNING("Input chord detected but no callback to call", LOG_CHANNEL::INPUT);
+						}
                     }
                 }
             }
@@ -267,9 +279,8 @@ void InputManager::update(U32 deltaTime) {
      * apply lifetime on remaining input and remove the too old ones
      */
     for(auto itr = m_postponedRawInputs.begin() ; itr!= m_postponedRawInputs.end() ; ) {
-		//TODO BUG HERE
-        (*itr).chordDetectionLifetimeMs -= deltaTime;
-        if((*itr).chordDetectionLifetimeMs <= 0){
+        (*itr).chordDetectionLifetimeS -= deltaTime;
+        if((*itr).chordDetectionLifetimeS <= 0){
 			triggerPlainInputAction((*itr), deltaTime);
 			m_postponedRawInputs.erase(itr);
             _DEBUG("INPUT FOR CHORD DETECTION LIFETIME OVER", LOG_CHANNEL::INPUT);
@@ -279,7 +290,7 @@ void InputManager::update(U32 deltaTime) {
     }
 }
 
-void InputManager::triggerPlainInputAction(rawInput ri, U32 deltaTime) {
+void InputManager::triggerPlainInputAction(rawInput ri, float deltaTime) {
 	for (auto const &entry : m_inputContexts) {
 		InputContext &context = (*entry.second);
 		if (context.isActive()) {
@@ -287,7 +298,7 @@ void InputManager::triggerPlainInputAction(rawInput ri, U32 deltaTime) {
 			if (context.getInputMatch(ri, &callbackId)) {
 				auto iter = m_inputCallbacks.find(callbackId);
 				if (iter != m_inputCallbacks.end()) {
-					_DEBUG("INPUT MATCH TRIGERRED BY " << RawInput::toString(ri.source) << ", " << RawInput::toString(ri.type) << ", " << ri.data.button.key, LOG_CHANNEL::INPUT);
+					_DEBUG("INPUT MATCH TRIGERRED BY " << RawInput::toString(ri.source) << ", " << RawInput::toString(ri.type) << ", " << RawInput::toString(ri.key), LOG_CHANNEL::INPUT);
 					iter->second(ri, deltaTime);
 				} else {
 					_WARNING("Input detected but no callback to call", LOG_CHANNEL::INPUT);

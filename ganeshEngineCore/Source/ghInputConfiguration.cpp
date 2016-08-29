@@ -6,10 +6,6 @@ InputManagerConfiguration::~InputManagerConfiguration() {}
 
 InputManagerConfiguration::InputManagerConfiguration() {}
 
-U32 InputManagerConfiguration::getChordThresholdDetectionUs() const {
-    return m_chordThresholdDetectionUs;
-}
-
 vector<InputContext*> &InputManagerConfiguration::getInputContexts() {
     return m_inputContexts;
 }
@@ -40,43 +36,11 @@ InputManagerConfiguration InputManagerConfiguration::loadFromFile(string configF
     return conf;
 }
 
-void InputManagerConfiguration::dump() {
-    _DEBUG("Dump of InputManagerConfiguration", LOG_CHANNEL::INPUT);
-    _DEBUG("\t m_chordThresholdDetectionUs = " << this->m_chordThresholdDetectionUs, LOG_CHANNEL::INPUT);
-    _DEBUG("\t m_chordThresholdDetectionUs = " << this->m_chordThresholdDetectionUs, LOG_CHANNEL::INPUT);
-
-    for (int i = 0; i < this->m_inputContexts.size(); i++) {
-        const auto ptr = this->m_inputContexts[i];
-        _DEBUG("\t Input Context : " << ptr->getId() << ", with " << ptr->m_inputMatches.size()
-                                     << " input matches", LOG_CHANNEL::INPUT);
-
-        for (int j = 0; j < ptr->m_inputMatches.size(); j++) {
-            const auto match = ptr->m_inputMatches[j];
-            _DEBUG("\t\t Source = " << RawInput::toString(match.getSource()), LOG_CHANNEL::INPUT);
-            _DEBUG("\t\t Type = " << RawInput::toString(match.getType()), LOG_CHANNEL::INPUT);
-            _DEBUG("\t\t Key = " << RawInput::toString(match.getKey()), LOG_CHANNEL::INPUT);
-            _DEBUG("\t\t----------------------------", LOG_CHANNEL::INPUT);
-        }
-        _DEBUG("\t============================", LOG_CHANNEL::INPUT);
-    }
-    _DEBUG("End Dump of InputManagerConfiguration", LOG_CHANNEL::INPUT);
-}
-
 void InputManagerConfiguration::readMainDatas(const Value &node, InputManagerConfiguration *conf) {
     if (!node.IsObject()) {
         _WARNING("load input configuration : Chord root element must be Object", LOG_CHANNEL::INPUT);
         return;
     };
-
-    if (node.HasMember("threshold_detection_us")) {
-        if (!node["threshold_detection_us"].IsInt()) {
-            _WARNING("load input configuration : threshold_detection_us must be an int", LOG_CHANNEL::INPUT);
-            return;
-        };
-        conf->m_chordThresholdDetectionUs = node["threshold_detection_us"].GetInt();
-        _DEBUG("threshold_detection_us : " << conf->m_chordThresholdDetectionUs, LOG_CHANNEL::INPUT);
-    }
-
 }
 
 void InputManagerConfiguration::readContexts(const Value &node, InputManagerConfiguration *conf) {
@@ -125,9 +89,9 @@ void InputManagerConfiguration::readMatches(const Value &node, InputContext *ctx
         InputMatch *inputMatch = nullptr;
         readMatch(node[i], inputMatch);
         if (inputMatch) {
-            _WARNING("\t - " << RawInput::toString(inputMatch->getSource()) << "/"
-                             << RawInput::toString(inputMatch->getType()) << "/"
-                             << RawInput::toString(inputMatch->getKey()),
+            _WARNING("\t - " << RawInput::toString(inputMatch->m_source) << "/"
+                             << RawInput::toString(inputMatch->m_type) << "/"
+                             << RawInput::toString(inputMatch->m_key),
                      LOG_CHANNEL::INPUT);
             ctx->registerMatch(*inputMatch);
         }
@@ -169,39 +133,17 @@ Chord *InputManagerConfiguration::readChord(const Value &node, Chord *&chord) {
     U32 callbackNameHash = GH_HASH(node["callbackName"].GetString());
     InputMatch i1, i2, i3;
 
-
-    _DEBUG("Chord action [" << callbackNameHash << "] :", LOG_CHANNEL::INPUT);
     if (node.HasMember("_3")) {
         csize = CHORD_SIZE::_3;
         i1 = readMatchFromChord(node["_1"]);
         i2 = readMatchFromChord(node["_2"]);
         i3 = readMatchFromChord(node["_3"]);
         chord = new Chord(callbackNameHash, i1, i2, i3);
-        _DEBUG("\t - " << RawInput::toString(chord->_1.getSource()) << "/"
-                       << RawInput::toString(chord->_1.getType()) << "/"
-                       << RawInput::toString(chord->_1.getKey()),
-               LOG_CHANNEL::INPUT);
-        _DEBUG("\t - " << RawInput::toString(chord->_2.getSource()) << "/"
-                       << RawInput::toString(chord->_2.getType()) << "/"
-                       << RawInput::toString(chord->_2.getKey()),
-               LOG_CHANNEL::INPUT);
-        _DEBUG("\t - " << RawInput::toString(chord->_3.getSource()) << "/"
-                       << RawInput::toString(chord->_3.getType()) << "/"
-                       << RawInput::toString(chord->_3.getKey()),
-               LOG_CHANNEL::INPUT);
     } else {
         csize = CHORD_SIZE::_2;
         i1 = readMatchFromChord(node["_1"]);
         i2 = readMatchFromChord(node["_2"]);
         chord = new Chord(callbackNameHash, i1, i2);
-        _DEBUG("\t - " << RawInput::toString(chord->_1.getSource()) << "/"
-                       << RawInput::toString(chord->_1.getType()) << "/"
-                       << RawInput::toString(chord->_1.getKey()),
-               LOG_CHANNEL::INPUT);
-        _DEBUG("\t - " << RawInput::toString(chord->_2.getSource()) << "/"
-                       << RawInput::toString(chord->_2.getType()) << "/"
-                       << RawInput::toString(chord->_2.getKey()),
-               LOG_CHANNEL::INPUT);
     }
     if (chord == nullptr) {
         _WARNING("load input configuration : chord skipped because it's not well formed", LOG_CHANNEL::INPUT);
@@ -243,6 +185,27 @@ void InputManagerConfiguration::readChords(const Value &node, InputContext *ctx)
             ctx->registerChord(*chord);
         }
     }
+}
+
+
+void InputManagerConfiguration::dump() {
+    _DEBUG("Dump of InputManagerConfiguration", LOG_CHANNEL::INPUT);
+
+    for (int i = 0; i < this->m_inputContexts.size(); i++) {
+        const auto ptr = this->m_inputContexts[i];
+        _DEBUG("\t Input Context : " << ptr->getId() << ", with " << ptr->m_inputMatches.size()
+                                     << " input matches", LOG_CHANNEL::INPUT);
+
+        for (int j = 0; j < ptr->m_inputMatches.size(); j++) {
+            const auto match = ptr->m_inputMatches[j];
+            _DEBUG("\t\t Source = " << RawInput::toString(match.m_source), LOG_CHANNEL::INPUT);
+            _DEBUG("\t\t Type = " << RawInput::toString(match.m_type), LOG_CHANNEL::INPUT);
+            _DEBUG("\t\t Key = " << RawInput::toString(match.m_key), LOG_CHANNEL::INPUT);
+            _DEBUG("\t\t----------------------------", LOG_CHANNEL::INPUT);
+        }
+        _DEBUG("\t============================", LOG_CHANNEL::INPUT);
+    }
+    _DEBUG("End Dump of InputManagerConfiguration", LOG_CHANNEL::INPUT);
 }
 
 }

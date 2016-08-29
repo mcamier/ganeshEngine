@@ -426,32 +426,16 @@ RawInput::KEY RawInput::fromString<RawInput::KEY>(const char *value) {
 	return RawInput::KEY::UNDEFINED;
 }
 
-RawInput::SOURCE InputMatch::getSource() const {
-	return m_source;
-}
-
-RawInput::TYPE InputMatch::getType() const {
-	return m_type;
-}
-
-RawInput::KEY InputMatch::getKey() const {
-	return m_key;
-}
-
-U32 InputMatch::getCallbackHash() const {
-	return m_callbackNameHash;
-}
-
 bool operator==(InputMatch const &v1, InputMatch const &v2) {
-	return (v1.getSource() == v2.getSource() &&
-			v1.getType() == v2.getType() &&
-			v1.getKey() == v2.getKey());
+	return (v1.m_source == v2.m_source &&
+			v1.m_type == v2.m_type &&
+			v1.m_key == v2.m_key);
 }
 
 bool operator!=(InputMatch const &v1, InputMatch const &v2) {
-	return (v1.getSource() != v2.getSource() ||
-			v1.getType() != v2.getType() ||
-			v1.getKey() != v2.getKey());
+	return (v1.m_source != v2.m_source ||
+			v1.m_type != v2.m_type ||
+			v1.m_key != v2.m_key);
 }
 
 bool operator==(Chord const &v1, Chord const &v2) {

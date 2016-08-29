@@ -22,6 +22,7 @@ namespace ganeshEngine {
 
     void Application::run() {
         U32 dt = 10000000;
+	    float dtAsSecond = 10000000.0f/1000000000.0f;
         U64 accumulator = 0;
         U64 totalTime = 0;
 
@@ -43,11 +44,9 @@ namespace ganeshEngine {
             accumulator += elapsedLastFrame.count();
 
             while (accumulator >= dt) {
-                PROFILE("input", gInput().update(dt));
-                PROFILE("scene", mMainScene->update(dt));
+                PROFILE("input", gInput().update(dtAsSecond));
+                PROFILE("scene", mMainScene->update(dtAsSecond));
                 PROFILE("event", gEvent().update());
-
-
 
                 accumulator -= dt;
                 totalTime += dt;
@@ -74,7 +73,6 @@ namespace ganeshEngine {
 
         auto rc = ResourceConfiguration::loadFromFile(m_configuration.resourceConfigurationFilename);
         ResourceManager::Initialize(move(rc), m_configuration.customResourceLoaders);
-
 
         ProfilerManager::Initialize();
 

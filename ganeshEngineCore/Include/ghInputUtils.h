@@ -185,7 +185,7 @@ public:
 	}
 
 	void update() {
-		std::memcpy(previousButtons, buttons, sizeof previousButtons);
+		//std::memcpy(previousButtons, buttons, sizeof previousButtons);
 		axes = glfwGetJoystickButtons(m_index, &axeCount);
 		buttons = glfwGetJoystickAxes(m_index, &buttonCount);
 	}
@@ -517,16 +517,13 @@ public:
 	static const char *toString(const K value);
 };
 
-/**
- * Store informations for all inputs that can be either pressed,
+/** Store informations for all inputs that can be either pressed,
  * released, or held (like keyboard keys, joysticks buttons or
  * mouse buttons)
  */
 typedef struct buttonData_s {
-	int key;
-	int scancode;
 	int mods;
-	long duration;
+	long HoldDurationSecond;
 } buttonData;
 
 typedef struct rangeData_s {
@@ -546,23 +543,29 @@ typedef struct moveData_s {
  * (GLFW by the time, should be later available through interface)
  */
 typedef struct rawInput_s {
-	/**
-	 * From which device the input comes from
+	/** From which device the input comes from
 	 */
 	RawInput::SOURCE source;
 
-	/**
-	 * Type of the received input
+	/** Type of the received input
 	 */
 	RawInput::TYPE type;
 
-	/**
-	 * Time when input occured
+	/** Key of the received input, could be set with NONE value
+	 * for certain kind of input
+	 */
+	RawInput::KEY key;
+
+	/** Time when input occured
 	 */
 	long timestamp;
 
 	/**
-	 * Index of the devices that generates the input
+	 *
+	 */
+	float chordDetectionLifetimeS;
+
+	/** Index of the devices that generates the input
 	 *
 	 * @note will be unrelevant value for the keyboard or the mouse
 	 * device source but significant when multiple xbox controllers are
@@ -570,13 +573,7 @@ typedef struct rawInput_s {
 	 */
 	int idx;
 
-	/**
-	 * Remaining lifetime of the input before it could be used to detect chord
-	 */
-	int chordDetectionLifetimeMs;
-
-	/**
-	 * Payload informations
+	/** Payload informations
 	 */
 	union datas_u {
 		buttonData button;
@@ -589,26 +586,16 @@ typedef struct rawInput_s {
  *
  */
 class InputMatch {
-private:
+public:
 	RawInput::SOURCE m_source {RawInput::SOURCE::UNDEFINED};
 	RawInput::TYPE m_type {RawInput::TYPE::UNDEFINED};
 	RawInput::KEY m_key {RawInput::KEY::UNDEFINED};
 	U32 m_callbackNameHash {0};
 
-public:
 	InputMatch() {}
-
-	InputMatch(const InputMatch& other)  :
-			m_source(other.m_source), m_type(other.m_type), m_key(other.m_key), m_callbackNameHash(other.m_callbackNameHash) {
-	}
 
 	InputMatch(RawInput::SOURCE source, RawInput::TYPE type, RawInput::KEY key, U32 callbackHash) :
 			m_source(source), m_type(type), m_key(key), m_callbackNameHash(callbackHash) {}
-
-	RawInput::SOURCE getSource() const;
-	RawInput::TYPE getType() const;
-	RawInput::KEY getKey() const;
-	U32 getCallbackHash() const;
 };
 
 /**
@@ -616,6 +603,8 @@ public:
  */
 class Chord {
 public:
+	constexpr static const float DETECTION_DURATION_SECOND = 0.02f;
+
 	CHORD_SIZE size;
 	InputMatch _1;
 	InputMatch _2;
@@ -635,12 +624,12 @@ public:
 
     bool containsRawInput(RawInput::SOURCE source, RawInput::TYPE type ,RawInput::KEY key) const {
         if(size == CHORD_SIZE::_3) {
-            return ((_1.getSource() == source && _1.getType() == type && _1.getKey() == key) ||
-                    (_2.getSource() == source && _2.getType() == type && _2.getKey() == key) ||
-                    (_3.getSource() == source && _3.getType() == type && _3.getKey() == key));
+            return ((_1.m_source == source && _1.m_type == type && _1.m_key == key) ||
+                    (_2.m_source == source && _2.m_type == type && _2.m_key == key) ||
+                    (_3.m_source == source && _3.m_type == type && _3.m_key == key));
         } else if(size == CHORD_SIZE::_2) {
-            return ((_1.getSource() == source && _1.getType() == type && _1.getKey() == key) ||
-                    (_2.getSource() == source && _2.getType() == type && _2.getKey() == key));
+            return ((_1.m_source == source && _1.m_type == type && _1.m_key == key) ||
+                    (_2.m_source == source && _2.m_type == type && _2.m_key == key));
         }
         return false;
     }
@@ -648,9 +637,9 @@ public:
     int findFirstInputFrom(vector<rawInput> &listInputs) const {
         for(int i = 0 ; i<listInputs.size() ; ++i) {
             auto const& ri = listInputs[i];
-            if(this->_1.getSource() == ri.source &&
-               this->_1.getType() == ri.type &&
-               this->_1.getKey() == ((RawInput::KEY)ri.data.button.key)) {
+            if(this->_1.m_source == ri.source &&
+               this->_1.m_type == ri.type &&
+               this->_1.m_key == ri.key) {
                 return i;
             }
         }
@@ -660,9 +649,9 @@ public:
     int findSecondInputFrom(vector<rawInput> &listInputs) const {
         for(int i = 0 ; i<listInputs.size() ; ++i) {
             auto const& ri = listInputs[i];
-            if(this->_2.getSource() == ri.source &&
-               this->_2.getType() == ri.type &&
-               this->_2.getKey() == ((RawInput::KEY)ri.data.button.key)) {
+            if(this->_2.m_source == ri.source &&
+               this->_2.m_type == ri.type &&
+               this->_2.m_key == ri.key) {
                 return i;
             }
         }
@@ -673,9 +662,9 @@ public:
         if(size != CHORD_SIZE::_3) return -1;
         for(int i = 0 ; i<listInputs.size() ; ++i) {
             auto const& ri = listInputs[i];
-            if(this->_3.getSource() == ri.source &&
-               this->_3.getType() == ri.type &&
-               this->_3.getKey() == ((RawInput::KEY)ri.data.button.key)) {
+            if(this->_3.m_source == ri.source &&
+               this->_3.m_type == ri.type &&
+               this->_3.m_key == ri.key) {
                 return i;
             }
         }
@@ -683,7 +672,7 @@ public:
     }
 };
 
-using InputCallbackType = function<void(rawInput ri, U32 frameDuration)>;
+using InputCallbackType = function<void(rawInput ri, float frameDuration)>;
 
 }
 

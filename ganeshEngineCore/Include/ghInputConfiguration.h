@@ -21,22 +21,12 @@ using namespace rapidjson;
 class InputManagerConfiguration {
 
 private:
-    /** maximum amount of time inputs can be held in order to detects chords */
-    U32 m_chordThresholdDetectionUs = -1;
-
     /**
      */
     vector<InputContext*> m_inputContexts;
 
 public:
     virtual ~InputManagerConfiguration();
-
-    /**
-     * Return the maximum amount of time inputs can be held in order to detects chords (input combination)
-     *
-     * @return amount of time in millisecond
-     */
-    U32 getChordThresholdDetectionUs() const;
 
     /**
      *

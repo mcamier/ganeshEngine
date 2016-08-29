@@ -1,27 +1,38 @@
 {
-  "chord": {
-    "threshold_detection_us": 100000000
-  },
   "contexts": [
     {
       "name": "demoMainInputContext",
-      "chords": [],
+      "chords": [
+        {
+          "callbackName": "demoMatchReset",
+          "_1": {
+            "source": "KEYBOARD",
+            "type": "PRESS",
+            "identifier": "RIGHT"
+          },
+          "_2": {
+            "source": "KEYBOARD",
+            "type": "PRESS",
+            "identifier": "LEFT"
+          }
+        }
+      ],
       "matches": [
         {
           "source": "KEYBOARD",
-          "type": "PRESS",
+          "type": "DOWN",
           "identifier": "UP",
           "callbackName": "demoMatchMoveUp"
         },
         {
           "source": "KEYBOARD",
-          "type": "PRESS",
+          "type": "DOWN",
           "identifier": "DOWN",
           "callbackName": "demoMatchMoveDown"
         },
         {
           "source": "KEYBOARD",
-          "type": "PRESS",
+          "type": "DOWN",
           "identifier": "LEFT",
           "callbackName": "demoMatchMoveLeft"
         },

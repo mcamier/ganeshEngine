@@ -85,28 +85,36 @@ public:
         gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveLeft"), this, &MainScene::goLeft);
 
         gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveRight"), this, &MainScene::goRight);
+        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchReset"), this, &MainScene::reset);
     }
 
-    void update(int deltaTime) override {}
+    void update(float deltaTime) override {
 
-    void goUp(rawInput ri, U32 deltaTime) {
-        float move = ((float)deltaTime/1000000000.0f) * 1.0f;
+    }
+
+    void goUp(rawInput ri, float deltaTime) {
+        float move = deltaTime * 1.0f;
         obj->addY(-move);
     }
 
-    void goDown(rawInput ri, U32 deltaTime) {
-        float move = ((float)deltaTime/1000000000.0f) * 1.0f;
+    void goDown(rawInput ri, float deltaTime) {
+        float move = deltaTime * 1.0f;
         obj->addY(move);
     }
 
-    void goRight(rawInput ri, U32 deltaTime) {
-        float move = ((float)deltaTime/1000000000.0f) * 1.0f;
+    void goRight(rawInput ri, float deltaTime) {
+        float move = deltaTime * 1.0f;
         obj->addX(move);
     }
 
-    void goLeft(rawInput ri, U32 deltaTime) {
-        float move = ((float)deltaTime/1000000000.0f) * 1.0f;
+    void goLeft(rawInput ri, float deltaTime) {
+        float move = deltaTime * 1.0f;
         obj->addX(-move);
+    }
+
+    void reset(rawInput ri, float deltaTime) {
+        obj->setX(0.0f);
+        obj->setY(0.0f);
     }
 };
 
@@ -129,15 +137,20 @@ protected:
 
 
 int main() {
-    LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT | LOG_CHANNEL::RESOURCE;
     Configuration conf;
+    LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT | LOG_CHANNEL::RESOURCE;
+
     conf.inputConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/inputConfiguration.json";
+
     conf.resourceConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/resourceConfiguration.json";
-    conf.loggers.push_back(new ConsoleLogger(LOG_LEVEL::DEBUG, channels));
+
+    conf.loggers.push_back(new ConsoleLogger(LOG_LEVEL::DEBUG, LOG_CHANNEL::INPUT));
     conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/log"));
+
     conf.customResourceLoaders.insert(make_pair(GH_HASH("MESH_OBJ"), new MeshObjLoader()));
     conf.customResourceLoaders.insert(make_pair(GH_HASH("GL_SHADER"), new ShaderLoader()));
-	conf.startScene = new MainScene();
+
+    conf.startScene = new MainScene();
 
     Application::Initialize(conf);
     /** After application initialization all singletons used by the engine
@@ -147,7 +160,6 @@ int main() {
     //gResource().addImporter("shader", new ShaderImporter());
     //gResource().addImporter("meshObj", new ObjResourceLoader());
     //hResource<MeshObj> foobar = gResource().getResource<MeshObj>(GH_HASH("foobar"));
-    //auto test = foobar->getRaw();
     Application::RunLoop();
     Application::Destroy();
     return 0;
