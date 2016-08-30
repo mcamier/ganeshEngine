@@ -10,9 +10,9 @@ namespace ganeshEngine {
 using namespace std;
 
 enum GLProgramStatus {
-    NONE = 0x01,
-    COMPILED = 0x02,
-    FAILED = 0x04,
+    NONE        = 0b0001,
+    COMPILED    = 0b0010,
+    FAILED      = 0b0100
 };
 
 

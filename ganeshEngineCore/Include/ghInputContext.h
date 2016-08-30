@@ -23,7 +23,7 @@ namespace ganeshEngine {
         U32 m_id;
 
         /**
-         * True if the inputManager should try to match a rawInput against this context, False
+         * True if the inputManager should try to match a RawInput against this context, False
          * otherwise
          */
         bool m_bActive;
@@ -46,11 +46,11 @@ namespace ganeshEngine {
 
         /**
          *
-         * @param rawInput
+         * @param RawInput
          * @param callback
          * @return
          */
-        bool getInputMatch(rawInput &rawInput, U32 *callback) const;
+        bool getInputMatch(const RawInput &RawInput, U32 *callback) const;
 
         /**
          *

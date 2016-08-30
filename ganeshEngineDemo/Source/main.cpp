@@ -92,27 +92,27 @@ public:
 
     }
 
-    void goUp(rawInput ri, float deltaTime) {
+    void goUp(RawInput ri, float deltaTime) {
         float move = deltaTime * 1.0f;
         obj->addY(-move);
     }
 
-    void goDown(rawInput ri, float deltaTime) {
+    void goDown(RawInput ri, float deltaTime) {
         float move = deltaTime * 1.0f;
         obj->addY(move);
     }
 
-    void goRight(rawInput ri, float deltaTime) {
+    void goRight(RawInput ri, float deltaTime) {
         float move = deltaTime * 1.0f;
         obj->addX(move);
     }
 
-    void goLeft(rawInput ri, float deltaTime) {
+    void goLeft(RawInput ri, float deltaTime) {
         float move = deltaTime * 1.0f;
         obj->addX(-move);
     }
 
-    void reset(rawInput ri, float deltaTime) {
+    void reset(RawInput ri, float deltaTime) {
         obj->setX(0.0f);
         obj->setY(0.0f);
     }

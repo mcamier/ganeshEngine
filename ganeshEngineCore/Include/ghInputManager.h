@@ -36,25 +36,25 @@ private:
     /** Contains all inputs read from the system during the current frame
      * this vector is cleared at thje end of each frames
      */
-    queue<rawInput> m_frameRawInputs;
+    queue<RawInput> m_frameRawInputs;
 
     /** Contains postponed input that belongs to a chord
      * This list contains input for maybe several frame, the time needed to detecte a valid chord
      * or when input chord detection lifetime is over
 	 */
-    vector<rawInput> m_postponedRawInputs;
+    vector<RawInput> m_postponedRawInputs;
 
     /** Array used to store each keyboard buttons state
      * Only used to determine if button is held down (was pressed once but not yet
      * released)
      */
-	rawInput m_keyboardButtonsState[GH_KEYBOARD_KEY_COUNT];
+	//RawInput m_keyboardButtonsState[GH_KEYBOARD_KEY_COUNT];
 
     /** Array used to store each mouse buttons state
      * Only used to determine if button is held down (was pressed once but not yet
      * released)
      */
-	rawInput m_mouseButtonsState[GH_MOUSE_KEY_COUNT];
+	//RawInput m_mouseButtonsState[GH_MOUSE_KEY_COUNT];
 
 	/** Joystick object responsible of storing the joystick's state
 	 */
@@ -68,8 +68,8 @@ protected:
 
 public:
 	InputManager(InputManagerConfiguration config) : m_config(config) {
-		m_postponedRawInputs = vector<rawInput>();
-		m_frameRawInputs = queue<rawInput>();
+		m_postponedRawInputs = vector<RawInput>();
+		m_frameRawInputs = queue<RawInput>();
 		m_inputContexts = map<U32, unique_ptr<InputContext>>();
 		m_inputCallbacks = map<U32, InputCallbackType>();
 	}
@@ -83,7 +83,7 @@ public:
 	void registerInputCallback(U32 callbackHash, InputCallbackType callback);
 
 	template<class T>
-	void registerInputCallback(U32 callbackHash, T *object, void (T::*TMethod)(rawInput ri, float deltaTime)) {
+	void registerInputCallback(U32 callbackHash, T *object, void (T::*TMethod)(RawInput ri, float deltaTime)) {
 		auto f = std::bind(TMethod, object, placeholders::_1, placeholders::_2);
 		m_inputCallbacks.insert(make_pair(callbackHash, f));
 	}
@@ -91,15 +91,15 @@ public:
 	void update(float frameDuration);
 
 private:
-	void triggerPlainInputAction(rawInput ri, float deltaTime);
+	void triggerPlainInputAction(RawInput ri, float deltaTime);
 
 	void onJoystickStateChange(Event* event);
 
-	void setKeyboardState(int key, RawInput::TYPE type);
+	void setKeyboardState(int key, InputType type);
 
-	void setMouseState(int button, RawInput::TYPE type);
+	void setMouseState(int button, InputType type);
 
-	void updateStates(rawInput target[], int size);
+	void updateStates(RawInput target[], int size);
 };
 
 /**

@@ -6,7 +6,6 @@
 #include "../ghResource.h"
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 namespace ganeshEngine {
 

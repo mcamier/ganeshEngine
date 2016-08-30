@@ -89,9 +89,9 @@ void InputManagerConfiguration::readMatches(const Value &node, InputContext *ctx
         InputMatch *inputMatch = nullptr;
         readMatch(node[i], inputMatch);
         if (inputMatch) {
-            _WARNING("\t - " << RawInput::toString(inputMatch->m_source) << "/"
-                             << RawInput::toString(inputMatch->m_type) << "/"
-                             << RawInput::toString(inputMatch->m_key),
+            _WARNING("\t - " << inputDetails::toString(inputMatch->m_source) << "/"
+                             << inputDetails::toString(inputMatch->m_type) << "/"
+                             << inputDetails::toString(inputMatch->m_code),
                      LOG_CHANNEL::INPUT);
             ctx->registerMatch(*inputMatch);
         }
@@ -110,9 +110,9 @@ void InputManagerConfiguration::readMatch(const Value &node, InputMatch *&im) {
         return;
     }
     im = new InputMatch(
-            RawInput::fromString<RawInput::SOURCE>(node["source"].GetString()),
-            RawInput::fromString<RawInput::TYPE>(node["type"].GetString()),
-            RawInput::fromString<RawInput::KEY>(node["identifier"].GetString()),
+            inputDetails::fromString<InputSource>(node["source"].GetString()),
+            inputDetails::fromString<InputType>(node["type"].GetString()),
+            inputDetails::fromString<InputCode>(node["identifier"].GetString()),
             GH_HASH(node["callbackName"].GetString()));
 }
 
@@ -129,18 +129,18 @@ Chord *InputManagerConfiguration::readChord(const Value &node, Chord *&chord) {
         return chord;
     }
 
-    CHORD_SIZE csize;
+    InputChordSize csize;
     U32 callbackNameHash = GH_HASH(node["callbackName"].GetString());
     InputMatch i1, i2, i3;
 
     if (node.HasMember("_3")) {
-        csize = CHORD_SIZE::_3;
+        csize = InputChordSize::_3;
         i1 = readMatchFromChord(node["_1"]);
         i2 = readMatchFromChord(node["_2"]);
         i3 = readMatchFromChord(node["_3"]);
         chord = new Chord(callbackNameHash, i1, i2, i3);
     } else {
-        csize = CHORD_SIZE::_2;
+        csize = InputChordSize::_2;
         i1 = readMatchFromChord(node["_1"]);
         i2 = readMatchFromChord(node["_2"]);
         chord = new Chord(callbackNameHash, i1, i2);
@@ -165,9 +165,9 @@ InputMatch InputManagerConfiguration::readMatchFromChord(const Value &node) {
         return InputMatch();
     }
     return InputMatch(
-            RawInput::fromString<RawInput::SOURCE>(node["source"].GetString()),
-            RawInput::fromString<RawInput::TYPE>(node["type"].GetString()),
-            RawInput::fromString<RawInput::KEY>(node["identifier"].GetString()),
+            inputDetails::fromString<InputSource>(node["source"].GetString()),
+            inputDetails::fromString<InputType>(node["type"].GetString()),
+            inputDetails::fromString<InputCode>(node["identifier"].GetString()),
             0);
 }
 
@@ -198,9 +198,9 @@ void InputManagerConfiguration::dump() {
 
         for (int j = 0; j < ptr->m_inputMatches.size(); j++) {
             const auto match = ptr->m_inputMatches[j];
-            _DEBUG("\t\t Source = " << RawInput::toString(match.m_source), LOG_CHANNEL::INPUT);
-            _DEBUG("\t\t Type = " << RawInput::toString(match.m_type), LOG_CHANNEL::INPUT);
-            _DEBUG("\t\t Key = " << RawInput::toString(match.m_key), LOG_CHANNEL::INPUT);
+            _DEBUG("\t\t Source = " << inputDetails::toString(match.m_source), LOG_CHANNEL::INPUT);
+            _DEBUG("\t\t Type = " << inputDetails::toString(match.m_type), LOG_CHANNEL::INPUT);
+            _DEBUG("\t\t Key = " << inputDetails::toString(match.m_code), LOG_CHANNEL::INPUT);
             _DEBUG("\t\t----------------------------", LOG_CHANNEL::INPUT);
         }
         _DEBUG("\t============================", LOG_CHANNEL::INPUT);

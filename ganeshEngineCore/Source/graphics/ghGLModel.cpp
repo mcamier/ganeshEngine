@@ -1,7 +1,5 @@
 #include "graphics/ghGLModel.h"
 
-#include <GLFW/glfw3.h>
-
 namespace ganeshEngine {
 
     void GLModel::sendToGC() {
