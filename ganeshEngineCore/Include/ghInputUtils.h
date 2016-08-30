@@ -7,156 +7,148 @@
 #include <functional>
 #include <GLFW/glfw3.h>
 
-// TODO missing xbox controller keys
-// TODO missing mouse button keys
-/**
- *This value below are relative to the system input used (GLFW for instance)
- */
-// TODO those #define must be conditionnal
-#define GH_BUTTON_UNKNOWN           -1
-
-#define GH_BUTTON_MOUSE_1           GLFW_MOUSE_BUTTON_1
-#define GH_BUTTON_MOUSE_2           GLFW_MOUSE_BUTTON_2
-#define GH_BUTTON_MOUSE_3           GLFW_MOUSE_BUTTON_3
-#define GH_BUTTON_MOUSE_4           GLFW_MOUSE_BUTTON_4
-#define GH_BUTTON_MOUSE_5           GLFW_MOUSE_BUTTON_5
-#define GH_BUTTON_MOUSE_6           GLFW_MOUSE_BUTTON_6
-#define GH_BUTTON_MOUSE_7           GLFW_MOUSE_BUTTON_7
-#define GH_BUTTON_MOUSE_8           GLFW_MOUSE_BUTTON_8
-#define GH_BUTTON_MOUSE_LEFT        GLFW_MOUSE_BUTTON_LEFT
-#define GH_BUTTON_MOUSE_RIGHT       GLFW_MOUSE_BUTTON_RIGHT
-#define GH_BUTTON_MOUSE_MIDDLE      GLFW_MOUSE_BUTTON_MIDDLE
-#define GH_BUTTON_MOUSE_SIZE        8
-
-#define GH_BUTTON_KEY_SPACE         32
-#define GH_BUTTON_KEY_APOSTROPHE    39 /* ' */
-#define GH_BUTTON_KEY_COMMA         44 /* , */
-#define GH_BUTTON_KEY_MINUS         45 /* - */
-#define GH_BUTTON_KEY_PERIOD        46 /* . */
-#define GH_BUTTON_KEY_SLASH         47 /* / */
-#define GH_BUTTON_KEY_0             48
-#define GH_BUTTON_KEY_1             49
-#define GH_BUTTON_KEY_2             50
-#define GH_BUTTON_KEY_3             51
-#define GH_BUTTON_KEY_4             52
-#define GH_BUTTON_KEY_5             53
-#define GH_BUTTON_KEY_6             54
-#define GH_BUTTON_KEY_7             55
-#define GH_BUTTON_KEY_8             56
-#define GH_BUTTON_KEY_9             57
-#define GH_BUTTON_KEY_SEMICOLON     59 /* ; */
-#define GH_BUTTON_KEY_EQUAL         61 /* = */
-#define GH_BUTTON_KEY_A             65
-#define GH_BUTTON_KEY_B             66
-#define GH_BUTTON_KEY_C             67
-#define GH_BUTTON_KEY_D             68
-#define GH_BUTTON_KEY_E             69
-#define GH_BUTTON_KEY_F             70
-#define GH_BUTTON_KEY_G             71
-#define GH_BUTTON_KEY_H             72
-#define GH_BUTTON_KEY_I             73
-#define GH_BUTTON_KEY_J             74
-#define GH_BUTTON_KEY_K             75
-#define GH_BUTTON_KEY_L             76
-#define GH_BUTTON_KEY_M             77
-#define GH_BUTTON_KEY_N             78
-#define GH_BUTTON_KEY_O             79
-#define GH_BUTTON_KEY_P             80
-#define GH_BUTTON_KEY_Q             81
-#define GH_BUTTON_KEY_R             82
-#define GH_BUTTON_KEY_S             83
-#define GH_BUTTON_KEY_T             84
-#define GH_BUTTON_KEY_U             85
-#define GH_BUTTON_KEY_V             86
-#define GH_BUTTON_KEY_W             87
-#define GH_BUTTON_KEY_X             88
-#define GH_BUTTON_KEY_Y             89
-#define GH_BUTTON_KEY_Z             90
-#define GH_BUTTON_KEY_LEFT_BRACKET  91 /* [ */
-#define GH_BUTTON_KEY_BACKSLASH     92 /* \ */
-#define GH_BUTTON_KEY_RIGHT_BRACKET 93 /* ] */
-#define GH_BUTTON_KEY_GRAVE_ACCENT  96 /* ` */
-#define GH_BUTTON_KEY_WORLD_1       161 /* non-US #1 */
-#define GH_BUTTON_KEY_WORLD_2       162 /* non-US #2 */
-#define GH_BUTTON_KEY_ESCAPE        256
-#define GH_BUTTON_KEY_ENTER         257
-#define GH_BUTTON_KEY_TAB           258
-#define GH_BUTTON_KEY_BACKSPACE     259
-#define GH_BUTTON_KEY_INSERT        260
-#define GH_BUTTON_KEY_DELETE        261
-#define GH_BUTTON_KEY_RIGHT         262
-#define GH_BUTTON_KEY_LEFT          263
-#define GH_BUTTON_KEY_DOWN          264
-#define GH_BUTTON_KEY_UP            265
-#define GH_BUTTON_KEY_PAGE_UP       266
-#define GH_BUTTON_KEY_PAGE_DOWN     267
-#define GH_BUTTON_KEY_HOME          268
-#define GH_BUTTON_KEY_END           269
-#define GH_BUTTON_KEY_CAPS_LOCK     280
-#define GH_BUTTON_KEY_SCROLL_LOCK   281
-#define GH_BUTTON_KEY_NUM_LOCK      282
-#define GH_BUTTON_KEY_PRINT_SCREEN  283
-#define GH_BUTTON_KEY_PAUSE         284
-#define GH_BUTTON_KEY_F1            290
-#define GH_BUTTON_KEY_F2            291
-#define GH_BUTTON_KEY_F3            292
-#define GH_BUTTON_KEY_F4            293
-#define GH_BUTTON_KEY_F5            294
-#define GH_BUTTON_KEY_F6            295
-#define GH_BUTTON_KEY_F7            296
-#define GH_BUTTON_KEY_F8            297
-#define GH_BUTTON_KEY_F9            298
-#define GH_BUTTON_KEY_F10           299
-#define GH_BUTTON_KEY_F11           300
-#define GH_BUTTON_KEY_F12           301
-#define GH_BUTTON_KEY_F13           302
-#define GH_BUTTON_KEY_F14           303
-#define GH_BUTTON_KEY_F15           304
-#define GH_BUTTON_KEY_F16           305
-#define GH_BUTTON_KEY_F17           306
-#define GH_BUTTON_KEY_F18           307
-#define GH_BUTTON_KEY_F19           308
-#define GH_BUTTON_KEY_F20           309
-#define GH_BUTTON_KEY_F21           310
-#define GH_BUTTON_KEY_F22           311
-#define GH_BUTTON_KEY_F23           312
-#define GH_BUTTON_KEY_F24           313
-#define GH_BUTTON_KEY_F25           314
-#define GH_BUTTON_KEY_KP_0          320
-#define GH_BUTTON_KEY_KP_1          321
-#define GH_BUTTON_KEY_KP_2          322
-#define GH_BUTTON_KEY_KP_3          323
-#define GH_BUTTON_KEY_KP_4          324
-#define GH_BUTTON_KEY_KP_5          325
-#define GH_BUTTON_KEY_KP_6          326
-#define GH_BUTTON_KEY_KP_7          327
-#define GH_BUTTON_KEY_KP_8          328
-#define GH_BUTTON_KEY_KP_9          329
-#define GH_BUTTON_KEY_KP_DECIMAL    330
-#define GH_BUTTON_KEY_KP_DIVIDE     331
-#define GH_BUTTON_KEY_KP_MULTIPLY   332
-#define GH_BUTTON_KEY_KP_SUBTRACT   333
-#define GH_BUTTON_KEY_KP_ADD        334
-#define GH_BUTTON_KEY_KP_ENTER      335
-#define GH_BUTTON_KEY_KP_EQUAL      336
-#define GH_BUTTON_KEY_LEFT_SHIFT    340
-#define GH_BUTTON_KEY_LEFT_CONTROL  341
-#define GH_BUTTON_KEY_LEFT_ALT      342
-#define GH_BUTTON_KEY_LEFT_SUPER    343
-#define GH_BUTTON_KEY_RIGHT_SHIFT   344
-#define GH_BUTTON_KEY_RIGHT_CONTROL 345
-#define GH_BUTTON_KEY_RIGHT_ALT     346
-#define GH_BUTTON_KEY_RIGHT_SUPER   347
-#define GH_BUTTON_KEY_MENU          348
-#define GH_BUTTON_KEY_LAST          GLFW_KEY_MENU
-
-#define GH_BUTTON_ARRAY_SIZE        350
+#define GH_KEYBOARD_KEY_COUNT       120
+#define GH_MOUSE_KEY_COUNT          8
+#define GH_MAX_JOYSTICK             GLFW_JOYSTICK_LAST
 
 #define GH_STATE_RELEASED           1
 #define GH_STATE_PRESSED            2
 #define GH_STATE_HELD               3
 
-#define GH_MAX_JOYSTICK             GLFW_JOYSTICK_LAST
+constexpr int ghKeyboardKeys[GH_KEYBOARD_KEY_COUNT] = {
+        //GLFW_KEY_UNKNOWN,
+        GLFW_KEY_SPACE,
+        GLFW_KEY_APOSTROPHE,
+        GLFW_KEY_COMMA,
+        GLFW_KEY_MINUS,
+        GLFW_KEY_PERIOD,
+        GLFW_KEY_SLASH,
+        GLFW_KEY_0,
+        GLFW_KEY_1,
+        GLFW_KEY_2,
+        GLFW_KEY_3,
+        GLFW_KEY_4,
+        GLFW_KEY_5,
+        GLFW_KEY_6,
+        GLFW_KEY_7,
+        GLFW_KEY_8,
+        GLFW_KEY_9,
+        GLFW_KEY_SEMICOLON,
+        GLFW_KEY_EQUAL,
+        GLFW_KEY_A,
+        GLFW_KEY_B,
+        GLFW_KEY_C,
+        GLFW_KEY_D,
+        GLFW_KEY_E,
+        GLFW_KEY_F,
+        GLFW_KEY_G,
+        GLFW_KEY_H,
+        GLFW_KEY_I,
+        GLFW_KEY_J,
+        GLFW_KEY_K,
+        GLFW_KEY_L,
+        GLFW_KEY_M,
+        GLFW_KEY_N,
+        GLFW_KEY_O,
+        GLFW_KEY_P,
+        GLFW_KEY_Q,
+        GLFW_KEY_R,
+        GLFW_KEY_S,
+        GLFW_KEY_T,
+        GLFW_KEY_U,
+        GLFW_KEY_V,
+        GLFW_KEY_W,
+        GLFW_KEY_X,
+        GLFW_KEY_Y,
+        GLFW_KEY_Z,
+        GLFW_KEY_LEFT_BRACKET,
+        GLFW_KEY_BACKSLASH,
+        GLFW_KEY_RIGHT_BRACKET,
+        GLFW_KEY_GRAVE_ACCENT,
+        GLFW_KEY_WORLD_1,
+        GLFW_KEY_WORLD_2,
+        GLFW_KEY_ESCAPE,
+        GLFW_KEY_ENTER,
+        GLFW_KEY_TAB,
+        GLFW_KEY_BACKSPACE,
+        GLFW_KEY_INSERT,
+        GLFW_KEY_DELETE,
+        GLFW_KEY_RIGHT,
+        GLFW_KEY_LEFT,
+        GLFW_KEY_DOWN,
+        GLFW_KEY_UP,
+        GLFW_KEY_PAGE_UP,
+        GLFW_KEY_PAGE_DOWN,
+        GLFW_KEY_HOME,
+        GLFW_KEY_END,
+        GLFW_KEY_CAPS_LOCK,
+        GLFW_KEY_SCROLL_LOCK,
+        GLFW_KEY_NUM_LOCK,
+        GLFW_KEY_PRINT_SCREEN,
+        GLFW_KEY_PAUSE,
+        GLFW_KEY_F1,
+        GLFW_KEY_F2,
+        GLFW_KEY_F3,
+        GLFW_KEY_F4,
+        GLFW_KEY_F5,
+        GLFW_KEY_F6,
+        GLFW_KEY_F7,
+        GLFW_KEY_F8,
+        GLFW_KEY_F9,
+        GLFW_KEY_F10,
+        GLFW_KEY_F11,
+        GLFW_KEY_F12,
+        GLFW_KEY_F13,
+        GLFW_KEY_F14,
+        GLFW_KEY_F15,
+        GLFW_KEY_F16,
+        GLFW_KEY_F17,
+        GLFW_KEY_F18,
+        GLFW_KEY_F19,
+        GLFW_KEY_F20,
+        GLFW_KEY_F21,
+        GLFW_KEY_F22,
+        GLFW_KEY_F23,
+        GLFW_KEY_F24,
+        GLFW_KEY_F25,
+        GLFW_KEY_KP_0,
+        GLFW_KEY_KP_1,
+        GLFW_KEY_KP_2,
+        GLFW_KEY_KP_3,
+        GLFW_KEY_KP_4,
+        GLFW_KEY_KP_5,
+        GLFW_KEY_KP_6,
+        GLFW_KEY_KP_7,
+        GLFW_KEY_KP_8,
+        GLFW_KEY_KP_9,
+        GLFW_KEY_KP_DECIMAL,
+        GLFW_KEY_KP_DIVIDE,
+        GLFW_KEY_KP_MULTIPLY,
+        GLFW_KEY_KP_SUBTRACT,
+        GLFW_KEY_KP_ADD,
+        GLFW_KEY_KP_ENTER,
+        GLFW_KEY_KP_EQUAL,
+        GLFW_KEY_LEFT_SHIFT,
+        GLFW_KEY_LEFT_CONTROL,
+        GLFW_KEY_LEFT_ALT,
+        GLFW_KEY_LEFT_SUPER,
+        GLFW_KEY_RIGHT_SHIFT,
+        GLFW_KEY_RIGHT_CONTROL,
+        GLFW_KEY_RIGHT_ALT,
+        GLFW_KEY_RIGHT_SUPER,
+        GLFW_KEY_MENU
+};
+
+constexpr int ghMouseKeys[GH_MOUSE_KEY_COUNT] = {
+    GLFW_MOUSE_BUTTON_1,
+    GLFW_MOUSE_BUTTON_2,
+    GLFW_MOUSE_BUTTON_3,
+    GLFW_MOUSE_BUTTON_4,
+    GLFW_MOUSE_BUTTON_5,
+    GLFW_MOUSE_BUTTON_6,
+    GLFW_MOUSE_BUTTON_7,
+    GLFW_MOUSE_BUTTON_8
+};
 
 namespace ganeshEngine {
 
@@ -216,6 +208,7 @@ private:
 
 	const static char *keyMouseLeft;
 	const static char *keyMouseRight;
+	const static char *keyMouseMiddle;
 	const static char *keyApostrophe;
 	const static char *keyComma;
 	const static char *keyMinus;
@@ -373,129 +366,132 @@ public:
 	 * well as gamepad's button
 	 */
 	enum class KEY : int {
-		MOUSE_LEFT = GH_BUTTON_MOUSE_LEFT,
-		MOUSE_RIGHT = GH_BUTTON_MOUSE_RIGHT,
-		APOSTROPHE = GH_BUTTON_KEY_APOSTROPHE,
-		COMMA = GH_BUTTON_KEY_COMMA,
-		MINUS = GH_BUTTON_KEY_MINUS,
-		PERIOD = GH_BUTTON_KEY_PERIOD,
-		SLASH = GH_BUTTON_KEY_SLASH,
-		NUM_0 = GH_BUTTON_KEY_0,
-		NUM_1 = GH_BUTTON_KEY_1,
-		NUM_2 = GH_BUTTON_KEY_2,
-		NUM_3 = GH_BUTTON_KEY_3,
-		NUM_4 = GH_BUTTON_KEY_4,
-		NUM_5 = GH_BUTTON_KEY_5,
-		NUM_6 = GH_BUTTON_KEY_6,
-		NUM_7 = GH_BUTTON_KEY_7,
-		NUM_8 = GH_BUTTON_KEY_8,
-		NUM_9 = GH_BUTTON_KEY_9,
-		SEMICOLON = GH_BUTTON_KEY_SEMICOLON,
-		EQUAL = GH_BUTTON_KEY_EQUAL,
-		SPACE = GH_BUTTON_KEY_SPACE,
-		A = GH_BUTTON_KEY_A,
-		B = GH_BUTTON_KEY_B,
-		C = GH_BUTTON_KEY_C,
-		D = GH_BUTTON_KEY_D,
-		E = GH_BUTTON_KEY_E,
-		F = GH_BUTTON_KEY_F,
-		G = GH_BUTTON_KEY_G,
-		H = GH_BUTTON_KEY_H,
-		I = GH_BUTTON_KEY_I,
-		J = GH_BUTTON_KEY_J,
-		K = GH_BUTTON_KEY_K,
-		L = GH_BUTTON_KEY_L,
-		M = GH_BUTTON_KEY_M,
-		N = GH_BUTTON_KEY_N,
-		O = GH_BUTTON_KEY_O,
-		P = GH_BUTTON_KEY_P,
-		Q = GH_BUTTON_KEY_Q,
-		R = GH_BUTTON_KEY_R,
-		S = GH_BUTTON_KEY_S,
-		T = GH_BUTTON_KEY_T,
-		U = GH_BUTTON_KEY_U,
-		V = GH_BUTTON_KEY_V,
-		W = GH_BUTTON_KEY_W,
-		X = GH_BUTTON_KEY_X,
-		Y = GH_BUTTON_KEY_Y,
-		Z = GH_BUTTON_KEY_Z,
-		LEFT_BRACKET = GH_BUTTON_KEY_LEFT_BRACKET,
-		BACKSLASH = GH_BUTTON_KEY_BACKSLASH,
-		RIGHT_BRACKET = GH_BUTTON_KEY_RIGHT_BRACKET,
-		GRAVE_ACCENT = GH_BUTTON_KEY_GRAVE_ACCENT,
-		WORLD_1 = GH_BUTTON_KEY_WORLD_1,
-		WORLD_2 = GH_BUTTON_KEY_WORLD_2,
-		ESCAPE = GH_BUTTON_KEY_ESCAPE,
-		ENTER = GH_BUTTON_KEY_ENTER,
-		TAB = GH_BUTTON_KEY_TAB,
-		BACKSPACE = GH_BUTTON_KEY_BACKSPACE,
-		INSERT = GH_BUTTON_KEY_INSERT,
-		DELETE = GH_BUTTON_KEY_DELETE,
-		RIGHT = GH_BUTTON_KEY_RIGHT,
-		LEFT = GH_BUTTON_KEY_LEFT,
-		DOWN = GH_BUTTON_KEY_DOWN,
-		UP = GH_BUTTON_KEY_UP,
-		PAGE_UP = GH_BUTTON_KEY_PAGE_UP,
-		PAGE_DOWN = GH_BUTTON_KEY_PAGE_DOWN,
-		HOME = GH_BUTTON_KEY_HOME,
-		END = GH_BUTTON_KEY_END,
-		CAPS_LOCK = GH_BUTTON_KEY_CAPS_LOCK,
-		SCROLL_LOCK = GH_BUTTON_KEY_SCROLL_LOCK,
-		NUM_LOCK = GH_BUTTON_KEY_NUM_LOCK,
-		PRINT_SCREEN = GH_BUTTON_KEY_PRINT_SCREEN,
-		PAUSE = GH_BUTTON_KEY_PAUSE,
-		F1 = GH_BUTTON_KEY_F1,
-		F2 = GH_BUTTON_KEY_F2,
-		F3 = GH_BUTTON_KEY_F3,
-		F4 = GH_BUTTON_KEY_F4,
-		F5 = GH_BUTTON_KEY_F5,
-		F6 = GH_BUTTON_KEY_F6,
-		F7 = GH_BUTTON_KEY_F7,
-		F8 = GH_BUTTON_KEY_F8,
-		F9 = GH_BUTTON_KEY_F9,
-		F10 = GH_BUTTON_KEY_F10,
-		F11 = GH_BUTTON_KEY_F11,
-		F12 = GH_BUTTON_KEY_F12,
-		F13 = GH_BUTTON_KEY_F13,
-		F14 = GH_BUTTON_KEY_F14,
-		F15 = GH_BUTTON_KEY_F15,
-		F16 = GH_BUTTON_KEY_F16,
-		F17 = GH_BUTTON_KEY_F17,
-		F18 = GH_BUTTON_KEY_F18,
-		F19 = GH_BUTTON_KEY_F19,
-		F20 = GH_BUTTON_KEY_F20,
-		F21 = GH_BUTTON_KEY_F21,
-		F22 = GH_BUTTON_KEY_F22,
-		F23 = GH_BUTTON_KEY_F23,
-		F24 = GH_BUTTON_KEY_F24,
-		F25 = GH_BUTTON_KEY_F25,
-		KP_0 = GH_BUTTON_KEY_KP_0,
-		KP_1 = GH_BUTTON_KEY_KP_1,
-		KP_2 = GH_BUTTON_KEY_KP_2,
-		KP_3 = GH_BUTTON_KEY_KP_3,
-		KP_4 = GH_BUTTON_KEY_KP_4,
-		KP_5 = GH_BUTTON_KEY_KP_5,
-		KP_6 = GH_BUTTON_KEY_KP_6,
-		KP_7 = GH_BUTTON_KEY_KP_7,
-		KP_8 = GH_BUTTON_KEY_KP_8,
-		KP_9 = GH_BUTTON_KEY_KP_9,
-		KP_DECIMAL = GH_BUTTON_KEY_KP_DECIMAL,
-		KP_DIVIDE = GH_BUTTON_KEY_KP_DIVIDE,
-		KP_MULTIPLY = GH_BUTTON_KEY_KP_MULTIPLY,
-		KP_SUBTRACT = GH_BUTTON_KEY_KP_SUBTRACT,
-		KP_ADD = GH_BUTTON_KEY_KP_ADD,
-		KP_ENTER = GH_BUTTON_KEY_KP_ENTER,
-		KP_EQUAL = GH_BUTTON_KEY_KP_EQUAL,
-		LEFT_SHIFT = GH_BUTTON_KEY_LEFT_SHIFT,
-		LEFT_CONTROL = GH_BUTTON_KEY_LEFT_CONTROL,
-		LEFT_ALT = GH_BUTTON_KEY_LEFT_ALT,
-		LEFT_SUPER = GH_BUTTON_KEY_LEFT_SUPER,
-		RIGHT_SHIFT = GH_BUTTON_KEY_RIGHT_SHIFT,
-		RIGHT_CONTROL = GH_BUTTON_KEY_RIGHT_CONTROL,
-		RIGHT_ALT = GH_BUTTON_KEY_RIGHT_ALT,
-		RIGHT_SUPER = GH_BUTTON_KEY_RIGHT_SUPER,
-		MENU = GH_BUTTON_KEY_MENU,
-		UNDEFINED = 9999
+        SPACE = ghKeyboardKeys[0],
+        APOSTROPHE = ghKeyboardKeys[1],
+        COMMA = ghKeyboardKeys[2],
+        MINUS = ghKeyboardKeys[3],
+        PERIOD = ghKeyboardKeys[4],
+        SLASH = ghKeyboardKeys[5],
+        NUM_0 = ghKeyboardKeys[6],
+        NUM_1 = ghKeyboardKeys[7],
+        NUM_2 = ghKeyboardKeys[8],
+        NUM_3 = ghKeyboardKeys[9],
+        NUM_4 = ghKeyboardKeys[10],
+        NUM_5 = ghKeyboardKeys[11],
+        NUM_6 = ghKeyboardKeys[12],
+        NUM_7 = ghKeyboardKeys[13],
+        NUM_8 = ghKeyboardKeys[14],
+        NUM_9 = ghKeyboardKeys[15],
+        SEMICOLON = ghKeyboardKeys[16],
+        EQUAL = ghKeyboardKeys[17],
+        A = ghKeyboardKeys[18],
+        B = ghKeyboardKeys[19],
+        C = ghKeyboardKeys[20],
+        D = ghKeyboardKeys[21],
+        E = ghKeyboardKeys[22],
+        F = ghKeyboardKeys[23],
+        G = ghKeyboardKeys[24],
+        H = ghKeyboardKeys[25],
+        I = ghKeyboardKeys[26],
+        J = ghKeyboardKeys[27],
+        K = ghKeyboardKeys[28],
+        L = ghKeyboardKeys[29],
+        M = ghKeyboardKeys[30],
+        N = ghKeyboardKeys[31],
+        O = ghKeyboardKeys[32],
+        P = ghKeyboardKeys[33],
+        Q = ghKeyboardKeys[34],
+        R = ghKeyboardKeys[35],
+        S = ghKeyboardKeys[36],
+        T = ghKeyboardKeys[37],
+        U = ghKeyboardKeys[38],
+        V = ghKeyboardKeys[39],
+        W = ghKeyboardKeys[40],
+        X = ghKeyboardKeys[41],
+        Y = ghKeyboardKeys[42],
+        Z = ghKeyboardKeys[43],
+        LEFT_BRACKET = ghKeyboardKeys[44],
+        BACKSLASH = ghKeyboardKeys[45],
+        RIGHT_BRACKET = ghKeyboardKeys[46],
+        GRAVE_ACCENT = ghKeyboardKeys[47],
+        WORLD_1 = ghKeyboardKeys[48],
+        WORLD_2 = ghKeyboardKeys[49],
+        ESCAPE = ghKeyboardKeys[50],
+        ENTER = ghKeyboardKeys[51],
+        TAB = ghKeyboardKeys[52],
+        BACKSPACE = ghKeyboardKeys[53],
+        INSERT = ghKeyboardKeys[54],
+        DELETE = ghKeyboardKeys[55],
+        RIGHT = ghKeyboardKeys[56],
+        LEFT = ghKeyboardKeys[57],
+        DOWN = ghKeyboardKeys[58],
+        UP = ghKeyboardKeys[59],
+        PAGE_UP = ghKeyboardKeys[60],
+        PAGE_DOWN = ghKeyboardKeys[61],
+        HOME = ghKeyboardKeys[62],
+        END = ghKeyboardKeys[63],
+        CAPS_LOCK = ghKeyboardKeys[64],
+        SCROLL_LOCK = ghKeyboardKeys[65],
+        NUM_LOCK = ghKeyboardKeys[66],
+        PRINT_SCREEN = ghKeyboardKeys[67],
+        PAUSE = ghKeyboardKeys[68],
+        F1 = ghKeyboardKeys[69],
+        F2 = ghKeyboardKeys[70],
+        F3 = ghKeyboardKeys[71],
+        F4 = ghKeyboardKeys[72],
+        F5 = ghKeyboardKeys[73],
+        F6 = ghKeyboardKeys[74],
+        F7 = ghKeyboardKeys[75],
+        F8 = ghKeyboardKeys[76],
+        F9 = ghKeyboardKeys[77],
+        F10 = ghKeyboardKeys[78],
+        F11 = ghKeyboardKeys[79],
+        F12 = ghKeyboardKeys[80],
+        F13 = ghKeyboardKeys[81],
+        F14 = ghKeyboardKeys[82],
+        F15 = ghKeyboardKeys[83],
+        F16 = ghKeyboardKeys[84],
+        F17 = ghKeyboardKeys[85],
+        F18 = ghKeyboardKeys[86],
+        F19 = ghKeyboardKeys[87],
+        F20 = ghKeyboardKeys[88],
+        F21 = ghKeyboardKeys[89],
+        F22 = ghKeyboardKeys[90],
+        F23 = ghKeyboardKeys[91],
+        F24 = ghKeyboardKeys[92],
+        F25 = ghKeyboardKeys[93],
+        KP_0 = ghKeyboardKeys[94],
+        KP_1 = ghKeyboardKeys[95],
+        KP_2 = ghKeyboardKeys[96],
+        KP_3 = ghKeyboardKeys[97],
+        KP_4 = ghKeyboardKeys[98],
+        KP_5 = ghKeyboardKeys[99],
+        KP_6 = ghKeyboardKeys[100],
+        KP_7 = ghKeyboardKeys[101],
+        KP_8 = ghKeyboardKeys[102],
+        KP_9 = ghKeyboardKeys[103],
+        KP_DECIMAL = ghKeyboardKeys[104],
+        KP_DIVIDE = ghKeyboardKeys[105],
+        KP_MULTIPLY = ghKeyboardKeys[106],
+        KP_SUBTRACT = ghKeyboardKeys[107],
+        KP_ADD = ghKeyboardKeys[108],
+        KP_ENTER = ghKeyboardKeys[109],
+        KP_EQUAL = ghKeyboardKeys[110],
+        LEFT_SHIFT = ghKeyboardKeys[111],
+        LEFT_CONTROL = ghKeyboardKeys[112],
+        LEFT_ALT = ghKeyboardKeys[113],
+        LEFT_SUPER = ghKeyboardKeys[114],
+        RIGHT_SHIFT = ghKeyboardKeys[115],
+        RIGHT_CONTROL = ghKeyboardKeys[116],
+        RIGHT_ALT = ghKeyboardKeys[117],
+        RIGHT_SUPER = ghKeyboardKeys[118],
+        MENU = ghKeyboardKeys[119],
+
+        MOUSE_LEFT = ghMouseKeys[0],
+        MOUSE_RIGHT = ghMouseKeys[1],
+        MOUSE_MIDDLE = ghMouseKeys[2],
+
+        UNDEFINED = 9999
 	};
 
 	/**

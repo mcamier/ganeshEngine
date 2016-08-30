@@ -1,6 +1,7 @@
 #include "ghInputUtils.h"
 
 namespace ganeshEngine {
+
 const char *RawInput::undefined = "UNDEFINED";
 
 const char *RawInput::sourceMouse = "MOUSE";
@@ -14,6 +15,7 @@ const char *RawInput::typeRange = "RANGE";
 const char *RawInput::typeMove = "MOVE";
 
 const char *RawInput::keyMouseLeft = "MOUSE_LEFT";
+const char *RawInput::keyMouseMiddle= "MOUSE_MIDDLE";
 const char *RawInput::keyMouseRight = "MOUSE_RIGHT";
 const char *RawInput::keyApostrophe = "APOSTROPHE";
 const char *RawInput::keyComma = "COMMA";

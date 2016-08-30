@@ -8,18 +8,18 @@
 namespace ganeshEngine {
 
 void InputManager::vInitialize() {
-	for (int i = 0; i < GH_BUTTON_ARRAY_SIZE; i++) {
+	for (int i = 0; i < GH_KEYBOARD_KEY_COUNT; i++) {
 		m_keyboardButtonsState[i].idx = 0;
 		m_keyboardButtonsState[i].source = RawInput::SOURCE::KEYBOARD;
 		m_keyboardButtonsState[i].type = RawInput::TYPE::RELEASE;
-		m_keyboardButtonsState[i].key = (RawInput::KEY)i;
+		m_keyboardButtonsState[i].key = (RawInput::KEY)ghKeyboardKeys[i];
 	}
 
-	for (int i = 0; i < GH_BUTTON_MOUSE_SIZE; i++) {
+	for (int i = 0; i < GH_MOUSE_KEY_COUNT; i++) {
 		m_mouseButtonsState[i].idx = 0;
 		m_mouseButtonsState[i].source = RawInput::SOURCE::MOUSE;
 		m_mouseButtonsState[i].type = RawInput::TYPE::RELEASE;
-		m_mouseButtonsState[i].key = (RawInput::KEY)i;
+		m_mouseButtonsState[i].key = (RawInput::KEY)ghMouseKeys[i];
 	}
 
 	glfwSetWindowUserPointer(gPlatform().getWindow(), this);
@@ -110,7 +110,7 @@ void InputManager::vInitialize() {
 	InputMatch *inputMatch = new InputMatch(
 			RawInput::SOURCE::KEYBOARD,
 			RawInput::TYPE::PRESS,
-			(RawInput::KEY) GH_BUTTON_KEY_ESCAPE,
+			RawInput::KEY::ESCAPE,
 			GH_HASH("__GH_INPUT_EXIT_GAME"));
 	inputContext->registerMatch(*inputMatch);
 
@@ -179,8 +179,8 @@ void InputManager::registerInputCallback(U32 callbackHash, InputCallbackType cal
 void InputManager::update(float deltaTime) {
 	/** Detection of held key, I dont rely on GLFW action repeat because of the
 	 * delay between press and the firist triggered hold input */
-	updateStates(m_keyboardButtonsState, GH_BUTTON_ARRAY_SIZE);
-	updateStates(m_mouseButtonsState, GH_BUTTON_MOUSE_SIZE);
+	updateStates(m_keyboardButtonsState, GH_KEYBOARD_KEY_COUNT);
+	updateStates(m_mouseButtonsState, GH_MOUSE_KEY_COUNT);
 
 	glfwPollEvents();
 	for (int i = 0; i <= GH_MAX_JOYSTICK; i++) {
@@ -209,7 +209,7 @@ void InputManager::update(float deltaTime) {
             /** if input could potentially triggers a chord, it is postponed in another container and
              * removed from the input queue */
             m_postponedRawInputs.push_back(input);
-            _DEBUG("INPUT POSTPONED : " << RawInput::toString(input.source) << ", " << RawInput::toString(input.type), LOG_CHANNEL::INPUT);
+            //_DEBUG("INPUT POSTPONED : " << RawInput::toString(input.source) << ", " << RawInput::toString(input.type), LOG_CHANNEL::INPUT);
         }else {
             /** trigger regular action for this input */
 			triggerPlainInputAction(input, deltaTime);
@@ -283,7 +283,7 @@ void InputManager::update(float deltaTime) {
         if((*itr).chordDetectionLifetimeS <= 0){
 			triggerPlainInputAction((*itr), deltaTime);
 			m_postponedRawInputs.erase(itr);
-            _DEBUG("INPUT FOR CHORD DETECTION LIFETIME OVER", LOG_CHANNEL::INPUT);
+            //_DEBUG("INPUT FOR CHORD DETECTION LIFETIME OVER", LOG_CHANNEL::INPUT);
         }else{
             ++itr;
         }

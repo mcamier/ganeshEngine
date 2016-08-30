@@ -48,13 +48,13 @@ private:
      * Only used to determine if button is held down (was pressed once but not yet
      * released)
      */
-	rawInput m_keyboardButtonsState[GH_BUTTON_ARRAY_SIZE];
+	rawInput m_keyboardButtonsState[GH_KEYBOARD_KEY_COUNT];
 
     /** Array used to store each mouse buttons state
      * Only used to determine if button is held down (was pressed once but not yet
      * released)
      */
-	rawInput m_mouseButtonsState[GH_BUTTON_MOUSE_SIZE];
+	rawInput m_mouseButtonsState[GH_MOUSE_KEY_COUNT];
 
 	/** Joystick object responsible of storing the joystick's state
 	 */
