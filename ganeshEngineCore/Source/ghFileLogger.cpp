@@ -4,7 +4,7 @@ namespace ganeshEngine {
 
     void FileLogger::vLog(LOG_LEVEL lvl, const char *file, int line, std::string &message) {
         if (lvl >= mLogLevel) {
-            if (currentAmount < mMaxBulkEntry - 1) {
+            if (mCurrentAmount < mMaxBulkEntry - 1) {
                 appendLogEntry(lvl, file, line, message);
             } else {
                 writePendingLogsIntroFileAndSwap();
@@ -53,7 +53,7 @@ namespace ganeshEngine {
         mCurrentEntries = temp;
 
         mPendingEntries.clear();
-        currentAmount = 0;
+        mCurrentAmount = 0;
     }
 
     void FileLogger::appendLogEntry(LOG_LEVEL lvl, const char *file, int line, std::string &message) {
@@ -63,7 +63,7 @@ namespace ganeshEngine {
         strcpy(entry->file, file);
         strcpy(entry->message, message.c_str());
         mCurrentEntries.push_back(entry);
-        currentAmount++;
+        mCurrentAmount++;
     }
 
 }

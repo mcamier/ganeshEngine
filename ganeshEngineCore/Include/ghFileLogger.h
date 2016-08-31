@@ -27,7 +27,7 @@ namespace ganeshEngine {
         /**
          * Current amount of LogEntry stored in memory before being written in the log file
          */
-        int currentAmount;
+        int mCurrentAmount;
 
         /**
          * Target logging filename
@@ -59,7 +59,7 @@ namespace ganeshEngine {
 
             mDBSAllocator = new DoubleBufferedStackAllocator(mMaxBulkEntry * sizeof(LogEntry));
             mDBSAllocator->initialize();
-            currentAmount = 0;
+            mCurrentAmount = 0;
         }
 
         FileLogger(const FileLogger &) = delete;

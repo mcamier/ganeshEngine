@@ -7,6 +7,7 @@
 #include "ghInputContext.h"
 #include "ghInputConfiguration.h"
 #include "ghEvent.h"
+#include "ghClock.h"
 
 namespace ganeshEngine {
 
@@ -78,6 +79,8 @@ public:
 
 	void activeContext(int id, bool active);
 
+	void registerInput(RawInput rawInput);
+
 	void registerInputContext(unique_ptr<InputContext> inputContext);
 
 	void registerInputCallback(U32 callbackHash, InputCallbackType callback);
@@ -88,7 +91,7 @@ public:
 		m_inputCallbacks.insert(make_pair(callbackHash, f));
 	}
 
-	void update(float frameDuration);
+	void vUpdate(const Clock& frameDuration);
 
 private:
 	void triggerPlainInputAction(RawInput ri, float deltaTime);

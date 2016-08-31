@@ -89,10 +89,6 @@ void InputManagerConfiguration::readMatches(const Value &node, InputContext *ctx
         InputMatch *inputMatch = nullptr;
         readMatch(node[i], inputMatch);
         if (inputMatch) {
-            _WARNING("\t - " << inputDetails::toString(inputMatch->m_source) << "/"
-                             << inputDetails::toString(inputMatch->m_type) << "/"
-                             << inputDetails::toString(inputMatch->m_code),
-                     LOG_CHANNEL::INPUT);
             ctx->registerMatch(*inputMatch);
         }
     }
@@ -102,7 +98,7 @@ void InputManagerConfiguration::readMatch(const Value &node, InputMatch *&im) {
     if (!node.IsObject() ||
         !node.HasMember("source") || !node["source"].IsString() ||
         !node.HasMember("type") || !node["type"].IsString() ||
-        !node.HasMember("identifier") || !node["identifier"].IsString() ||
+        !node.HasMember("code") || !node["code"].IsString() ||
         !node.HasMember("callbackName") || !node["callbackName"].IsString()) {
         _WARNING("load input configuration : input match skipped because it's not well formed",
                  LOG_CHANNEL::INPUT);
@@ -112,7 +108,7 @@ void InputManagerConfiguration::readMatch(const Value &node, InputMatch *&im) {
     im = new InputMatch(
             inputDetails::fromString<InputSource>(node["source"].GetString()),
             inputDetails::fromString<InputType>(node["type"].GetString()),
-            inputDetails::fromString<InputCode>(node["identifier"].GetString()),
+            inputDetails::fromString<InputCode>(node["code"].GetString()),
             GH_HASH(node["callbackName"].GetString()));
 }
 
@@ -159,7 +155,7 @@ InputMatch InputManagerConfiguration::readMatchFromChord(const Value &node) {
 
     if (!node.HasMember("source") || !node["source"].IsString() ||
         !node.HasMember("type") || !node["type"].IsString() ||
-        !node.HasMember("identifier") || !node["identifier"].IsString()) {
+        !node.HasMember("code") || !node["code"].IsString()) {
         _WARNING("load input configuration : input match in chord skipped because it's not well formed",
                  LOG_CHANNEL::INPUT);
         return InputMatch();
@@ -167,7 +163,7 @@ InputMatch InputManagerConfiguration::readMatchFromChord(const Value &node) {
     return InputMatch(
             inputDetails::fromString<InputSource>(node["source"].GetString()),
             inputDetails::fromString<InputType>(node["type"].GetString()),
-            inputDetails::fromString<InputCode>(node["identifier"].GetString()),
+            inputDetails::fromString<InputCode>(node["code"].GetString()),
             0);
 }
 

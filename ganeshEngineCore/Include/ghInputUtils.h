@@ -157,7 +157,6 @@ enum class InputCode : U32 {
 	KEYBOARD_RIGHT_ALT 			= 0x01000076,
 	KEYBOARD_RIGHT_SUPER 		= 0x01000077,
 	KEYBOARD_MENU 				= 0x01000078,
-
 	MOUSE_BUTTON_1 				= 0x02000011,
 	MOUSE_BUTTON_2 				= 0x02000012,
 	MOUSE_BUTTON_3 				= 0x02000013,
@@ -169,7 +168,6 @@ enum class InputCode : U32 {
 	MOUSE_LEFT 					= 0x02000011,
 	MOUSE_RIGHT 				= 0x02000012,
 	MOUSE_MIDDLE				= 0x02000013,
-
 	XBOX_CONTROLLER_A 			= 0x03000001,
 	XBOX_CONTROLLER_B 			= 0x03000002,
 	XBOX_CONTROLLER_X 			= 0x03000003,
@@ -210,142 +208,168 @@ enum class InputModifier : U8 {
 };
 
 namespace inputDetails {
-/*
-const char* undefined = "Undefined";
 
-const char* sourceMouse = "Mouse";
-const char* sourceKeyboard = "Keyboard";
-const char* sourceDevice = "Device";
+const char* const undefined 					= "UNDEFINED";
 
-const char* typeUp = "Up";
-const char* typePress = "Press";
-const char* typeRelease = "Release";
-const char* typeDown = "Down";
-const char* typeAxis = "Range";
+const char* const sourceMouse 					= "MOUSE";
+const char* const sourceKeyboard 				= "KEYBOARD";
+const char* const sourceDevice	 				= "DEVICE";
 
-const char* keyMouseLeft = "MOUSE_LEFT";
-const char* keyMouseMiddle = "MOUSE_MIDDLE";
-const char* keyMouseRight = "MOUSE_RIGHT";
-const char* keyApostrophe = "APOSTROPHE";
-const char* keyComma = "COMMA";
-const char* keyMinus = "MINUS"; // and cortex
-const char* keyPeriod = "PERIOD";
-const char* keySlash = "SLASH"; // Paradise city FTW
-const char* keyNum0 = "NUM_0";
-const char* keyNum1 = "NUM_1";
-const char* keyNum2 = "NUM_2";
-const char* keyNum3 = "NUM_3";
-const char* keyNum4 = "NUM_4";
-const char* keyNum5 = "NUM_5";
-const char* keyNum6 = "NUM_6";
-const char* keyNum7 = "NUM_7";
-const char* keyNum8 = "NUM_8";
-const char* keyNum9 = "NUM_9";
-const char* keySemicolon = "SEMICOLON";
-const char* keyEqual = "EQUAL";
-const char* keySpace = "SPACE";
-const char* keyA = "A";
-const char* keyB = "B";
-const char* keyC = "C";
-const char* keyD = "D";
-const char* keyE = "E";
-const char* keyF = "F";
-const char* keyG = "G";
-const char* keyH = "H";
-const char* keyI = "I";
-const char* keyJ = "J";
-const char* keyK = "K";
-const char* keyL = "L";
-const char* keyM = "M";
-const char* keyN = "N";
-const char* keyO = "O";
-const char* keyP = "P";
-const char* keyQ = "Q";
-const char* keyR = "R";
-const char* keyS = "S";
-const char* keyT = "T";
-const char* keyU = "U";
-const char* keyV = "V";
-const char* keyW = "W";
-const char* keyX = "X";
-const char* keyY = "Y";
-const char* keyZ = "Z";
-const char* keyLeftBracket = "LEFT_BRACKET";
-const char* keyBackslash = "BACKSLASH";
-const char* keyRightBracket = "RIGHT_BRACKET";
-const char* keyGraveAccent = "GRAVE_ACCENT";
-const char* keyWorld1 = "WORLD_1";
-const char* keyWorld2 = "WORLD_2";
-const char* keyEscape = "ESCAPE"; // the great one
-const char* keyEnter = "ENTER"; // the matrix
-const char* keyTab = "TAB";
-const char* keyBackspace = "BACKSPACE";
-const char* keyInsert = "INSERT"; //coin
-const char* keyDelete = "DELETE";
-const char* keyRight = "RIGHT";
-const char* keyLeft = "LEFT";
-const char* keyDown = "DOWN";
-const char* keyUp = "UP";
-const char* keyPageUp = "PAGE_UP";
-const char* keyPageDown = "PAGE_DOWN";
-const char* keyHome = "HOME"; // sweet home
-const char* keyEnd = "END"; // never war
-const char* keyCapsLock = "CAPS_LOCK";
-const char* keyScrollLock = "SCROLL_LOCK";
-const char* keyNumLock = "NUM_LOCK";
-const char* keyPrintScreen = "PRINT_SCREEN";
-const char* keyPause = "PAUSE";
-const char* keyF1 = "F1";
-const char* keyF2 = "F2";
-const char* keyF3 = "F3";
-const char* keyF4 = "F4";
-const char* keyF5 = "F5";
-const char* keyF6 = "F6";
-const char* keyF7 = "F7";
-const char* keyF8 = "F8";
-const char* keyF9 = "F9";
-const char* keyF10 = "F10";
-const char* keyF11 = "F11";
-const char* keyF12 = "F12";
-const char* keyF13 = "F13";
-const char* keyF14 = "F14";
-const char* keyF15 = "F15";
-const char* keyF16 = "F16";
-const char* keyF17 = "F17";
-const char* keyF18 = "F18";
-const char* keyF19 = "F19";
-const char* keyF20 = "F20";
-const char* keyF21 = "F21";
-const char* keyF22 = "F22";
-const char* keyF23 = "F23";
-const char* keyF24 = "F24";
-const char* keyF25 = "F25";
-const char* keyKp0 = "KP_0";
-const char* keyKp1 = "KP_1";
-const char* keyKp2 = "KP_2";
-const char* keyKp3 = "KP_3";
-const char* keyKp4 = "KP_4";
-const char* keyKp5 = "KP_5";
-const char* keyKp6 = "KP_6";
-const char* keyKp7 = "KP_7";
-const char* keyKp8 = "KP_8";
-const char* keyKp9 = "KP_9";
-const char* keyKpDecimal = "KP_DECIMAL";
-const char* keyKpDivide = "KP_DIVIDE";
-const char* keyKpMultiply = "KP_MULTIPLY";
-const char* keyKpSubtract = "KP_SUBTRACT";
-const char* keyKpAdd = "KP_ADD";
-const char* keyKpEnter = "KP_ENTER";
-const char* keyKpEqual = "KP_EQUAL";
-const char* keyLeftShift = "LEFT_SHIFT";
-const char* keyLeftControl = "LEFT_CONTROL";
-const char* keyLeftAlt = "LEFT_ALT";
-const char* keyLeftSuper = "LEFT_SUPER";
-const char* keyRightShift = "RIGHT_SHIFT";
-const char* keyRightControl = "RIGHT_CONTROL";
-const char* keyRightAlt = "RIGHT_ALT";
-const char* keyRightSuper = "RIGHT_SUPER";
-const char* keyMenu = "MENU";*/
+const char* const typeUp 						= "BUTTON_UP";
+const char* const typePress 					= "BUTTON_PRESS";
+const char* const typeRelease 					= "BUTTON_RELEASE";
+const char* const typeDown 						= "BUTTON_DOWN";
+const char* const typeAxis 						= "AXIS";
+
+const char* const NONE							= "None";
+const char* const KEYBOARD_F1 					= "KEYBOARD_F1";
+const char* const KEYBOARD_F2 					= "KEYBOARD_F2";
+const char* const KEYBOARD_F3 					= "KEYBOARD_F3";
+const char* const KEYBOARD_F4 					= "KEYBOARD_F4";
+const char* const KEYBOARD_F5 					= "KEYBOARD_F5";
+const char* const KEYBOARD_F6 					= "KEYBOARD_F6";
+const char* const KEYBOARD_F7 					= "KEYBOARD_F7";
+const char* const KEYBOARD_F8 					= "KEYBOARD_F8";
+const char* const KEYBOARD_F9 					= "KEYBOARD_F9";
+const char* const KEYBOARD_F10 					= "KEYBOARD_F10";
+const char* const KEYBOARD_F11 					= "KEYBOARD_F11";
+const char* const KEYBOARD_F12 					= "KEYBOARD_F12";
+const char* const KEYBOARD_F13 					= "KEYBOARD_F13";
+const char* const KEYBOARD_F14 					= "KEYBOARD_F14";
+const char* const KEYBOARD_F15 					= "KEYBOARD_F15";
+const char* const KEYBOARD_F16 					= "KEYBOARD_F16";
+const char* const KEYBOARD_F17 					= "KEYBOARD_F17";
+const char* const KEYBOARD_F18 					= "KEYBOARD_F18";
+const char* const KEYBOARD_F19 					= "KEYBOARD_F19";
+const char* const KEYBOARD_F20 					= "KEYBOARD_F20";
+const char* const KEYBOARD_F21 					= "KEYBOARD_F21";
+const char* const KEYBOARD_F22 					= "KEYBOARD_F22";
+const char* const KEYBOARD_F23 					= "KEYBOARD_F23";
+const char* const KEYBOARD_F24 					= "KEYBOARD_F24";
+const char* const KEYBOARD_F25 					= "KEYBOARD_F25";
+const char* const KEYBOARD_SPACE 				= "KEYBOARD_SPACE";
+const char* const KEYBOARD_APOSTROPHE 			= "KEYBOARD_APOSTROPHE";
+const char* const KEYBOARD_COMMA 				= "KEYBOARD_COMMA";
+const char* const KEYBOARD_MINUS 				= "KEYBOARD_MINUS";
+const char* const KEYBOARD_PERIOD 				= "KEYBOARD_PERIOD";
+const char* const KEYBOARD_SLASH 				= "KEYBOARD_SLASH";
+const char* const KEYBOARD_0 					= "KEYBOARD_0";
+const char* const KEYBOARD_1 					= "KEYBOARD_1";
+const char* const KEYBOARD_2 					= "KEYBOARD_2";
+const char* const KEYBOARD_3 					= "KEYBOARD_3";
+const char* const KEYBOARD_4 					= "KEYBOARD_4";
+const char* const KEYBOARD_5 					= "KEYBOARD_5";
+const char* const KEYBOARD_6 					= "KEYBOARD_6";
+const char* const KEYBOARD_7 					= "KEYBOARD_7";
+const char* const KEYBOARD_8 					= "KEYBOARD_8";
+const char* const KEYBOARD_9 					= "KEYBOARD_9";
+const char* const KEYBOARD_KP_0 				= "KEYBOARD_KP_0";
+const char* const KEYBOARD_KP_1 				= "KEYBOARD_KP_1";
+const char* const KEYBOARD_KP_2 				= "KEYBOARD_KP_2";
+const char* const KEYBOARD_KP_3 				= "KEYBOARD_KP_3";
+const char* const KEYBOARD_KP_4 				= "KEYBOARD_KP_4";
+const char* const KEYBOARD_KP_5 				= "KEYBOARD_KP_5";
+const char* const KEYBOARD_KP_6 				= "KEYBOARD_KP_6";
+const char* const KEYBOARD_KP_7 				= "KEYBOARD_KP_7";
+const char* const KEYBOARD_KP_8 				= "KEYBOARD_KP_8";
+const char* const KEYBOARD_KP_9 				= "KEYBOARD_KP_9";
+const char* const KEYBOARD_SEMICOLON 			= "KEYBOARD_SEMICOLON";
+const char* const KEYBOARD_EQUAL 				= "KEYBOARD_EQUAL";
+const char* const KEYBOARD_A 					= "KEYBOARD_A";
+const char* const KEYBOARD_B 					= "KEYBOARD_B";
+const char* const KEYBOARD_C 					= "KEYBOARD_C";
+const char* const KEYBOARD_D 					= "KEYBOARD_D";
+const char* const KEYBOARD_E 					= "KEYBOARD_E";
+const char* const KEYBOARD_F 					= "KEYBOARD_F";
+const char* const KEYBOARD_G 					= "KEYBOARD_G";
+const char* const KEYBOARD_H 					= "KEYBOARD_H";
+const char* const KEYBOARD_I 					= "KEYBOARD_I";
+const char* const KEYBOARD_J 					= "KEYBOARD_J";
+const char* const KEYBOARD_K 					= "KEYBOARD_K";
+const char* const KEYBOARD_L 					= "KEYBOARD_L";
+const char* const KEYBOARD_M 					= "KEYBOARD_M";
+const char* const KEYBOARD_N 					= "KEYBOARD_N";
+const char* const KEYBOARD_O 					= "KEYBOARD_O";
+const char* const KEYBOARD_P 					= "KEYBOARD_P";
+const char* const KEYBOARD_Q 					= "KEYBOARD_Q";
+const char* const KEYBOARD_R 					= "KEYBOARD_R";
+const char* const KEYBOARD_S 					= "KEYBOARD_S";
+const char* const KEYBOARD_T 					= "KEYBOARD_T";
+const char* const KEYBOARD_U 					= "KEYBOARD_U";
+const char* const KEYBOARD_V 					= "KEYBOARD_V";
+const char* const KEYBOARD_W 					= "KEYBOARD_W";
+const char* const KEYBOARD_X 					= "KEYBOARD_X";
+const char* const KEYBOARD_Y 					= "KEYBOARD_Y";
+const char* const KEYBOARD_Z 					= "KEYBOARD_Z";
+const char* const KEYBOARD_LEFT_BRACKET 		= "KEYBOARD_LEFT_BRACKET";
+const char* const KEYBOARD_BACKSLASH 			= "KEYBOARD_BACKSLASH";
+const char* const KEYBOARD_RIGHT_BRACKET 		= "KEYBOARD_RIGHT_BRACKET";
+const char* const KEYBOARD_GRAVE_ACCENT 		= "KEYBOARD_GRAVE_ACCENT";
+const char* const KEYBOARD_WORLD_1 				= "KEYBOARD_WORLD_1";
+const char* const KEYBOARD_WORLD_2 				= "KEYBOARD_WORLD_2";
+const char* const KEYBOARD_ESCAPE 				= "KEYBOARD_ESCAPE";
+const char* const KEYBOARD_ENTER 				= "KEYBOARD_ENTER";
+const char* const KEYBOARD_TAB 					= "KEYBOARD_TAB";
+const char* const KEYBOARD_BACKSPACE 			= "KEYBOARD_BACKSPACE";
+const char* const KEYBOARD_INSERT 				= "KEYBOARD_INSERT";
+const char* const KEYBOARD_DELETE 				= "KEYBOARD_DELETE";
+const char* const KEYBOARD_RIGHT 				= "KEYBOARD_RIGHT";
+const char* const KEYBOARD_LEFT 				= "KEYBOARD_LEFT";
+const char* const KEYBOARD_DOWN 				= "KEYBOARD_DOWN";
+const char* const KEYBOARD_UP 					= "KEYBOARD_UP";
+const char* const KEYBOARD_PAGE_UP 				= "KEYBOARD_PAGE_UP";
+const char* const KEYBOARD_PAGE_DOWN 			= "KEYBOARD_PAGE_DOWN";
+const char* const KEYBOARD_HOME 				= "KEYBOARD_HOME";
+const char* const KEYBOARD_END 					= "KEYBOARD_END";
+const char* const KEYBOARD_CAPS_LOCK 			= "KEYBOARD_CAPS_LOCK";
+const char* const KEYBOARD_SCROLL_LOCK 			= "KEYBOARD_SCROLL_LOCK";
+const char* const KEYBOARD_NUM_LOCK 			= "KEYBOARD_NUM_LOCK";
+const char* const KEYBOARD_PRINT_SCREEN 		= "KEYBOARD_PRINT_SCREEN";
+const char* const KEYBOARD_PAUSE 				= "KEYBOARD_PAUSE";
+const char* const KEYBOARD_KP_DECIMAL 			= "KEYBOARD_KP_DECIMAL";
+const char* const KEYBOARD_KP_DIVIDE 			= "KEYBOARD_KP_DIVIDE";
+const char* const KEYBOARD_KP_MULTIPLY 			= "KEYBOARD_KP_MULTIPLY";
+const char* const KEYBOARD_KP_SUBTRACT 			= "KEYBOARD_KP_SUBTRACT";
+const char* const KEYBOARD_KP_ADD 				= "KEYBOARD_KP_ADD";
+const char* const KEYBOARD_KP_ENTER 			= "KEYBOARD_KP_ENTER";
+const char* const KEYBOARD_KP_EQUAL 			= "KEYBOARD_KP_EQUAL";
+const char* const KEYBOARD_LEFT_SHIFT 			= "KEYBOARD_LEFT_SHIFT";
+const char* const KEYBOARD_LEFT_CONTROL 		= "KEYBOARD_LEFT_CONTROL";
+const char* const KEYBOARD_LEFT_ALT 			= "KEYBOARD_LEFT_ALT";
+const char* const KEYBOARD_LEFT_SUPER 			= "KEYBOARD_LEFT_SUPER";
+const char* const KEYBOARD_RIGHT_SHIFT 			= "KEYBOARD_RIGHT_SHIFT";
+const char* const KEYBOARD_RIGHT_CONTROL 		= "KEYBOARD_RIGHT_CONTROL";
+const char* const KEYBOARD_RIGHT_ALT 			= "KEYBOARD_RIGHT_ALT";
+const char* const KEYBOARD_RIGHT_SUPER 			= "KEYBOARD_RIGHT_SUPER";
+const char* const KEYBOARD_MENU 				= "KEYBOARD_MENU";
+const char* const MOUSE_BUTTON_1 				= "MOUSE_BUTTON_1";
+const char* const MOUSE_BUTTON_2 				= "MOUSE_BUTTON_2";
+const char* const MOUSE_BUTTON_3 				= "MOUSE_BUTTON_3";
+const char* const MOUSE_BUTTON_4 				= "MOUSE_BUTTON_4";
+const char* const MOUSE_BUTTON_5 				= "MOUSE_BUTTON_5";
+const char* const MOUSE_BUTTON_6 				= "MOUSE_BUTTON_6";
+const char* const MOUSE_BUTTON_7 				= "MOUSE_BUTTON_7";
+const char* const MOUSE_BUTTON_8 				= "MOUSE_BUTTON_8";
+const char* const MOUSE_LEFT 					= "MOUSE_LEFT";
+const char* const MOUSE_RIGHT 					= "MOUSE_RIGHT";
+const char* const MOUSE_MIDDLE					= "MOUSE_MIDDLE";
+const char* const XBOX_CONTROLLER_A 			= "XBOX_CONTROLLER_A";
+const char* const XBOX_CONTROLLER_B 			= "XBOX_CONTROLLER_B";
+const char* const XBOX_CONTROLLER_X 			= "XBOX_CONTROLLER_X";
+const char* const XBOX_CONTROLLER_Y 			= "XBOX_CONTROLLER_Y";
+const char* const XBOX_CONTROLLER_START			= "XBOX_CONTROLLER_START";
+const char* const XBOX_CONTROLLER_SELECT		= "XBOX_CONTROLLER_SELECT";
+const char* const XBOX_CONTROLLER_MENU			= "XBOX_CONTROLLER_MENU";
+const char* const XBOX_CONTROLLER_RS			= "XBOX_CONTROLLER_RS";
+const char* const XBOX_CONTROLLER_LS			= "XBOX_CONTROLLER_LS";
+const char* const XBOX_CONTROLLER_UP			= "XBOX_CONTROLLER_UP";
+const char* const XBOX_CONTROLLER_DOWN			= "XBOX_CONTROLLER_DOWN";
+const char* const XBOX_CONTROLLER_LEFT			= "XBOX_CONTROLLER_LEFT";
+const char* const XBOX_CONTROLLER_RIGHT			= "XBOX_CONTROLLER_RIGHT";
+const char* const XBOX_CONTROLLER_AXIS_LEFT_X	= "XBOX_CONTROLLER_AXIS_LEFT_X";
+const char* const XBOX_CONTROLLER_AXIS_LEFT_Y	= "XBOX_CONTROLLER_AXIS_LEFT_Y";
+const char* const XBOX_CONTROLLER_AXIS_RIGHT_X	= "XBOX_CONTROLLER_AXIS_RIGHT_X";
+const char* const XBOX_CONTROLLER_AXIS_RIGHT_Y	= "XBOX_CONTROLLER_AXIS_RIGHT_Y";
 
 template<typename K>
 K fromString(const char *value);
@@ -353,11 +377,20 @@ K fromString(const char *value);
 template<typename K>
 const char *toString(K value);
 
+bool isKeyboardCode(const InputCode code);
+
+bool isMouseCode(const InputCode code);
+
+bool isDeviceCode(const InputCode code);
+
+InputCode sysInputKeyboardCode2GHCode(int sysInputCode);
+
+InputCode sysInputMouseCode2GHCode(int sysInputCode);
+
 }
 
 /**
  * Store informations from an input got from the system input layer
- * (GLFW by the time, should be later available through interface)
  */
 class RawInput {
 public:

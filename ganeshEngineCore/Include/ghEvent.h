@@ -71,7 +71,7 @@ public:
 	 * Update read all events stored m_EventQueue and call related event's callback stored
 	 * in m_Listeners
 	 */
-	void update();
+	void vUpdate(const Clock& clock) override;
 
 	/**
 	 * Executes immediately the callbacks registered for the given input

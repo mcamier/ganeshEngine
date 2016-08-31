@@ -7,39 +7,39 @@
           "callbackName": "demoMatchReset",
           "_1": {
             "source": "KEYBOARD",
-            "type": "PRESS",
-            "identifier": "RIGHT"
+            "type": "BUTTON_PRESS",
+            "code": "KEYBOARD_RIGHT"
           },
           "_2": {
             "source": "KEYBOARD",
-            "type": "PRESS",
-            "identifier": "LEFT"
+            "type": "BUTTON_PRESS",
+            "code": "KEYBOARD_LEFT"
           }
         }
       ],
       "matches": [
         {
           "source": "KEYBOARD",
-          "type": "DOWN",
-          "identifier": "UP",
+          "type": "BUTTON_DOWN",
+          "code": "KEYBOARD_UP",
           "callbackName": "demoMatchMoveUp"
         },
         {
           "source": "KEYBOARD",
-          "type": "DOWN",
-          "identifier": "DOWN",
+          "type": "BUTTON_DOWN",
+          "code": "KEYBOARD_DOWN",
           "callbackName": "demoMatchMoveDown"
         },
         {
           "source": "KEYBOARD",
-          "type": "DOWN",
-          "identifier": "LEFT",
+          "type": "BUTTON_DOWN",
+          "code": "KEYBOARD_LEFT",
           "callbackName": "demoMatchMoveLeft"
         },
         {
           "source": "KEYBOARD",
-          "type": "DOWN",
-          "identifier": "RIGHT",
+          "type": "BUTTON_DOWN",
+          "code": "KEYBOARD_RIGHT",
           "callbackName": "demoMatchMoveRight"
         }
       ]

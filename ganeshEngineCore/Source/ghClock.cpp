@@ -2,25 +2,33 @@
 
 namespace ganeshEngine {
 
-    void Clock::tick(U32 dtNanoSecond) {
-        if (!mIsPaused) {
-            mTotalNanoSeconds += mScale * dtNanoSecond;
-        }
-    }
+void Clock::update(U32 dtNanoSecond) {
+	if (!mIsPaused) {
+		mLastTimeAdded = mScale * dtNanoSecond;
+		mTotalNanoSeconds += mLastTimeAdded;
+	} else {
+		mLastTimeAdded = 0;
+	}
+}
 
+bool Clock::isPaused() {
+	return mIsPaused;
+}
 
-    void Clock::singleStep(bool force) {
-        if (!mIsPaused || force) {
-            tick((1.0f / 30.0f) * 1000000000);
-        }
-    }
+void Clock::setPause(bool value) {
+	mIsPaused = value;
+}
 
-    bool Clock::isPaused() {
-        return mIsPaused;
-    }
+U32 Clock::getLastFrameElapsedTime() const {
+	return mLastTimeAdded;
+}
 
-    void Clock::setPause(bool value) {
-        mIsPaused = value;
-    }
+U64 Clock::getTotalTime() const {
+	return mTotalNanoSeconds;
+}
+
+float Clock::getLastFrameElapsedTimeAsSecond() const {
+	return (float)(mLastTimeAdded)/1000000000.0f;
+}
 
 }

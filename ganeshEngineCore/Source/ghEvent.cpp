@@ -40,7 +40,7 @@ void EventManager::vInitialize() {}
 
 void EventManager::vDestroy() {}
 
-void EventManager::update() {
+void EventManager::vUpdate(const Clock& clock) {
 	Event *event;
 	while (!m_EventQueue.empty()) {
 		event = m_EventQueue.back();
