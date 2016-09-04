@@ -15,6 +15,8 @@
 #include "ghConfiguration.h"
 #include "ghScene.h"
 
+#include "ghStringId.h"
+
 #include "ghMath.h"
 #include <glm/glm.hpp>
 
@@ -134,7 +136,6 @@ protected:
         return nullptr;
     }
 };
-
 
 int main() {
     Configuration conf;
