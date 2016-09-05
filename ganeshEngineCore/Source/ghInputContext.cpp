@@ -17,11 +17,15 @@ namespace ganeshEngine {
         m_chords.push_back(chord);
     }
 
-    bool InputContext::getInputMatch(const RawInput &rawInput, U32 *callbackId) const {
+    bool InputContext::getInputMatch(const RawInput &rawInput, stringId *callbackId) const {
+        *callbackId = 0;
         bool matchFound = false;
         for (auto &&match : m_inputMatches) {
             matchFound = match.isMatch(rawInput);
-            if(matchFound) {break;}
+            if(matchFound) {
+                *callbackId = match.m_callbackId;
+                break;
+            }
         }
         return matchFound ;
     }

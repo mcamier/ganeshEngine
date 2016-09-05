@@ -22,9 +22,8 @@ class ResourceWrapper {
 private:
     shared_ptr<Resource> data;
 
-    /** Unique ID for each resource managed via a ResourceWrapper
-     * Basically it's a hash of the resource's name */
-    long id;
+    /** Unique ID for each resource managed via a ResourceWrapper */
+    stringId id;
 
     /** Resource name */
     string name;
@@ -41,7 +40,12 @@ private:
     bool eagerLoading;
 
 public:
-    ResourceWrapper(const string &name, const string &filename, shared_ptr<ResourceLoader> loader, bool eagerLoading = false) : id(GH_HASH(name)), name(name), filename(filename), loader(loader), eagerLoading(eagerLoading) {}
+    ResourceWrapper(const string &name, const string &filename, shared_ptr<ResourceLoader> loader, bool eagerLoading = false) :
+        id(gInternString(filename.c_str())),
+        name(name),
+        filename(filename),
+        loader(loader),
+        eagerLoading(eagerLoading) {}
 
     /**
      * Set the Resource pointed by the wrapper

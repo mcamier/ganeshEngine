@@ -10,7 +10,7 @@ void ResourceManager::vInitialize() {
         m_resourceLocation = m_configuration->getResourceLocation();
         for (const auto &entry : m_configuration->getResourceEntries()) {
 
-            auto loadersItr = m_loaders.find(GH_HASH(entry.loaderName));
+            auto loadersItr = m_loaders.find(gInternString(entry.loaderName.c_str()));
             if (loadersItr != m_loaders.end()) {
                 auto ptr = make_shared<ResourceWrapper>(entry.name, entry.filename, loadersItr->second, entry.eagerLoading);
 
@@ -19,7 +19,7 @@ void ResourceManager::vInitialize() {
                     ptr->load();
                 }
 
-                m_resources.insert(make_pair(GH_HASH(entry.name), ptr));
+                m_resources.insert(make_pair(gInternString(entry.name.c_str()), ptr));
             } else {
                 _ERROR("Resource doesn't have valid loader present", LOG_CHANNEL::RESOURCE);
             }

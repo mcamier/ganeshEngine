@@ -54,11 +54,9 @@ private:
 
 public:
 	Application(const Application &) = delete;
-
 	Application &operator=(const Application &) = delete;
 
-	~Application() {
-	}
+	~Application() {}
 
 	/**
 	 *  Run the lifecycle of the engine
@@ -66,10 +64,6 @@ public:
 	 */
 	static void RunLoop();
 
-	/**
-	 * Will shutdown the main loop at the next frame iteration
-	 */
-	void shutdown();
 
 protected:
 	/**
@@ -89,6 +83,12 @@ protected:
 	 * stub RunLoop
 	 */
 	void run();
+
+private:
+	/**
+	 * Will shutdown the main loop at the next frame iteration
+	 */
+	void onShutdown(Event *event);
 };
 
 /**

@@ -10,8 +10,8 @@ namespace ganeshEngine {
 
 Event::~Event() {}
 
-const EventType Event::getType() const {
-	return m_type;
+const stringId Event::getType() const {
+	return mType;
 }
 
 /*
@@ -46,7 +46,7 @@ void EventManager::vUpdate(const Clock& clock) {
 		event = m_EventQueue.back();
 
 		auto pair = m_Listeners.equal_range(event->getType());
-		for (multimap<EventType, EventCallback>::iterator it = pair.first;
+		for (multimap<stringId, EventCallback>::iterator it = pair.first;
 			 it != pair.second;
 			 ++it) {
 			(*it).second(event);
@@ -57,7 +57,7 @@ void EventManager::vUpdate(const Clock& clock) {
 
 void EventManager::fireEvent(Event *event) {
 	auto pair = m_Listeners.equal_range(event->getType());
-	for (multimap<EventType, EventCallback>::iterator it = pair.first;
+	for (multimap<stringId, EventCallback>::iterator it = pair.first;
 		 it != pair.second;
 		 ++it) {
 		(*it).second(event);
@@ -68,11 +68,11 @@ void EventManager::queueEvent(Event *event) {
 	m_EventQueue.push_back(event);
 }
 
-void EventManager::addListener(EventType eventType, EventCallback callback) {
-	m_Listeners.insert(pair<EventType, EventCallback>(eventType, callback));
+void EventManager::addListener(stringId eventType, EventCallback callback) {
+	m_Listeners.insert(pair<stringId, EventCallback>(eventType, callback));
 }
 
-void EventManager::removeAllListeners(EventType eventType) {
+void EventManager::removeAllListeners(stringId eventType) {
 	m_Listeners.erase(m_Listeners.find(eventType));
 }
 

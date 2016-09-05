@@ -69,7 +69,7 @@ public:
 	 * intance pointer doesn't points to nullptr while the system state is UNINITIALIZED.
 	 */
 	static void Destroy() {
-		ASSERT_FLAG(_state(), INITIALIZED);
+		//ASSERT_FLAG(_state(), INITIALIZED);
 
 		((System *) _instance())->vDestroy();
 		delete _instance();

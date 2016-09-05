@@ -20,7 +20,7 @@ namespace ganeshEngine {
         /**
          * Unique ID among all inputContext during on game^s execution
          */
-        U32 m_id;
+        stringId m_id;
 
         /**
          * True if the inputManager should try to match a RawInput against this context, False
@@ -39,7 +39,7 @@ namespace ganeshEngine {
 
     public:
 
-        InputContext(U32 id) : m_id(id), m_bActive(false) {
+        InputContext(stringId id) : m_id(id), m_bActive(false) {
         }
 
         virtual ~InputContext();
@@ -50,7 +50,7 @@ namespace ganeshEngine {
          * @param callback
          * @return
          */
-        bool getInputMatch(const RawInput &RawInput, U32 *callback) const;
+        bool getInputMatch(const RawInput &RawInput, stringId *callback) const;
 
         /**
          *

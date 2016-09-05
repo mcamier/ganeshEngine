@@ -13,7 +13,6 @@ namespace ganeshEngine {
 
 using namespace std;
 
-
 class InputManager : public System<InputManager> {
 	friend class System<InputManager>;
 
@@ -26,13 +25,13 @@ private:
 	/** List of the registered input contexts in the manager
 	 * Multiple inputContext could be active at the same time
 	 */
-	map<U32, unique_ptr<InputContext>> m_inputContexts;
+	map<stringId, unique_ptr<InputContext>> m_inputContexts;
 
 	/** Map of input corresponding actions in the game
 	 * the key is the hash of the actual name of the input action, the value is
 	 * function called when input action is triggered
 	 */
-	map<U32, InputCallbackType> m_inputCallbacks;
+	map<stringId, InputCallbackType> m_inputCallbacks;
 
     /** Contains all inputs read from the system during the current frame
      * this vector is cleared at thje end of each frames
@@ -45,48 +44,30 @@ private:
 	 */
     vector<RawInput> m_postponedRawInputs;
 
-    /** Array used to store each keyboard buttons state
-     * Only used to determine if button is held down (was pressed once but not yet
-     * released)
-     */
-	//RawInput m_keyboardButtonsState[GH_KEYBOARD_KEY_COUNT];
-
-    /** Array used to store each mouse buttons state
-     * Only used to determine if button is held down (was pressed once but not yet
-     * released)
-     */
-	//RawInput m_mouseButtonsState[GH_MOUSE_KEY_COUNT];
-
-	/** Joystick object responsible of storing the joystick's state
-	 */
-	array<Joystick*, GH_MAX_JOYSTICK> m_joystick;
-
-
 protected:
 	void vInitialize() override;
 	void vDestroy() override;
-
 
 public:
 	InputManager(InputManagerConfiguration config) : m_config(config) {
 		m_postponedRawInputs = vector<RawInput>();
 		m_frameRawInputs = queue<RawInput>();
-		m_inputContexts = map<U32, unique_ptr<InputContext>>();
-		m_inputCallbacks = map<U32, InputCallbackType>();
+		m_inputContexts = map<stringId, unique_ptr<InputContext>>();
+		m_inputCallbacks = map<stringId, InputCallbackType>();
 	}
 	InputManager(const InputManager &) = delete;
 	InputManager &operator=(const InputManager &) = delete;
 
-	void activeContext(int id, bool active);
+	void activeContext(stringId id, bool active);
 
 	void registerInput(RawInput rawInput);
 
 	void registerInputContext(unique_ptr<InputContext> inputContext);
 
-	void registerInputCallback(U32 callbackHash, InputCallbackType callback);
+	void registerInputCallback(stringId callbackHash, InputCallbackType callback);
 
 	template<class T>
-	void registerInputCallback(U32 callbackHash, T *object, void (T::*TMethod)(RawInput ri, float deltaTime)) {
+	void registerInputCallback(stringId callbackHash, T *object, void (T::*TMethod)(RawInput ri, float deltaTime)) {
 		auto f = std::bind(TMethod, object, placeholders::_1, placeholders::_2);
 		m_inputCallbacks.insert(make_pair(callbackHash, f));
 	}
@@ -102,7 +83,9 @@ private:
 
 	void setMouseState(int button, InputType type);
 
-	void updateStates(RawInput target[], int size);
+	void initCallbacks();
+
+	void initDefaultInputContext();
 };
 
 /**

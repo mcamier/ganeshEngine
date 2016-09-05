@@ -1,29 +1,20 @@
 #include <iostream>
+
 #include "ghCore.h"
-#include <memory>
 #include "ghApplication.h"
-#include "ghLoggerManager.h"
 #include "ghFileLogger.h"
 #include "ghConsoleLogger.h"
 #include "ghInputManager.h"
-#include "ghInputConfiguration.h"
-#include "ghPlatform.h"
-#include "ghHeaders.h"
-#include "ghEvent.h"
-#include "ghResourceManager.h"
-#include "ghResourceLoader.h"
-#include "ghConfiguration.h"
-#include "ghScene.h"
-
-#include "ghStringId.h"
-
-#include "ghMath.h"
-#include <glm/glm.hpp>
-
 
 using namespace std;
 using namespace glm;
 using namespace ganeshEngine;
+
+static stringId GH_DEMO_ACTION_MOVE_UP = gInternString("demoMatchMoveUp");
+static stringId GH_DEMO_ACTION_MOVE_DOWN = gInternString("demoMatchMoveDown");
+static stringId GH_DEMO_ACTION_MOVE_RIGHT = gInternString("demoMatchMoveRight");
+static stringId GH_DEMO_ACTION_MOVE_LEFT = gInternString("demoMatchMoveLeft");
+static stringId GH_DEMO_ACTION_RESET = gInternString("demoMatchReset");
 
 class MainScene : public Scene {
 private:
@@ -80,19 +71,14 @@ public:
         root->appendChild(obj);
         this->setRoot(root);
 
-        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveUp"), this, &MainScene::goUp);
-
-        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveDown"), this, &MainScene::goDown);
-
-        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveLeft"), this, &MainScene::goLeft);
-
-        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchMoveRight"), this, &MainScene::goRight);
-        gInput().registerInputCallback<MainScene>(GH_HASH("demoMatchReset"), this, &MainScene::reset);
+        gInput().registerInputCallback<MainScene>(GH_DEMO_ACTION_MOVE_UP, this, &MainScene::goUp);
+        gInput().registerInputCallback<MainScene>(GH_DEMO_ACTION_MOVE_DOWN, this, &MainScene::goDown);
+        gInput().registerInputCallback<MainScene>(GH_DEMO_ACTION_MOVE_LEFT, this, &MainScene::goLeft);
+        gInput().registerInputCallback<MainScene>(GH_DEMO_ACTION_MOVE_RIGHT, this, &MainScene::goRight);
+        gInput().registerInputCallback<MainScene>(GH_DEMO_ACTION_RESET, this, &MainScene::reset);
     }
 
-    void update(float deltaTime) override {
-
-    }
+    void update(float deltaTime) override {}
 
     void goUp(RawInput ri, float deltaTime) {
         float move = deltaTime * 1.0f;
@@ -148,8 +134,8 @@ int main() {
     conf.loggers.push_back(new ConsoleLogger(LOG_LEVEL::DEBUG, LOG_CHANNEL::INPUT));
     conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/log"));
 
-    conf.customResourceLoaders.insert(make_pair(GH_HASH("MESH_OBJ"), new MeshObjLoader()));
-    conf.customResourceLoaders.insert(make_pair(GH_HASH("GL_SHADER"), new ShaderLoader()));
+    conf.customResourceLoaders.insert(make_pair(gInternString("MESH_OBJ"), new MeshObjLoader()));
+    conf.customResourceLoaders.insert(make_pair(gInternString("GL_SHADER"), new ShaderLoader()));
 
     conf.startScene = new MainScene();
 

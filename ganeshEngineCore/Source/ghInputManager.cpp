@@ -6,82 +6,12 @@
 
 namespace ganeshEngine {
 
+static stringId GH_INPUT_CONTEXT_SYSTEM = gInternString("__GH_INPUT_CONTEXT_SYSTEM");
+static stringId GH_INPUT_EXIT_GAME = gInternString("__GH_INPUT_EXIT_GAME");
+
 void InputManager::vInitialize() {
-	glfwSetWindowUserPointer(gPlatform().getWindow(), this);
-	glfwSetKeyCallback(gPlatform().getWindow(), [](GLFWwindow *window, int key, int scancde, int action, int mods) {
-		if (action != GLFW_REPEAT) {
-			InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
-			RawInput input;
-			input.idx = 0;
-			input.timestamp = 0;
-			input.source = InputSource::KEYBOARD;
-			input.code = inputDetails::sysInputKeyboardCode2GHCode(key);
-			if (action == GLFW_PRESS) input.type = InputType::BUTTON_PRESS;
-			else if (action == GLFW_RELEASE) input.type = InputType::BUTTON_RELEASE;
-
-			mgr->registerInput(input);
-		}
-	});
-
-	glfwSetCursorPosCallback(gPlatform().getWindow(), [](GLFWwindow *window, double xpos, double ypos) {
-		InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
-		RawInput input;
-		input.idx = 0;
-		input.timestamp = 0;
-		input.source = InputSource::MOUSE;
-		input.type = InputType::AXIS;
-		input.data.range.x = xpos;
-		input.data.range.y = ypos;
-		input.data.range.z = 0.0f;
-
-		mgr->registerInput(input);
-	});
-
-	glfwSetMouseButtonCallback(gPlatform().getWindow(), [](GLFWwindow *window, int button, int action, int mods) {
-		if (action != GLFW_REPEAT) {
-			InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
-			RawInput input;
-			input.idx = 0;
-			input.timestamp = 0;
-			input.source = InputSource::MOUSE;
-			input.code = inputDetails::sysInputMouseCode2GHCode(button);
-			if (action == GLFW_PRESS) input.type = InputType::BUTTON_PRESS;
-			else if (action == GLFW_RELEASE) input.type = InputType::BUTTON_RELEASE;
-
-			mgr->registerInput(input);
-		}
-	});
-
-	glfwSetScrollCallback(gPlatform().getWindow(), [](GLFWwindow *window, double offsetX, double offsetY) {
-		InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
-		RawInput input;
-		input.idx = 0;
-		input.timestamp = 0;
-		input.source = InputSource::MOUSE;
-		input.type = InputType::AXIS;
-		input.data.range.x = offsetX;
-		input.data.range.y = offsetY;
-		input.data.range.z = 0;
-
-		mgr->registerInput(input);
-	});
-
-	/** Add default input detection to exit the game when ESC is pressed */
-	unique_ptr<InputContext> inputContext = make_unique<InputContext>(GH_HASH("__GH_INPUT_CONTEXT_SYSTEM"));
-	int id = inputContext->getId();
-	InputMatch *inputMatch = new InputMatch(
-		InputSource::KEYBOARD,
-		InputType::BUTTON_PRESS,
-		InputCode::KEYBOARD_ESCAPE,
-		GH_HASH("__GH_INPUT_EXIT_GAME"));
-	inputContext->registerMatch(*inputMatch);
-
-	this->registerInputCallback(GH_HASH("__GH_INPUT_EXIT_GAME"), [](RawInput ri, float deltaTime) {
-		gApp().shutdown();
-	});
-
-	this->registerInputContext(move(inputContext));
-	this->activeContext(id, true);
+	initCallbacks();
+	initDefaultInputContext();
 
 	/** Read and configuration from conf object */
 	_DEBUG("############################", LOG_CHANNEL::INPUT);
@@ -90,34 +20,19 @@ void InputManager::vInitialize() {
 	for (int i = 0; i < ictxs.size(); i++) {
 		InputContext *ptr = ictxs[i];
 		int id = ptr->getId();
-		m_inputContexts.insert(pair<int, unique_ptr<InputContext>>(id, unique_ptr<InputContext>(ptr)));
+		m_inputContexts.insert(pair<stringId, unique_ptr<InputContext>>(id, unique_ptr<InputContext>(ptr)));
 		activeContext(id, true);
 	}
 
-	gEvent().addListener<InputManager>(GH_HASH("__GH_EVENT_JOYSTICK_STATE_CHANGE"), this,
-									   &InputManager::onJoystickStateChange);
-
-	for (int i = 0; i <= GH_MAX_JOYSTICK; i++) {
-		if (GLFW_TRUE == glfwJoystickPresent(i)) {
-			m_joystick[i] = new Joystick(i);
-		} else {
-			m_joystick[i] = nullptr;
-		}
-	}
-
+	gEvent().addListener<InputManager>(GH_EVENT_JOYSTICK_STATE_CHANGE, this, &InputManager::onJoystickStateChange);
 	_DEBUG("InputManager initialized", LOG_CHANNEL::INPUT);
 }
 
 void InputManager::vDestroy() {
-	for (int i = 0; i <= GH_MAX_JOYSTICK; i++) {
-		if (m_joystick[i] != nullptr) {
-			delete (m_joystick[i]);
-		}
-	}
 	_DEBUG("InputManager destroyed", LOG_CHANNEL::INPUT);
 }
 
-void InputManager::activeContext(int id, bool active) {
+void InputManager::activeContext(stringId id, bool active) {
 	auto iter = m_inputContexts.find(id);
 	if (iter != m_inputContexts.end()) {
 		_DEBUG("InputContext with id : " << id << " activated", LOG_CHANNEL::INPUT);
@@ -135,7 +50,7 @@ void InputManager::registerInputContext(unique_ptr<InputContext> inputContext) {
 	m_inputContexts.insert(make_pair(inputContext->getId(), move(inputContext)));
 }
 
-void InputManager::registerInputCallback(U32 callbackHash, InputCallbackType callback) {
+void InputManager::registerInputCallback(stringId callbackHash, InputCallbackType callback) {
 	m_inputCallbacks.insert(make_pair(callbackHash, callback));
 }
 
@@ -149,17 +64,8 @@ void InputManager::registerInput(RawInput rawInput) {
 
 void InputManager::vUpdate(const Clock &clock) {
 	float secondElapsedSinceLastFrame = clock.getLastFrameElapsedTimeAsSecond();
-	/** Detection of held key, I dont rely on GLFW action repeat because of the
-	 * delay between press and the firist triggered hold input */
-	//updateStates(m_keyboardButtonsState, GH_KEYBOARD_KEY_COUNT);
-	//updateStates(m_mouseButtonsState, GH_MOUSE_KEY_COUNT);
 
 	glfwPollEvents();
-	for (int i = 0; i <= GH_MAX_JOYSTICK; i++) {
-		if (m_joystick[i] != nullptr) {
-			m_joystick[i]->update();
-		}
-	}
 
 	bool inputFoundInChord = false;
 	while (!m_frameRawInputs.empty()) {
@@ -268,7 +174,7 @@ void InputManager::triggerPlainInputAction(RawInput ri, float deltaTime) {
 	for (auto const &entry : m_inputContexts) {
 		InputContext &context = (*entry.second);
 		if (context.isActive()) {
-			U32 callbackId;
+			stringId callbackId;
 			if (context.getInputMatch(ri, &callbackId)) {
 				auto iter = m_inputCallbacks.find(callbackId);
 				if (iter != m_inputCallbacks.end()) {
@@ -286,7 +192,7 @@ void InputManager::triggerPlainInputAction(RawInput ri, float deltaTime) {
 
 void InputManager::onJoystickStateChange(Event *event) {
 	JoystickStateChangeEvent *jsce = static_cast<JoystickStateChangeEvent *>(event);
-	if (jsce->getJoystickIndex() < 0 || jsce->getJoystickIndex() > GH_MAX_JOYSTICK) {
+	/*if (jsce->getJoystickIndex() < 0 || jsce->getJoystickIndex() > GH_MAX_JOYSTICK) {
 		_DEBUG("onJoystickStateChange with invalid index [" << jsce->getJoystickIndex() << "]", LOG_CHANNEL::INPUT);
 	} else {
 		if (jsce->getJoystickState() == GLFW_CONNECTED) {
@@ -297,34 +203,86 @@ void InputManager::onJoystickStateChange(Event *event) {
 			delete (m_joystick[jsce->getJoystickIndex()]);
 			m_joystick[jsce->getJoystickIndex()] = nullptr;
 		}
-	}
-}
-
-void InputManager::setKeyboardState(int key, InputType type) {
-	/*if (type == InputType::PRESS ||
-		type == InputType::RELEASE ||
-		type == InputType::DOWN) {
-		m_keyboardButtonsState[key].type = type;
 	}*/
 }
 
-void InputManager::setMouseState(int button, InputType type) {
-	/*if (type == InputType::PRESS ||
-		type == InputType::RELEASE ||
-		type == InputType::DOWN) {
-		m_mouseButtonsState[button].type = type;
-	}*/
-}
+void InputManager::initCallbacks() {
+	glfwSetWindowUserPointer(gPlatform().getWindow(), this);
+	glfwSetKeyCallback(gPlatform().getWindow(), [](GLFWwindow *window, int key, int scancde, int action, int mods) {
+		if (action != GLFW_REPEAT) {
+			InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
+			RawInput input;
+			input.idx = 0;
+			input.timestamp = 0;
+			input.source = InputSource::KEYBOARD;
+			input.code = inputDetails::sysInputKeyboardCode2GHCode(key);
+			if (action == GLFW_PRESS) input.type = InputType::BUTTON_PRESS;
+			else if (action == GLFW_RELEASE) input.type = InputType::BUTTON_RELEASE;
 
-void InputManager::updateStates(RawInput target[], int size) {
-	/*for (int i = 0; i < size; i++) {
-		if (target[i].type == InputType::PRESS) {
-            target[i].type = InputType::DOWN;
-            m_frameRawInputs.push(target[i]);
-		} else if (target[i].type == InputType::DOWN) {
-            m_frameRawInputs.push(target[i]);
+			mgr->registerInput(input);
 		}
-	}*/
+	});
+
+	glfwSetCursorPosCallback(gPlatform().getWindow(), [](GLFWwindow *window, double xpos, double ypos) {
+		InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
+		RawInput input;
+		input.idx = 0;
+		input.timestamp = 0;
+		input.source = InputSource::MOUSE;
+		input.type = InputType::AXIS;
+		input.data.range.x = xpos;
+		input.data.range.y = ypos;
+		input.data.range.z = 0.0f;
+
+		mgr->registerInput(input);
+	});
+
+	glfwSetMouseButtonCallback(gPlatform().getWindow(), [](GLFWwindow *window, int button, int action, int mods) {
+		if (action != GLFW_REPEAT) {
+			InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
+			RawInput input;
+			input.idx = 0;
+			input.timestamp = 0;
+			input.source = InputSource::MOUSE;
+			input.code = inputDetails::sysInputMouseCode2GHCode(button);
+			if (action == GLFW_PRESS) input.type = InputType::BUTTON_PRESS;
+			else if (action == GLFW_RELEASE) input.type = InputType::BUTTON_RELEASE;
+
+			mgr->registerInput(input);
+		}
+	});
+
+	glfwSetScrollCallback(gPlatform().getWindow(), [](GLFWwindow *window, double offsetX, double offsetY) {
+		InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
+		RawInput input;
+		input.idx = 0;
+		input.timestamp = 0;
+		input.source = InputSource::MOUSE;
+		input.type = InputType::AXIS;
+		input.data.range.x = offsetX;
+		input.data.range.y = offsetY;
+		input.data.range.z = 0;
+
+		mgr->registerInput(input);
+	});
+}
+
+void InputManager::initDefaultInputContext() {
+	unique_ptr<InputContext> inputContext = make_unique<InputContext>(GH_INPUT_CONTEXT_SYSTEM);
+	int id = inputContext->getId();
+	InputMatch *inputMatch = new InputMatch(
+		InputSource::KEYBOARD,
+		InputType::BUTTON_PRESS,
+		InputCode::KEYBOARD_ESCAPE,
+		GH_INPUT_EXIT_GAME);
+	inputContext->registerMatch(*inputMatch);
+
+	this->registerInputCallback(GH_INPUT_EXIT_GAME, [](RawInput ri, float deltaTime) {
+		gEvent().fireEvent(new Event(GH_EVENT_EXIT_GAME));
+	});
+
+	this->registerInputContext(move(inputContext));
+	this->activeContext(id, true);
 }
 
 InputManager &(*gInput)() = &InputManager::get;

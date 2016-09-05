@@ -450,20 +450,20 @@ public:
 	InputSource m_source;
 	InputType m_type;
 	InputCode m_code;
-	U32 m_callbackId;
+	stringId m_callbackId;
 
 	InputMatch() {}
 
-	InputMatch(InputSource source, InputType type, InputCode code, U32 callbackId) :
+	InputMatch(InputSource source, InputType type, InputCode code, stringId callbackId) :
 			m_source(source),
 			m_type(type),
 			m_code(code),
 			m_callbackId(callbackId) {}
 
-	bool isMatch(const RawInput& RawInput) const {
-		if(RawInput.source == m_source && RawInput.type == m_type) {
+	bool isMatch(const RawInput& rawInput) const {
+		if(rawInput.source == m_source && rawInput.type == m_type) {
 			if(m_code != InputCode::NONE) {
-				return (RawInput.code == m_code);
+				return (rawInput.code == m_code);
 			}
 			return true;
 		}

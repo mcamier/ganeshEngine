@@ -1,5 +1,7 @@
 #include "ghInputConfiguration.h"
 
+#include "ghStringId.h"
+
 namespace ganeshEngine {
 
 InputManagerConfiguration::~InputManagerConfiguration() {}
@@ -66,7 +68,7 @@ void InputManagerConfiguration::readContext(const Value &node, InputContext *&ct
 
     if (node.HasMember("name") && node["name"].IsString()) {
         _DEBUG("Input Contexts: " << node["name"].GetString(), LOG_CHANNEL::INPUT);
-        ctx = new InputContext(GH_HASH(node["name"].GetString()));
+        ctx = new InputContext(gInternString(node["name"].GetString()));
         if (node.HasMember("chords")) {
             readChords(node["chords"], ctx);
         }
@@ -109,7 +111,7 @@ void InputManagerConfiguration::readMatch(const Value &node, InputMatch *&im) {
             inputDetails::fromString<InputSource>(node["source"].GetString()),
             inputDetails::fromString<InputType>(node["type"].GetString()),
             inputDetails::fromString<InputCode>(node["code"].GetString()),
-            GH_HASH(node["callbackName"].GetString()));
+            gInternString(node["callbackName"].GetString()));
 }
 
 Chord *InputManagerConfiguration::readChord(const Value &node, Chord *&chord) {
@@ -126,7 +128,7 @@ Chord *InputManagerConfiguration::readChord(const Value &node, Chord *&chord) {
     }
 
     InputChordSize csize;
-    U32 callbackNameHash = GH_HASH(node["callbackName"].GetString());
+    U32 callbackNameHash = gInternString(node["callbackName"].GetString());
     InputMatch i1, i2, i3;
 
     if (node.HasMember("_3")) {

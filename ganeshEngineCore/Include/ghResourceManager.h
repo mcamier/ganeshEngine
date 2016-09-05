@@ -29,10 +29,10 @@ private:
     string m_resourceLocation;
 
     /** Registered resources loaders */
-    map<U32, shared_ptr<ResourceLoader>> m_loaders;
+    map<stringId, shared_ptr<ResourceLoader>> m_loaders;
 
     /** Resource registry */
-    map<U32, shared_ptr<ResourceWrapper>> m_resources;
+    map<stringId, shared_ptr<ResourceWrapper>> m_resources;
 
     ResourceManager(unique_ptr<ResourceConfiguration> conf, map<U32, ResourceLoader*> loaders) :
             m_configuration(move(conf)) {

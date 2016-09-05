@@ -3,18 +3,36 @@
 
 #include <map>
 #include <string>
-
-using namespace std;
+#include <functional>
 
 namespace ganeshEngine {
 
-    using stringId = size_t;
+using namespace std;
 
-    static map<stringId, string> gInternalStrings = map<stringId, string>();
+/**
+ * stringId is used to create id's corresponding to given strings
+ */
+using stringId = size_t;
 
-    static stringId gInternString(const char* value);
+static map<stringId, string> gInternStrings = map<stringId, string>();
 
-    static const string& gGetInternString(stringId hashId);
+static stringId gInternString(const char * value) {
+	size_t hash = std::hash<string>{}(value);
+	auto&& itr = gInternStrings.find(hash);
+	if(itr == gInternStrings.end()) {
+		gInternStrings.insert(make_pair(hash, string(value)));
+	}
+	return hash;
+};
+
+static const string& gStringFromStringId(stringId id) {
+	static const string noStringFound = "no String Found";
+	auto&& itr = gInternStrings.find(id);
+	if(itr == gInternStrings.end()) {
+		return noStringFound;
+	}
+	return itr->second;
+};
 
 }
 

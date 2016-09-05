@@ -23,7 +23,7 @@ typedef struct resourceEntry_s {
     string filename;
     string loaderName;
     bool eagerLoading;
-    map<U32, resourceMetadata> metadatas;
+    map<stringId, resourceMetadata> metadatas;
 } resourceEntry;
 
 enum class ResourceLocationType {
@@ -128,7 +128,7 @@ private:
                         resourceMetadata metadata;
                         metadata.name = metas["key"].GetString();
                         metadata.name = metas ["value"].GetString();
-                        re.metadatas.insert(make_pair(GH_HASH(metadata.name), metadata));
+                        re.metadatas.insert(make_pair(gInternString(metadata.name.c_str()), metadata));
                     }
                     else {
                         _WARNING("Ignored resource's metadata", LOG_CHANNEL::DEFAULT);

@@ -28,6 +28,7 @@
 #include <GLFW/glfw3.h>
 
 #include "ghCore.h"
+#include "ghStringId.h"
 
 #ifdef LOGGING_ENABLED
 #define _LOG(LOG_LEVEL, MESSAGE) {\

@@ -73,7 +73,6 @@ set(EngineSources
         "Source/ghResourceWrapper.cpp"
         "Source/ghSceneObject.cpp"
         "Source/ghSkybox.cpp"
-        "Source/ghStringId.cpp"
         "Source/ghStackAllocator.cpp"
         "Source/graphics/ghFrustum.cpp"
         "Source/graphics/ghGLMesh.cpp"

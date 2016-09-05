@@ -47,8 +47,6 @@
 #define BREAK()
 #endif
 
-#define GH_HASH(expr)  std::hash<std::string>{}(expr)
-
 namespace ganeshEngine {
 
     using U8 = std::uint8_t;

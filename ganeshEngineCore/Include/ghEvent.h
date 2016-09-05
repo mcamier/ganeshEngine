@@ -8,7 +8,8 @@ namespace ganeshEngine {
 
 using namespace std;
 
-using EventType = U32;
+static stringId GH_EVENT_JOYSTICK_STATE_CHANGE = gInternString("__GH_EVENT_JOYSTICK_STATE_CHANGE");
+static stringId GH_EVENT_EXIT_GAME = gInternString("__GH_EVENT_EXIT_GAME");
 
 /**
  * Basic Event class that all other event have to extends in order to be used by the
@@ -16,10 +17,10 @@ using EventType = U32;
  */
 class Event {
 private:
-	EventType m_type;
+	stringId mType;
 
 public:
-	Event(EventType type) : m_type(type) {}
+	Event(stringId type) : mType(type) {}
 	virtual ~Event();
 
 	/**
@@ -27,9 +28,11 @@ public:
 	 *
 	 * @return event's type
 	 */
-	const EventType getType() const;
+	const stringId getType() const;
 };
+
 using EventCallback = function<void(Event *)>;
+
 
 class JoystickStateChangeEvent : public Event {
 private:
@@ -38,7 +41,7 @@ private:
 
 public:
 	JoystickStateChangeEvent(int index, int state) :
-			Event(GH_HASH("__GH_EVENT_JOYSTICK_STATE_CHANGE")),
+			Event(GH_EVENT_JOYSTICK_STATE_CHANGE),
 			m_joystickIndex(index),
 			m_joystickState(state) {}
 
@@ -57,7 +60,7 @@ class EventManager : public System<EventManager> {
 private:
 	vector<Event *> m_EventQueue;
 
-	multimap<EventType, EventCallback> m_Listeners;
+	multimap<stringId, EventCallback> m_Listeners;
 
 protected:
 	void vInitialize() override;
@@ -92,13 +95,13 @@ public:
 	 * @param eventType event type to match to trigger callback
 	 * @param callback method to execute when event occurs
 	 */
-	void addListener(EventType eventType, EventCallback callback);
+	void addListener(stringId eventType, EventCallback callback);
 
 	/**
 	 * Remove all listerners of a given type of event
 	 * @param eventType type of event to find
 	 */
-	void removeAllListeners(EventType eventType);
+	void removeAllListeners(stringId eventType);
 
 	/**
 	 * Register a callback method to be called when event occurs
@@ -109,9 +112,9 @@ public:
 	 * @param TMethod pointer to the member function to use as callback
 	 */
 	template<class T>
-	void addListener(EventType eventType, T *object, void (T::*TMethod)(Event *)) {
+	void addListener(stringId eventType, T *object, void (T::*TMethod)(Event *)) {
 		auto f = std::bind(TMethod, object, placeholders::_1);
-		m_Listeners.insert(pair<EventType, EventCallback>(eventType, f));
+		m_Listeners.insert(pair<stringId, EventCallback>(eventType, f));
 	}
 
 private:
