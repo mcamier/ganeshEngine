@@ -1,5 +1,7 @@
 #include "ghInputUtils.h"
 
+#include "ghInputManager.h"
+
 namespace ganeshEngine {
 
 namespace inputDetails {
@@ -171,6 +173,8 @@ const char *toString<InputCode>(InputCode value) {
 	if (value == InputCode::XBOX_CONTROLLER_AXIS_LEFT_X) return inputDetails::XBOX_CONTROLLER_AXIS_LEFT_X;
 	if (value == InputCode::XBOX_CONTROLLER_AXIS_LEFT_Y) return inputDetails::XBOX_CONTROLLER_AXIS_LEFT_Y;
 	if (value == InputCode::XBOX_CONTROLLER_AXIS_RIGHT_X) return inputDetails::XBOX_CONTROLLER_AXIS_RIGHT_X;
+	if (value == InputCode::UNSUPPORTED) return inputDetails::UNSUPPORTED;
+	if (value == InputCode::NONE) return inputDetails::NONE;
 	return "Undefined";
 }
 
@@ -340,6 +344,7 @@ InputCode fromString<InputCode>(const char *value) {
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_AXIS_LEFT_Y) == 0) return InputCode::XBOX_CONTROLLER_AXIS_LEFT_Y;
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_AXIS_RIGHT_X) == 0) return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_X;
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_AXIS_RIGHT_Y) == 0) return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_Y;
+	if (strcmp(value, inputDetails::UNSUPPORTED) == 0) return InputCode::UNSUPPORTED;
 	return InputCode::NONE;
 }
 
@@ -513,6 +518,163 @@ bool operator!=(Chord const &v1, Chord const &v2) {
 		}
 	}
 	return true;
+}
+
+
+Joystick::Joystick(int index) {
+	mIndex = index;
+	switch (glfwJoystickPresent(index)) {
+		case GLFW_TRUE:
+			mConnected = true;
+			mInitialized = true;
+			mAxeStates = glfwGetJoystickButtons(index, &mAxesCount);
+			mButtonStates = glfwGetJoystickAxes(index, &mButtonsCount);
+
+			mPreviousAxeStates = (unsigned char *) std::malloc(mAxesCount * sizeof(unsigned char));
+			mPreviousButtonStates = (float *) std::malloc(mButtonsCount * sizeof(float));
+			break;
+
+		default:
+			mConnected = false;
+			mInitialized = false;
+			mIndex = 0;
+			mAxesCount = 0;
+			mButtonsCount = 0;
+			mAxeStates = nullptr;
+			mPreviousAxeStates = nullptr;
+			mButtonStates = nullptr;
+			mPreviousButtonStates = nullptr;
+			break;
+	}
+}
+
+Joystick::~Joystick() {
+	if (mInitialized) {
+		std::free(mPreviousAxeStates);
+		std::free(mPreviousButtonStates);
+	}
+}
+
+void Joystick::initialize(int index) {
+	if (glfwJoystickPresent(index)) {
+		mConnected = true;
+		mInitialized = true;
+		mAxeStates = glfwGetJoystickButtons(index, &mAxesCount);
+		mButtonStates = glfwGetJoystickAxes(index, &mButtonsCount);
+
+		mPreviousAxeStates = (unsigned char *) std::malloc(mAxesCount * sizeof(unsigned char));
+		mPreviousButtonStates = (float *) std::malloc(mButtonsCount * sizeof(float));
+	}
+}
+
+void Joystick::release() {
+	if (mConnected && mInitialized) {
+		mConnected = false;
+		mInitialized = false;
+		mAxeStates = nullptr;
+		mButtonStates = nullptr;
+		mAxesCount = 0;
+		mButtonsCount = 0;
+
+		std::free(mPreviousAxeStates);
+		std::free(mPreviousButtonStates);
+	}
+}
+
+void Joystick::update() {
+	if (mConnected && mInitialized) {
+		std::memcpy(mPreviousAxeStates, mAxeStates, sizeof(mPreviousAxeStates));
+		std::memcpy(mPreviousButtonStates, mButtonStates, sizeof(mPreviousButtonStates));
+
+		/* Read buttons states to submit input to manager if needed */
+		RawInput rawInput;
+		for (int i = 0; i < mButtonsCount; i++) {
+			rawInput = RawInput();
+			rawInput.idx = this->mIndex;
+			rawInput.source = InputSource::DEVICE;
+			rawInput.code = InputCode::UNSUPPORTED;
+
+			if (mPreviousButtonStates[i] == GLFW_RELEASE && mButtonStates[i] == GLFW_PRESS) {
+				rawInput.type = InputType::BUTTON_PRESS;
+				rawInput.code = mapButtonIdxToInputCode(i);
+			}
+			else if (mPreviousButtonStates[i] == GLFW_PRESS && mButtonStates[i] == GLFW_PRESS) {
+				rawInput.type = InputType::BUTTON_DOWN;
+				rawInput.code = mapButtonIdxToInputCode(i);
+			}
+			else if (mPreviousButtonStates[i] == GLFW_PRESS && mButtonStates[i] == GLFW_RELEASE) {
+				rawInput.type = InputType::BUTTON_RELEASE;
+				rawInput.code = mapButtonIdxToInputCode(i);
+			}
+
+			if (rawInput.code != InputCode::UNSUPPORTED) {
+				gInput().registerInput(rawInput);
+			}
+		}
+
+		/* Read axes states to submit input to manager if needed */
+		for (int i = 0; i < mAxesCount; i++) {
+			rawInput = RawInput();
+			rawInput.idx = this->mIndex;
+			rawInput.source = InputSource::DEVICE;
+			rawInput.type = InputType::AXIS;
+			rawInput.code = mapAxesIdxToInputCode(i);
+
+			if ((rawInput.code != InputCode::UNSUPPORTED) &&
+				(mAxeStates[i] < -0.001f || mAxeStates[i] > 0.001f)) {
+				gInput().registerInput(rawInput);
+			}
+		}
+	}
+}
+
+
+InputCode Joystick::mapButtonIdxToInputCode(int idx) {
+	switch (idx) {
+		case 1:
+			return InputCode::XBOX_CONTROLLER_A;
+		case 2:
+			return InputCode::XBOX_CONTROLLER_B;
+		case 3:
+			return InputCode::XBOX_CONTROLLER_X;
+		case 4:
+			return InputCode::XBOX_CONTROLLER_Y;
+		case 5:
+			return InputCode::XBOX_CONTROLLER_START;
+		case 6:
+			return InputCode::XBOX_CONTROLLER_SELECT;
+		case 7:
+			return InputCode::XBOX_CONTROLLER_MENU;
+		case 8:
+			return InputCode::XBOX_CONTROLLER_RS;
+		case 9:
+			return InputCode::XBOX_CONTROLLER_LS;
+		case 10:
+			return InputCode::XBOX_CONTROLLER_UP;
+		case 11:
+			return InputCode::XBOX_CONTROLLER_DOWN;
+		case 12:
+			return InputCode::XBOX_CONTROLLER_LEFT;
+		case 13:
+			return InputCode::XBOX_CONTROLLER_RIGHT;
+		default:
+			return InputCode::UNSUPPORTED;
+	};
+}
+
+InputCode Joystick::mapAxesIdxToInputCode(int idx) {
+	switch (idx) {
+		case 1:
+			return InputCode::XBOX_CONTROLLER_AXIS_LEFT_X;
+		case 2:
+			return InputCode::XBOX_CONTROLLER_AXIS_LEFT_Y;
+		case 3:
+			return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_X;
+		case 4:
+			return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_Y;
+		default:
+			return InputCode::UNSUPPORTED;
+	};
 }
 
 }

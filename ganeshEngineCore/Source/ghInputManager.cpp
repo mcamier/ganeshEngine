@@ -15,12 +15,12 @@ void InputManager::vInitialize() {
 
 	/** Read and configuration from conf object */
 	_DEBUG("############################", LOG_CHANNEL::INPUT);
-	m_config.dump();
-	vector<InputContext *> &ictxs = m_config.getInputContexts();
+	mInputConfig.dump();
+	vector<InputContext *> &ictxs = mInputConfig.getInputContexts();
 	for (int i = 0; i < ictxs.size(); i++) {
 		InputContext *ptr = ictxs[i];
 		int id = ptr->getId();
-		m_inputContexts.insert(pair<stringId, unique_ptr<InputContext>>(id, unique_ptr<InputContext>(ptr)));
+		mInputContexts.insert(pair<stringId, unique_ptr<InputContext>>(id, unique_ptr<InputContext>(ptr)));
 		activeContext(id, true);
 	}
 
@@ -33,8 +33,8 @@ void InputManager::vDestroy() {
 }
 
 void InputManager::activeContext(stringId id, bool active) {
-	auto iter = m_inputContexts.find(id);
-	if (iter != m_inputContexts.end()) {
+	auto iter = mInputContexts.find(id);
+	if (iter != mInputContexts.end()) {
 		_DEBUG("InputContext with id : " << id << " activated", LOG_CHANNEL::INPUT);
 		iter->second->setActive(active);
 	} else {
@@ -43,19 +43,19 @@ void InputManager::activeContext(stringId id, bool active) {
 }
 
 void InputManager::registerInputContext(unique_ptr<InputContext> inputContext) {
-	auto iter = m_inputContexts.find(inputContext->getId());
-	if (iter != m_inputContexts.end()) {
+	auto iter = mInputContexts.find(inputContext->getId());
+	if (iter != mInputContexts.end()) {
 		_ERROR("Cannot add an inputContext already present in the InputManager", LOG_CHANNEL::INPUT);
 	}
-	m_inputContexts.insert(make_pair(inputContext->getId(), move(inputContext)));
+	mInputContexts.insert(make_pair(inputContext->getId(), move(inputContext)));
 }
 
 void InputManager::registerInputCallback(stringId callbackHash, InputCallbackType callback) {
-	m_inputCallbacks.insert(make_pair(callbackHash, callback));
+	mInputCallbacks.insert(make_pair(callbackHash, callback));
 }
 
 void InputManager::registerInput(RawInput rawInput) {
-	m_frameRawInputs.push(rawInput);
+	mFrameRawInputs.push(rawInput);
 	_DEBUG(
 		"RawInput registered : [" << inputDetails::toString(rawInput.source) << ", "
 								  << inputDetails::toString(rawInput.type)
@@ -67,57 +67,70 @@ void InputManager::vUpdate(const Clock &clock) {
 
 	glfwPollEvents();
 
+	for(Joystick& device : mJoysticks) {
+		device.update();
+	}
+
+	/* loop over list of held button and submit input accordingly */
+	for(auto itr : mHeldButtonRawInputs) {
+		registerInput(itr.second);
+	}
+
 	bool inputFoundInChord = false;
-	while (!m_frameRawInputs.empty()) {
-		auto input = m_frameRawInputs.front();
+	while (!mFrameRawInputs.empty()) {
+		auto input = mFrameRawInputs.front();
 		inputFoundInChord = false;
 
-		/** check if input exist in any chord in any active context */
-		for (auto const &entry : m_inputContexts) {
+		/* check if input exist in any chord in any active context
+		 */
+		for (auto const &entry : mInputContexts) {
 			InputContext &context = (*entry.second);
 			if (context.isActive()) {
 				for (auto const &chord : context.m_chords) {
-					if (chord.containsRawInput(input.source, input.type, input.code)) {
+					/* Chord inputs are now limited to input of type BUTTON_PRESS only
+					 */
+					if (input.type == InputType::BUTTON_PRESS &&
+						chord.containsRawInput(input.source, input.type, input.code)) {
 						inputFoundInChord = true;
 					}
 				}
 			}
 		}
 		if (inputFoundInChord) {
-			/** if input could potentially triggers a chord, it is postponed in another container and
-			 * removed from the input queue */
-			m_postponedRawInputs.push_back(input);
+			/* if input could potentially triggers a chord, it is postponed in another container and
+			 * removed from the input queue
+			 */
+			mPostponedRawInputs.push_back(input);
 			//_DEBUG("INPUT POSTPONED : " << inputDetails::toString(input.source) << ", " << inputDetails::toString(input.type), LOG_CHANNEL::INPUT);
 		} else {
 			/** trigger regular action for this input */
 			triggerPlainInputAction(input, secondElapsedSinceLastFrame);
 		}
-		m_frameRawInputs.pop();
+		mFrameRawInputs.pop();
 	}
 
-	/**
-	 * Update and detects chords
+	/* Update and detects chords
 	 * btw it's quite ugly
 	 */
-	for (auto const &entry : m_inputContexts) {
+	for (auto const &entry : mInputContexts) {
 		InputContext &context = (*entry.second);
-		if (context.isActive() && !m_postponedRawInputs.empty()) {
+		if (context.isActive() && !mPostponedRawInputs.empty()) {
 			for (auto const &chord : context.m_chords) {
 				if (chord.size == InputChordSize::_2) {
-					int a = chord.findFirstInputFrom(m_postponedRawInputs);
-					int b = chord.findSecondInputFrom(m_postponedRawInputs);
+					int a = chord.findFirstInputFrom(mPostponedRawInputs);
+					int b = chord.findSecondInputFrom(mPostponedRawInputs);
 					if (a >= 0 && b >= 0) {
 						_DEBUG("CHORD DETECTED", LOG_CHANNEL::INPUT);
 						if (a > b) {
-							m_postponedRawInputs.erase(m_postponedRawInputs.begin() + a);
-							m_postponedRawInputs.erase(m_postponedRawInputs.begin() + b);
+							mPostponedRawInputs.erase(mPostponedRawInputs.begin() + a);
+							mPostponedRawInputs.erase(mPostponedRawInputs.begin() + b);
 						} else {
-							m_postponedRawInputs.erase(m_postponedRawInputs.begin() + b);
-							m_postponedRawInputs.erase(m_postponedRawInputs.begin() + a);
+							mPostponedRawInputs.erase(mPostponedRawInputs.begin() + b);
+							mPostponedRawInputs.erase(mPostponedRawInputs.begin() + a);
 						}
 
-						auto iter = m_inputCallbacks.find(chord.m_callbackNameHash);
-						if (iter != m_inputCallbacks.end()) {
+						auto iter = mInputCallbacks.find(chord.m_callbackNameHash);
+						if (iter != mInputCallbacks.end()) {
 							iter->second(RawInput(), secondElapsedSinceLastFrame);
 						} else {
 							_WARNING("Input chord detected but no callback to call", LOG_CHANNEL::INPUT);
@@ -125,14 +138,14 @@ void InputManager::vUpdate(const Clock &clock) {
 
 					}
 				} else if (chord.size == InputChordSize::_3) {
-					int a = chord.findFirstInputFrom(m_postponedRawInputs);
-					int b = chord.findSecondInputFrom(m_postponedRawInputs);
-					int c = chord.findThirdInputFrom(m_postponedRawInputs);
+					int a = chord.findFirstInputFrom(mPostponedRawInputs);
+					int b = chord.findSecondInputFrom(mPostponedRawInputs);
+					int c = chord.findThirdInputFrom(mPostponedRawInputs);
 					if (a >= 0 && b >= 0 && c >= 0) {
 						_DEBUG("CHORD DETECTED", LOG_CHANNEL::INPUT);
-						m_postponedRawInputs.erase(m_postponedRawInputs.begin() + a);
-						m_postponedRawInputs.erase(m_postponedRawInputs.begin() + b);
-						m_postponedRawInputs.erase(m_postponedRawInputs.begin() + c);
+						mPostponedRawInputs.erase(mPostponedRawInputs.begin() + a);
+						mPostponedRawInputs.erase(mPostponedRawInputs.begin() + b);
+						mPostponedRawInputs.erase(mPostponedRawInputs.begin() + c);
 						vector<int> pouet = vector<int>(3);
 						pouet.push_back(a);
 						pouet.push_back(b);
@@ -140,11 +153,11 @@ void InputManager::vUpdate(const Clock &clock) {
 						std::sort(pouet.begin(), pouet.end());
 						for (auto itr = pouet.rbegin(); itr != pouet.rend(); ++itr) {
 							int t = (*itr);
-							m_postponedRawInputs.erase(m_postponedRawInputs.begin() + t);
+							mPostponedRawInputs.erase(mPostponedRawInputs.begin() + t);
 						}
 
-						auto iter = m_inputCallbacks.find(chord.m_callbackNameHash);
-						if (iter != m_inputCallbacks.end()) {
+						auto iter = mInputCallbacks.find(chord.m_callbackNameHash);
+						if (iter != mInputCallbacks.end()) {
 							iter->second(RawInput(), secondElapsedSinceLastFrame);
 						} else {
 							_WARNING("Input chord detected but no callback to call", LOG_CHANNEL::INPUT);
@@ -155,15 +168,13 @@ void InputManager::vUpdate(const Clock &clock) {
 		}
 	}
 
-	/**
-	 * apply lifetime on remaining input and remove the too old ones
+	/* apply lifetime on remaining input and remove the too old ones
 	 */
-	for (auto itr = m_postponedRawInputs.begin(); itr != m_postponedRawInputs.end();) {
+	for (auto itr = mPostponedRawInputs.begin(); itr != mPostponedRawInputs.end();) {
 		(*itr).chordDetectionLifetimeS -= secondElapsedSinceLastFrame;
 		if ((*itr).chordDetectionLifetimeS <= 0) {
 			triggerPlainInputAction((*itr), secondElapsedSinceLastFrame);
-			m_postponedRawInputs.erase(itr);
-			//_DEBUG("INPUT FOR CHORD DETECTION LIFETIME OVER", LOG_CHANNEL::INPUT);
+			mPostponedRawInputs.erase(itr);
 		} else {
 			++itr;
 		}
@@ -171,13 +182,13 @@ void InputManager::vUpdate(const Clock &clock) {
 }
 
 void InputManager::triggerPlainInputAction(RawInput ri, float deltaTime) {
-	for (auto const &entry : m_inputContexts) {
+	for (auto const &entry : mInputContexts) {
 		InputContext &context = (*entry.second);
 		if (context.isActive()) {
 			stringId callbackId;
 			if (context.getInputMatch(ri, &callbackId)) {
-				auto iter = m_inputCallbacks.find(callbackId);
-				if (iter != m_inputCallbacks.end()) {
+				auto iter = mInputCallbacks.find(callbackId);
+				if (iter != mInputCallbacks.end()) {
 					_DEBUG("INPUT MATCH TRIGERRED BY " << inputDetails::toString(ri.source) << ", "
 													   << inputDetails::toString(ri.type) << ", "
 													   << inputDetails::toString(ri.code), LOG_CHANNEL::INPUT);
@@ -186,24 +197,39 @@ void InputManager::triggerPlainInputAction(RawInput ri, float deltaTime) {
 					_WARNING("Input detected but no callback to call", LOG_CHANNEL::INPUT);
 				}
 			}
+
+			if(ri.type == InputType::BUTTON_PRESS) {
+				auto itr = mHeldButtonRawInputs.find(ri.code);
+
+				if(itr == mHeldButtonRawInputs.end()) {
+					ri.type = InputType::BUTTON_DOWN;
+					mHeldButtonRawInputs.insert(make_pair(ri.code, ri));
+				}
+			} else if(ri.type == InputType::BUTTON_RELEASE) {
+				auto itr = mHeldButtonRawInputs.find(ri.code);
+
+				if(itr != mHeldButtonRawInputs.end()) {
+					mHeldButtonRawInputs.erase(itr);
+				}
+			}
 		}
 	}
 }
 
 void InputManager::onJoystickStateChange(Event *event) {
 	JoystickStateChangeEvent *jsce = static_cast<JoystickStateChangeEvent *>(event);
-	/*if (jsce->getJoystickIndex() < 0 || jsce->getJoystickIndex() > GH_MAX_JOYSTICK) {
-		_DEBUG("onJoystickStateChange with invalid index [" << jsce->getJoystickIndex() << "]", LOG_CHANNEL::INPUT);
-	} else {
+	int i = jsce->getJoystickIndex();
+	if (i >= 0 || i <= GH_MAX_JOYSTICK) {
 		if (jsce->getJoystickState() == GLFW_CONNECTED) {
-			_DEBUG("Joystick [" << jsce->getJoystickIndex() << "] connected", LOG_CHANNEL::INPUT);
-			m_joystick[jsce->getJoystickIndex()] = new Joystick(jsce->getJoystickIndex());
+			mJoysticks[i].initialize(i);
+			_DEBUG("Joystick [" << i << "] connected", LOG_CHANNEL::INPUT);
 		} else if (jsce->getJoystickState() == GLFW_DISCONNECTED) {
-			_DEBUG("Joystick [" << jsce->getJoystickIndex() << "] disconnected", LOG_CHANNEL::INPUT);
-			delete (m_joystick[jsce->getJoystickIndex()]);
-			m_joystick[jsce->getJoystickIndex()] = nullptr;
+			mJoysticks[i].release();
+			_DEBUG("Joystick [" << i << "] disconnected", LOG_CHANNEL::INPUT);
 		}
-	}*/
+	} else {
+		_DEBUG("onJoystickStateChange with invalid index [" << i << "]", LOG_CHANNEL::INPUT);
+	}
 }
 
 void InputManager::initCallbacks() {
@@ -213,7 +239,6 @@ void InputManager::initCallbacks() {
 			InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
 			RawInput input;
 			input.idx = 0;
-			input.timestamp = 0;
 			input.source = InputSource::KEYBOARD;
 			input.code = inputDetails::sysInputKeyboardCode2GHCode(key);
 			if (action == GLFW_PRESS) input.type = InputType::BUTTON_PRESS;
@@ -227,12 +252,11 @@ void InputManager::initCallbacks() {
 		InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
 		RawInput input;
 		input.idx = 0;
-		input.timestamp = 0;
 		input.source = InputSource::MOUSE;
 		input.type = InputType::AXIS;
-		input.data.range.x = xpos;
-		input.data.range.y = ypos;
-		input.data.range.z = 0.0f;
+		input.data.axis.x = (F32)xpos;
+		input.data.axis.y = (F32)ypos;
+		input.data.axis.z = 0.0f;
 
 		mgr->registerInput(input);
 	});
@@ -242,7 +266,6 @@ void InputManager::initCallbacks() {
 			InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
 			RawInput input;
 			input.idx = 0;
-			input.timestamp = 0;
 			input.source = InputSource::MOUSE;
 			input.code = inputDetails::sysInputMouseCode2GHCode(button);
 			if (action == GLFW_PRESS) input.type = InputType::BUTTON_PRESS;
@@ -256,12 +279,11 @@ void InputManager::initCallbacks() {
 		InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
 		RawInput input;
 		input.idx = 0;
-		input.timestamp = 0;
 		input.source = InputSource::MOUSE;
 		input.type = InputType::AXIS;
-		input.data.range.x = offsetX;
-		input.data.range.y = offsetY;
-		input.data.range.z = 0;
+		input.data.axis.x = (F32)offsetX;
+		input.data.axis.y = (F32)offsetY;
+		input.data.axis.z = 0.0f;
 
 		mgr->registerInput(input);
 	});

@@ -7,12 +7,10 @@
           "callbackName": "demoMatchReset",
           "_1": {
             "source": "KEYBOARD",
-            "type": "BUTTON_PRESS",
             "code": "KEYBOARD_RIGHT"
           },
           "_2": {
             "source": "KEYBOARD",
-            "type": "BUTTON_PRESS",
             "code": "KEYBOARD_LEFT"
           }
         }

@@ -16,35 +16,34 @@ using namespace std;
 using namespace rapidjson;
 
 /**
- *
+ * Object containing all informations relative to the configuration of the {@see InputManager}
  */
 class InputManagerConfiguration {
 
 private:
     /**
      */
-    vector<InputContext*> m_inputContexts;
+    vector<InputContext*> mInputContexts;
 
 public:
     virtual ~InputManagerConfiguration();
 
     /**
-     *
-     * @return
+     * Getter to the vector containing the extracted InputContext*
+     * @return vector of InputContext*
      */
     vector<InputContext*> &getInputContexts();
 
     /**
      * Load a configuration from the filesystem
-     * Returns nullptr if the file could not be parsed properly
      *
      * @param configFilename configuration to read
-     * @return loaded configuration
+     * @return an inputManagerConfiguration object
      */
     static InputManagerConfiguration loadFromFile(string configFilename);
 
     /**
-     * Write the the Input's log channel all the content of the configuration
+     * Write into the input's log channel all the content of the configuration
      */
     void dump();
 
@@ -52,8 +51,6 @@ private:
     /** Object creation only possible through call of the static method :
      * InputManagerConfiguration::loadFromFile */
     InputManagerConfiguration();
-
-    static void readMainDatas(const Value &node, InputManagerConfiguration *conf);
 
     static void readContexts(const Value &node, InputManagerConfiguration *conf);
 

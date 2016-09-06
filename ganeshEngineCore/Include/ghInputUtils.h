@@ -16,13 +16,18 @@ namespace ganeshEngine {
 
 using namespace std;
 
+/**
+ * List of device providing input that the engine can deal with
+ */
 enum class InputSource : U8 {
 	MOUSE 		= 0x01,
 	KEYBOARD 	= 0x02,
 	DEVICE 		= 0x03
 };
 
-/** Kind of input
+/**
+ * Kind of input handled by the engine.
+ * Axis is used to handle range like joystick movement, mouse movement or triggers on the xbox controller
  */
 enum class InputType : U8 {
 	BUTTON_UP 		= 0x01,
@@ -32,10 +37,14 @@ enum class InputType : U8 {
 	AXIS			= 0x05,
 };
 
-/** Every supported key/button which could be pressed, released or held
+/**
+ * Every supported key code for button related input. Basically if the input could be pressed, held and released, it has
+ * an entry here is it's handled by the engine
+ * @note NONE value dedicated to event type which are not button related
  */
 enum class InputCode : U32 {
-	NONE						= 0x00000000, // usefull for mouse move : no defined code
+	NONE						= 0x00000000,
+	UNSUPPORTED					= 0xFFFFFFFF,
 
 	KEYBOARD_F1 				= 0x01000001,
 	KEYBOARD_F2 				= 0x01000002,
@@ -187,16 +196,17 @@ enum class InputCode : U32 {
 	XBOX_CONTROLLER_AXIS_RIGHT_Y= 0x03000011
 };
 
-/** Chord is a combination of two or three pressed at the same time
- * resulting in one action
+/**
+ * Chord is a combination of two or three inputs occuring at the (almost) same time, which is resulting to one action in
+ * the game
  */
 enum class InputChordSize : U8 {
 	_2 = 2,
 	_3 = 3
 };
 
-/** Chord is a combination of two or three pressed at the same time
- * resulting in one action
+/**
+ * Each input can be contextualized with one of those modifier keys/combination
  */
 enum class InputModifier : U8 {
 	CTRL			= 0b001,
@@ -221,7 +231,8 @@ const char* const typeRelease 					= "BUTTON_RELEASE";
 const char* const typeDown 						= "BUTTON_DOWN";
 const char* const typeAxis 						= "AXIS";
 
-const char* const NONE							= "None";
+const char* const NONE							= "NONE";
+const char* const UNSUPPORTED 					= "UNSUPPORTED";
 const char* const KEYBOARD_F1 					= "KEYBOARD_F1";
 const char* const KEYBOARD_F2 					= "KEYBOARD_F2";
 const char* const KEYBOARD_F3 					= "KEYBOARD_F3";
@@ -390,7 +401,7 @@ InputCode sysInputMouseCode2GHCode(int sysInputCode);
 }
 
 /**
- * Store informations from an input got from the system input layer
+ * Store informations from an input read from the system input layer, and throughout the inputManager
  */
 class RawInput {
 public:
@@ -400,7 +411,7 @@ public:
 	 * device source but significant when multiple xbox controllers are
 	 * plugged in
 	 */
-	int idx;
+	U32 idx;
 
 	/** From which device the input comes from
 	 */
@@ -419,11 +430,7 @@ public:
 	 */
 	InputModifier modifiers;
 
-	/** Time when input occured
-	 */
-	long timestamp;
-
-	float chordDetectionLifetimeS = GH_DETECTION_DURATION_SECOND;
+	F32 chordDetectionLifetimeS = GH_DETECTION_DURATION_SECOND;
 
 	/** Store informations for all inputs that can be either pressed,
 	 * released, or held (like keyboard keys, joysticks buttons or
@@ -431,15 +438,16 @@ public:
 	 */
 	union datas_u {
 		struct buttonData_s {
-			long HoldDurationSecond;
+			F32 holdDurationSecond;
 		} button;
 
 		struct rangeData_s {
-			double x;
-			double y;
-			double z;
-		} range;
+			F32 x;
+			F32 y;
+			F32 z;
+		} axis;
 	} data;
+
 };
 
 /**
@@ -486,15 +494,15 @@ public:
 	InputMatch _1;
 	InputMatch _2;
 	InputMatch _3;
-	U32 m_callbackNameHash;
+	stringId m_callbackNameHash;
 
 public:
-	Chord(U32 callbackNameHash, InputMatch i1, InputMatch i2) :
+	Chord(stringId callbackNameHash, InputMatch i1, InputMatch i2) :
 			size(InputChordSize::_2),
 			_1(i1), _2(i2),
 			m_callbackNameHash(callbackNameHash) {}
 
-	Chord(U32 callbackNameHash, InputMatch i1, InputMatch i2, InputMatch i3) :
+	Chord(stringId callbackNameHash, InputMatch i1, InputMatch i2, InputMatch i3) :
 			size(InputChordSize::_3),
 			_1(i1), _2(i2), _3(i3),
 			m_callbackNameHash(callbackNameHash) {}
@@ -550,32 +558,59 @@ public:
 };
 
 /**
- *
+ * @note Class tightly coupled with GLFW, it would be good to make and interface to get joystick's state from it
  */
 class Joystick {
 private:
-	int m_index;
-	int axeCount;
-	int buttonCount;
+	int mIndex;
+	int mAxesCount;
+	int mButtonsCount;
+	bool mConnected;
+	bool mInitialized;
 
-	const unsigned char* axes;
-	const float* buttons;
-	float* previousButtons;
+	const unsigned char* mAxeStates;
+	unsigned char* mPreviousAxeStates;
+
+	const float* mButtonStates;
+	float* mPreviousButtonStates;
 
 public:
-	Joystick(int index) : m_index(index) {
-		glfwGetJoystickAxes(index, &buttonCount);
-		previousButtons = static_cast<float*>(malloc(buttonCount * sizeof(float)));
-	}
-	virtual ~Joystick() {
-		free(previousButtons);
-	}
+	Joystick() :
+		mIndex(-1),
+		mConnected(false),
+		mInitialized(false),
+		mAxesCount(0),
+		mButtonsCount(0),
+		mAxeStates(nullptr),
+		mPreviousAxeStates(nullptr),
+		mButtonStates(nullptr),
+		mPreviousButtonStates(nullptr) {}
 
-	void update() {
-		//std::memcpy(previousButtons, buttons, sizeof previousButtons);
-		axes = glfwGetJoystickButtons(m_index, &axeCount);
-		buttons = glfwGetJoystickAxes(m_index, &buttonCount);
-	}
+	Joystick(int index);
+
+	virtual ~Joystick();
+
+	/**
+	 * Should be could when the system input handler detect the given controller get plugged. Set the initial state of
+	 * controller.
+	 */
+	void initialize(int index);
+
+	/**
+	 * Should be could when the system input handler detect the given controller get unplugged.
+	 */
+	void release();
+
+	/**
+	 * Copy the actual controller's state in order to be the "previous" state during the next frame.
+	 * Do nothing if could upon a controller not plugged or not initialized.
+	 */
+	void update();
+
+private:
+	InputCode mapButtonIdxToInputCode(int idx);
+
+	InputCode mapAxesIdxToInputCode(int idx);
 };
 
 using InputCallbackType = function<void(RawInput ri, float frameDuration)>;
