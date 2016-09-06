@@ -87,30 +87,34 @@ void InputManager::vUpdate(const Clock &clock) {
 
 		/* check if input exist in any chord in any active context
 		 */
-		for (auto const &entry : mInputContexts) {
-			InputContext &context = (*entry.second);
-			if (context.isActive()) {
-				for (auto const &chord : context.m_chords) {
-					/* Chord inputs are now limited to input of type BUTTON_PRESS only
-					 */
-					if (input.type == InputType::BUTTON_PRESS &&
-						chord.containsRawInput(input.source, input.type, input.code)) {
-						inputFoundInChord = true;
-					}
-				}
-			}
-		}
-		if (inputFoundInChord) {
-			/* if input could potentially triggers a chord, it is postponed in another container and
-			 * removed from the input queue
-			 */
-			mPostponedRawInputs.push_back(input);
-			//_DEBUG("INPUT POSTPONED : " << inputDetails::toString(input.source) << ", " << inputDetails::toString(input.type), LOG_CHANNEL::INPUT);
-		} else {
-			/** trigger regular action for this input */
-			triggerPlainInputAction(input, secondElapsedSinceLastFrame);
-		}
-		mFrameRawInputs.pop();
+        if (input.type == InputType::BUTTON_PRESS) {
+            for (auto const &entry : mInputContexts) {
+                InputContext &context = (*entry.second);
+                if (context.isActive()) {
+                    for (auto const &chord : context.m_chords) {
+                        /* Chord inputs are now limited to input of type BUTTON_PRESS only
+                         */
+                        if (chord.containsRawInput(input.source, input.type, input.code)) {
+                            inputFoundInChord = true;
+                        }
+                    }
+                }
+            }
+            if (inputFoundInChord) {
+                /* if input could potentially triggers a chord, it is postponed in another container and
+                 * removed from the input queue
+                 */
+                mPostponedRawInputs.push_back(input);
+                //_DEBUG("INPUT POSTPONED : " << inputDetails::toString(input.source) << ", " << inputDetails::toString(input.type), LOG_CHANNEL::INPUT);
+            } else {
+                /** trigger regular action for this input */
+                triggerPlainInputAction(input, secondElapsedSinceLastFrame);
+            }
+        } else {
+            /** trigger regular action for this input */
+            triggerPlainInputAction(input, secondElapsedSinceLastFrame);
+        }
+        mFrameRawInputs.pop();
 	}
 
 	/* Update and detects chords
