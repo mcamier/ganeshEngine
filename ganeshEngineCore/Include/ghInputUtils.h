@@ -190,10 +190,14 @@ enum class InputCode : U32 {
 	XBOX_CONTROLLER_DOWN		= 0x0300000B,
 	XBOX_CONTROLLER_LEFT		= 0x0300000C,
 	XBOX_CONTROLLER_RIGHT		= 0x0300000D,
-	XBOX_CONTROLLER_AXIS_LEFT_X	= 0x0300000E,
-	XBOX_CONTROLLER_AXIS_LEFT_Y	= 0x0300000F,
-	XBOX_CONTROLLER_AXIS_RIGHT_X= 0x03000010,
-	XBOX_CONTROLLER_AXIS_RIGHT_Y= 0x03000011
+    XBOX_CONTROLLER_LB          = 0x0300000E,
+    XBOX_CONTROLLER_RB          = 0x0300000F,
+	XBOX_CONTROLLER_AXIS_LEFT_X	= 0x03000010,
+	XBOX_CONTROLLER_AXIS_LEFT_Y	= 0x03000011,
+    XBOX_CONTROLLER_AXIS_RIGHT_X= 0x03000012,
+    XBOX_CONTROLLER_AXIS_RIGHT_Y= 0x03000013,
+    XBOX_CONTROLLER_AXIS_RT     = 0x03000014,
+    XBOX_CONTROLLER_AXIS_LT     = 0x03000015
 };
 
 /**
@@ -373,6 +377,8 @@ const char* const XBOX_CONTROLLER_SELECT		= "XBOX_CONTROLLER_SELECT";
 const char* const XBOX_CONTROLLER_MENU			= "XBOX_CONTROLLER_MENU";
 const char* const XBOX_CONTROLLER_RS			= "XBOX_CONTROLLER_RS";
 const char* const XBOX_CONTROLLER_LS			= "XBOX_CONTROLLER_LS";
+const char* const XBOX_CONTROLLER_RB			= "XBOX_CONTROLLER_RB";
+const char* const XBOX_CONTROLLER_LB			= "XBOX_CONTROLLER_LB";
 const char* const XBOX_CONTROLLER_UP			= "XBOX_CONTROLLER_UP";
 const char* const XBOX_CONTROLLER_DOWN			= "XBOX_CONTROLLER_DOWN";
 const char* const XBOX_CONTROLLER_LEFT			= "XBOX_CONTROLLER_LEFT";
@@ -381,6 +387,8 @@ const char* const XBOX_CONTROLLER_AXIS_LEFT_X	= "XBOX_CONTROLLER_AXIS_LEFT_X";
 const char* const XBOX_CONTROLLER_AXIS_LEFT_Y	= "XBOX_CONTROLLER_AXIS_LEFT_Y";
 const char* const XBOX_CONTROLLER_AXIS_RIGHT_X	= "XBOX_CONTROLLER_AXIS_RIGHT_X";
 const char* const XBOX_CONTROLLER_AXIS_RIGHT_Y	= "XBOX_CONTROLLER_AXIS_RIGHT_Y";
+const char* const XBOX_CONTROLLER_AXIS_RT       = "XBOX_CONTROLLER_AXIS_RT";
+const char* const XBOX_CONTROLLER_AXIS_LT       = "XBOX_CONTROLLER_AXIS_LT";
 
 template<typename K>
 K fromString(const char *value);
@@ -568,11 +576,11 @@ private:
 	bool mConnected;
 	bool mInitialized;
 
-	const unsigned char* mAxeStates;
-	unsigned char* mPreviousAxeStates;
+    const float* mAxeStates;
+    float* mPreviousAxeStates;
 
-	const float* mButtonStates;
-	float* mPreviousButtonStates;
+    const unsigned char* mButtonStates;
+    unsigned char* mPreviousButtonStates;
 
 public:
 	Joystick() :

@@ -164,8 +164,10 @@ const char *toString<InputCode>(InputCode value) {
 	if (value == InputCode::XBOX_CONTROLLER_START) return inputDetails::XBOX_CONTROLLER_START;
 	if (value == InputCode::XBOX_CONTROLLER_SELECT) return inputDetails::XBOX_CONTROLLER_SELECT;
 	if (value == InputCode::XBOX_CONTROLLER_MENU) return inputDetails::XBOX_CONTROLLER_MENU;
-	if (value == InputCode::XBOX_CONTROLLER_RS) return inputDetails::XBOX_CONTROLLER_RS;
-	if (value == InputCode::XBOX_CONTROLLER_LS) return inputDetails::XBOX_CONTROLLER_LS;
+    if (value == InputCode::XBOX_CONTROLLER_RS) return inputDetails::XBOX_CONTROLLER_RS;
+    if (value == InputCode::XBOX_CONTROLLER_LS) return inputDetails::XBOX_CONTROLLER_LS;
+    if (value == InputCode::XBOX_CONTROLLER_RB) return inputDetails::XBOX_CONTROLLER_RB;
+    if (value == InputCode::XBOX_CONTROLLER_LB) return inputDetails::XBOX_CONTROLLER_LB;
 	if (value == InputCode::XBOX_CONTROLLER_UP) return inputDetails::XBOX_CONTROLLER_UP;
 	if (value == InputCode::XBOX_CONTROLLER_DOWN) return inputDetails::XBOX_CONTROLLER_DOWN;
 	if (value == InputCode::XBOX_CONTROLLER_LEFT) return inputDetails::XBOX_CONTROLLER_LEFT;
@@ -173,9 +175,11 @@ const char *toString<InputCode>(InputCode value) {
 	if (value == InputCode::XBOX_CONTROLLER_AXIS_LEFT_X) return inputDetails::XBOX_CONTROLLER_AXIS_LEFT_X;
 	if (value == InputCode::XBOX_CONTROLLER_AXIS_LEFT_Y) return inputDetails::XBOX_CONTROLLER_AXIS_LEFT_Y;
 	if (value == InputCode::XBOX_CONTROLLER_AXIS_RIGHT_X) return inputDetails::XBOX_CONTROLLER_AXIS_RIGHT_X;
+	if (value == InputCode::XBOX_CONTROLLER_AXIS_RIGHT_Y) return inputDetails::XBOX_CONTROLLER_AXIS_RIGHT_Y;
+	if (value == InputCode::XBOX_CONTROLLER_AXIS_RT) return inputDetails::XBOX_CONTROLLER_AXIS_RT;
+	if (value == InputCode::XBOX_CONTROLLER_AXIS_LT) return inputDetails::XBOX_CONTROLLER_AXIS_LT;
 	if (value == InputCode::UNSUPPORTED) return inputDetails::UNSUPPORTED;
-	if (value == InputCode::NONE) return inputDetails::NONE;
-	return "Undefined";
+	return inputDetails::UNSUPPORTED;
 }
 
 template<>
@@ -334,8 +338,10 @@ InputCode fromString<InputCode>(const char *value) {
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_START) == 0) return InputCode::XBOX_CONTROLLER_START;
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_SELECT) == 0) return InputCode::XBOX_CONTROLLER_SELECT;
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_MENU) == 0) return InputCode::XBOX_CONTROLLER_MENU;
-	if (strcmp(value, inputDetails::XBOX_CONTROLLER_RS) == 0) return InputCode::XBOX_CONTROLLER_RS;
-	if (strcmp(value, inputDetails::XBOX_CONTROLLER_LS) == 0) return InputCode::XBOX_CONTROLLER_LS;
+    if (strcmp(value, inputDetails::XBOX_CONTROLLER_RS) == 0) return InputCode::XBOX_CONTROLLER_RS;
+    if (strcmp(value, inputDetails::XBOX_CONTROLLER_LS) == 0) return InputCode::XBOX_CONTROLLER_LS;
+    if (strcmp(value, inputDetails::XBOX_CONTROLLER_RB) == 0) return InputCode::XBOX_CONTROLLER_RB;
+    if (strcmp(value, inputDetails::XBOX_CONTROLLER_LB) == 0) return InputCode::XBOX_CONTROLLER_LB;
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_UP) == 0) return InputCode::XBOX_CONTROLLER_UP;
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_DOWN) == 0) return InputCode::XBOX_CONTROLLER_DOWN;
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_LEFT) == 0) return InputCode::XBOX_CONTROLLER_LEFT;
@@ -344,8 +350,10 @@ InputCode fromString<InputCode>(const char *value) {
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_AXIS_LEFT_Y) == 0) return InputCode::XBOX_CONTROLLER_AXIS_LEFT_Y;
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_AXIS_RIGHT_X) == 0) return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_X;
 	if (strcmp(value, inputDetails::XBOX_CONTROLLER_AXIS_RIGHT_Y) == 0) return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_Y;
+	if (strcmp(value, inputDetails::XBOX_CONTROLLER_AXIS_RT) == 0) return InputCode::XBOX_CONTROLLER_AXIS_RT;
+	if (strcmp(value, inputDetails::XBOX_CONTROLLER_AXIS_LT) == 0) return InputCode::XBOX_CONTROLLER_AXIS_LT;
 	if (strcmp(value, inputDetails::UNSUPPORTED) == 0) return InputCode::UNSUPPORTED;
-	return InputCode::NONE;
+	return InputCode::UNSUPPORTED;
 }
 
 bool isKeyboardCode(const InputCode code) {
@@ -527,11 +535,11 @@ Joystick::Joystick(int index) {
 		case GLFW_TRUE:
 			mConnected = true;
 			mInitialized = true;
-			mAxeStates = glfwGetJoystickButtons(index, &mAxesCount);
-			mButtonStates = glfwGetJoystickAxes(index, &mButtonsCount);
+			mAxeStates = glfwGetJoystickAxes(index, &mAxesCount);
+			mButtonStates = glfwGetJoystickButtons(index, &mButtonsCount);
 
-			mPreviousAxeStates = (unsigned char *) std::malloc(mAxesCount * sizeof(unsigned char));
-			mPreviousButtonStates = (float *) std::malloc(mButtonsCount * sizeof(float));
+			mPreviousAxeStates = (float *) std::malloc(mAxesCount * sizeof(float));
+			mPreviousButtonStates = (unsigned char *) std::malloc(mButtonsCount * sizeof(unsigned char));
 			break;
 
 		default:
@@ -557,13 +565,14 @@ Joystick::~Joystick() {
 
 void Joystick::initialize(int index) {
 	if (glfwJoystickPresent(index)) {
+        mIndex = index;
 		mConnected = true;
 		mInitialized = true;
-		mAxeStates = glfwGetJoystickButtons(index, &mAxesCount);
-		mButtonStates = glfwGetJoystickAxes(index, &mButtonsCount);
+		mAxeStates = glfwGetJoystickAxes(index, &mAxesCount);
+		mButtonStates = glfwGetJoystickButtons(index, &mButtonsCount);
 
-		mPreviousAxeStates = (unsigned char *) std::malloc(mAxesCount * sizeof(unsigned char));
-		mPreviousButtonStates = (float *) std::malloc(mButtonsCount * sizeof(float));
+		mPreviousAxeStates = (float *) std::malloc(mAxesCount * sizeof(float));
+		mPreviousButtonStates = (unsigned char *) std::malloc(mButtonsCount * sizeof(unsigned char));
 	}
 }
 
@@ -583,8 +592,9 @@ void Joystick::release() {
 
 void Joystick::update() {
 	if (mConnected && mInitialized) {
-		std::memcpy(mPreviousAxeStates, mAxeStates, sizeof(mPreviousAxeStates));
-		std::memcpy(mPreviousButtonStates, mButtonStates, sizeof(mPreviousButtonStates));
+        /* update joystick state */
+        mAxeStates = glfwGetJoystickAxes(mIndex, &mAxesCount);
+        mButtonStates = glfwGetJoystickButtons(mIndex, &mButtonsCount);
 
 		/* Read buttons states to submit input to manager if needed */
 		RawInput rawInput;
@@ -594,10 +604,14 @@ void Joystick::update() {
 			rawInput.source = InputSource::DEVICE;
 			rawInput.code = InputCode::UNSUPPORTED;
 
-			if (mPreviousButtonStates[i] == GLFW_RELEASE && mButtonStates[i] == GLFW_PRESS) {
-				rawInput.type = InputType::BUTTON_PRESS;
-				rawInput.code = mapButtonIdxToInputCode(i);
-			}
+            if (mButtonStates[i] == GLFW_PRESS) {
+                rawInput.type = InputType::BUTTON_PRESS;
+            }
+
+            if (mPreviousButtonStates[i] == GLFW_RELEASE && mButtonStates[i] == GLFW_PRESS) {
+                rawInput.type = InputType::BUTTON_PRESS;
+                rawInput.code = mapButtonIdxToInputCode(i);
+            }
 			else if (mPreviousButtonStates[i] == GLFW_PRESS && mButtonStates[i] == GLFW_PRESS) {
 				rawInput.type = InputType::BUTTON_DOWN;
 				rawInput.code = mapButtonIdxToInputCode(i);
@@ -618,45 +632,58 @@ void Joystick::update() {
 			rawInput.idx = this->mIndex;
 			rawInput.source = InputSource::DEVICE;
 			rawInput.type = InputType::AXIS;
+			rawInput.code = InputCode::UNSUPPORTED;
 			rawInput.code = mapAxesIdxToInputCode(i);
 
-			if ((rawInput.code != InputCode::UNSUPPORTED) &&
-				(mAxeStates[i] < -0.001f || mAxeStates[i] > 0.001f)) {
+
+            if( rawInput.code == InputCode::XBOX_CONTROLLER_AXIS_RT ||
+                rawInput.code == InputCode::XBOX_CONTROLLER_AXIS_LT ) {
+
+                if(mAxeStates[i] > -1.0f && mAxeStates[i] <= 1.0f) {
+				    gInput().registerInput(rawInput);
+                }
+            } else if ( (rawInput.code != InputCode::UNSUPPORTED) &&
+				        (mAxeStates[i] < -0.1f || mAxeStates[i] > 0.1f) ) {
 				gInput().registerInput(rawInput);
 			}
 		}
+
+		std::memcpy(mPreviousAxeStates, mAxeStates, mAxesCount * sizeof(float));
+		std::memcpy(mPreviousButtonStates, mButtonStates, mButtonsCount * sizeof(unsigned char));
 	}
 }
 
 
 InputCode Joystick::mapButtonIdxToInputCode(int idx) {
 	switch (idx) {
-		case 1:
+		case 0:
 			return InputCode::XBOX_CONTROLLER_A;
-		case 2:
+		case 1:
 			return InputCode::XBOX_CONTROLLER_B;
-		case 3:
+		case 2:
 			return InputCode::XBOX_CONTROLLER_X;
-		case 4:
-			return InputCode::XBOX_CONTROLLER_Y;
-		case 5:
-			return InputCode::XBOX_CONTROLLER_START;
+        case 3:
+            return InputCode::XBOX_CONTROLLER_Y;
+        case 4:
+            return InputCode::XBOX_CONTROLLER_LB;
+        case 5:
+            return InputCode::XBOX_CONTROLLER_RB;
 		case 6:
 			return InputCode::XBOX_CONTROLLER_SELECT;
 		case 7:
-			return InputCode::XBOX_CONTROLLER_MENU;
+			return InputCode::XBOX_CONTROLLER_START;
 		case 8:
-			return InputCode::XBOX_CONTROLLER_RS;
-		case 9:
 			return InputCode::XBOX_CONTROLLER_LS;
+		case 9:
+			return InputCode::XBOX_CONTROLLER_RS;
 		case 10:
 			return InputCode::XBOX_CONTROLLER_UP;
 		case 11:
-			return InputCode::XBOX_CONTROLLER_DOWN;
-		case 12:
-			return InputCode::XBOX_CONTROLLER_LEFT;
-		case 13:
 			return InputCode::XBOX_CONTROLLER_RIGHT;
+		case 12:
+			return InputCode::XBOX_CONTROLLER_DOWN;
+		case 13:
+			return InputCode::XBOX_CONTROLLER_LEFT;
 		default:
 			return InputCode::UNSUPPORTED;
 	};
@@ -664,14 +691,18 @@ InputCode Joystick::mapButtonIdxToInputCode(int idx) {
 
 InputCode Joystick::mapAxesIdxToInputCode(int idx) {
 	switch (idx) {
-		case 1:
+		case 0:
 			return InputCode::XBOX_CONTROLLER_AXIS_LEFT_X;
-		case 2:
+		case 1:
 			return InputCode::XBOX_CONTROLLER_AXIS_LEFT_Y;
-		case 3:
-			return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_X;
-		case 4:
-			return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_Y;
+        case 2:
+            return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_X;
+        case 3:
+            return InputCode::XBOX_CONTROLLER_AXIS_RIGHT_Y;
+        case 4:
+            return InputCode::XBOX_CONTROLLER_AXIS_RT;
+        case 5:
+            return InputCode::XBOX_CONTROLLER_AXIS_LT;
 		default:
 			return InputCode::UNSUPPORTED;
 	};

@@ -32,7 +32,7 @@ namespace ganeshEngine {
             mpWindow = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
             if (mpWindow) {
                 glfwSetErrorCallback([](int error, const char *message) {
-                    _ERROR("GLFW ERROR : code " << error << " message : ", LOG_CHANNEL::DEFAULT);
+                    _ERROR("GLFW ERROR : code " << error << " message : " << message, LOG_CHANNEL::DEFAULT);
                 });
                 glfwMakeContextCurrent(mpWindow);
                 glewExperimental = GL_TRUE;
@@ -64,7 +64,7 @@ namespace ganeshEngine {
             }
 
             glfwSetJoystickCallback([](int joyIndex, int joyEvent) {
-                gEvent().queueEvent(new JoystickStateChangeEvent(joyIndex, joyEvent));
+                gEvent().fireEvent(new JoystickStateChangeEvent(joyIndex, joyEvent));
             });
 
             _DEBUG("Platform initialized", LOG_CHANNEL::DEFAULT);

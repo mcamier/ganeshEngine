@@ -24,6 +24,10 @@ void InputManager::vInitialize() {
 		activeContext(id, true);
 	}
 
+    for (int i = 0 ; i <= GH_MAX_JOYSTICK ; i++) {
+        mJoysticks[i].initialize(i);
+    }
+
 	gEvent().addListener<InputManager>(GH_EVENT_JOYSTICK_STATE_CHANGE, this, &InputManager::onJoystickStateChange);
 	_DEBUG("InputManager initialized", LOG_CHANNEL::INPUT);
 }
