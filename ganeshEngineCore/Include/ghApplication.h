@@ -9,10 +9,10 @@
 #include "ghEvent.h"
 #include "ghConfiguration.h"
 
-#include "graphics/ghGLProgram.h"
-#include "graphics/ghGLTexture.h"
-#include "graphics/ghGLMesh.h"
-#include "graphics/ghGLModel.h"
+#include "graphics/ghShaderProgram.h"
+#include "graphics/ghTexture.h"
+#include "graphics/ghMesh.h"
+#include "graphics/ghModel.h"
 
 namespace ganeshEngine {
 

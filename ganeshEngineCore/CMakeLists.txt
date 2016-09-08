@@ -42,9 +42,9 @@ set(EngineIncludes
         "Include/ghStringId.h"
         "Include/ghStackAllocator.h"
         "Include/graphics/ghFrustum.h"
-        "Include/graphics/ghGLProgram.h"
-        "Include/graphics/ghGLModel.h"
-        "Include/graphics/ghGLShader.h")
+        "Include/graphics/ghShaderProgram.h"
+        "Include/graphics/ghModel.h"
+        "Include/graphics/ghShader.h")
 
 set(EngineSources
         "Source/ghActor.cpp"
@@ -75,11 +75,11 @@ set(EngineSources
         "Source/ghSkybox.cpp"
         "Source/ghStackAllocator.cpp"
         "Source/graphics/ghFrustum.cpp"
-        "Source/graphics/ghGLMesh.cpp"
-        "Source/graphics/ghGLModel.cpp"
-        "Source/graphics/ghGLTexture.cpp"
-        "Source/graphics/ghGLProgram.cpp"
-        "Source/graphics/ghGLShader.cpp")
+        "Source/graphics/ghMesh.cpp"
+        "Source/graphics/ghModel.cpp"
+        "Source/graphics/ghTexture.cpp"
+        "Source/graphics/ghShaderProgram.cpp"
+        "Source/graphics/ghShader.cpp")
 
 SET_SOURCE_FILES_PROPERTIES( ${EngineSources} PROPERTIES LANGUAGE CXX )
 
@@ -94,7 +94,8 @@ include_directories(
 set(GL_LIBS
         ${OPENGL_LIBRARY}
         glfw
-        GLEW_1130)
+        GLEW_1130
+        png)
 
 add_library(${LibName} ${EngineSources})
 target_link_libraries(${LibName} ${GL_LIBS})

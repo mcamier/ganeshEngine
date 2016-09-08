@@ -6,32 +6,38 @@
   "resources": [
     {
       "name": "defaultFragmentShader",
-      "loaderName": "GL_SHADER",
+      "loaderName": "__MESH_OBJ_LOADER",
       "filename": "fDefault.glsl",
       "eagerLoading": false,
       "metadatas": [
         {
-          "key": "shaderType",
+          "key": "stage",
           "value": "fragment"
         }
       ]
     },
     {
       "name": "defaultVertexShader",
-      "loaderName": "GL_SHADER",
+      "loaderName": "__MESH_OBJ_LOADER",
       "filename": "vDefault.glsl",
       "eagerLoading": false,
       "metadatas": [
         {
-          "key": "shaderType",
+          "key": "stage",
           "value": "vertex"
         }
       ]
     },
     {
       "name": "foobar",
-      "loaderName": "MESH_OBJ",
+      "loaderName": "__MESH_OBJ_LOADER",
       "filename": "foobar.obj",
+      "eagerLoading": true
+    },
+    {
+      "name": "dirty",
+      "loaderName": "__TEXTURE_PNG_LOADER",
+      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/dirty.png",
       "eagerLoading": true
     }
   ]

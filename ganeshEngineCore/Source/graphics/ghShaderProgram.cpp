@@ -1,4 +1,4 @@
-#include "graphics/ghGLProgram.h"
+#include "graphics/ghShaderProgram.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -39,45 +39,45 @@ const char *GL_type_to_string(GLenum type) {
 
 }
 
-void GLProgram::setUniform(const char *name, mat4 value) {
+void ShaderProgram::setUniform(const char *name, mat4 value) {
     GLint id = glGetUniformLocation(this->mInternalId, name);
     if (id != -1 && inUse()) {
         glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(value));
     }
 }
 
-void GLProgram::setUniform(const char *name, mat3 value) {
+void ShaderProgram::setUniform(const char *name, mat3 value) {
     GLint id = glGetUniformLocation(this->mInternalId, name);
     if (id != -1 && inUse()) {
         glUniformMatrix3fv(id, 1, GL_FALSE, glm::value_ptr(value));
     }
 }
 
-void GLProgram::setUniform(const char *name, vec3 value) {
+void ShaderProgram::setUniform(const char *name, vec3 value) {
     GLint id = glGetUniformLocation(this->mInternalId, name);
     if (id != -1 && inUse()) {
         glUniform3fv(id, 1, glm::value_ptr(value));
     }
 }
 
-void GLProgram::setUniform(const char *name, vec4 value) {
+void ShaderProgram::setUniform(const char *name, vec4 value) {
     GLint id = glGetUniformLocation(this->mInternalId, name);
     if (id != -1 && inUse()) {
         glUniform4fv(id, 1, glm::value_ptr(value));
     }
 }
 
-bool GLProgram::sendToGC() const {
+bool ShaderProgram::sendToGC() const {
     //TODO implementation
     return true;
 }
 
-bool GLProgram::freeFromGC() const {
+bool ShaderProgram::freeFromGC() const {
     //TODO implementation
     return true;
 }
 
-void GLProgram::logProgramInfo() {
+void ShaderProgram::logProgramInfo() {
     _DEBUG("Shader program infos : " << mInternalId, LOG_CHANNEL::DEFAULT);
     int params = -1;
 
@@ -139,7 +139,7 @@ void GLProgram::logProgramInfo() {
 
 }
 
-GLProgram GLProgram::create(GLProgram &program) {
+ShaderProgram ShaderProgram::create(ShaderProgram &program) {
     glLinkProgram(program.mInternalId);
 
     /// error checking
@@ -174,17 +174,17 @@ GLProgram GLProgram::create(GLProgram &program) {
     return program;
 }
 
-void GLProgram::use() {
+void ShaderProgram::use() {
     glUseProgram(mInternalId);
 }
 
-bool GLProgram::inUse() {
+bool ShaderProgram::inUse() {
     GLint param = -1;
     glGetIntegerv(GL_CURRENT_PROGRAM, &param);
     return ((GLint) mInternalId == param);
 }
 
-void GLProgram::stopUsing() {
+void ShaderProgram::stopUsing() {
     GLint param = -1;
     glGetIntegerv(GL_CURRENT_PROGRAM, &param);
     if ((GLint) mInternalId == param) {

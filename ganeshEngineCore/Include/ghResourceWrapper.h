@@ -81,7 +81,7 @@ public:
     /**
      * Load the underlying resource with the embedded resourceLoader
      */
-    void load();
+    bool load();
 };
 
 }

@@ -18,11 +18,12 @@ This new engine use :
   - Profiling (basic, no real time display profiling sample)
   - Logging (support log level, console and file output)
   - Memory tools (PoolAllocator, StackAllocator, DoubleBufferedStackAllocator)
+  - Input management
+  - Resource management
 
 #### Features in progress :
   - Rendering system wrapping OpenGL
-  - Input management
-  - Resource management
+  - Entity Component System
 
 #### Features to come :
   - Plugin system (to interface other rendering api like vulkan or directX)

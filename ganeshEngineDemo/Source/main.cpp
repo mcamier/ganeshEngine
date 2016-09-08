@@ -5,6 +5,9 @@
 #include "ghFileLogger.h"
 #include "ghConsoleLogger.h"
 #include "ghInputManager.h"
+#include "ghResourceLoaders.h"
+#include "ghResourceManager.h"
+#include "ghResourceHandler.h"
 
 using namespace std;
 using namespace glm;
@@ -16,14 +19,19 @@ static stringId GH_DEMO_ACTION_MOVE_RIGHT = gInternString("demoMatchMoveRight");
 static stringId GH_DEMO_ACTION_MOVE_LEFT = gInternString("demoMatchMoveLeft");
 static stringId GH_DEMO_ACTION_RESET = gInternString("demoMatchReset");
 
+static stringId demoResourceMesh = gInternString("dirty");
+
+static stringId textureLoaderName = gInternString("__TEXTURE_PNG_LOADER");
+static stringId objLoaderName = gInternString("__MESH_OBJ_LOADER");
+
 class MainScene : public Scene {
 private:
-    GLProgram program;
-    GLTexture *tex{nullptr};
-    GLMesh *mesh{nullptr};
-    GLMesh *mesh2{nullptr};
-    GLModel *model{nullptr};
-    GLModel *model2{nullptr};
+    ShaderProgram program;
+    Texture *tex{nullptr};
+    Mesh *mesh{nullptr};
+    Mesh *mesh2{nullptr};
+    Model *model{nullptr};
+    Model *model2{nullptr};
     Actor *obj{nullptr};
 
     U64 totalTime = 0;
@@ -31,28 +39,28 @@ public:
     MainScene() : Scene() {}
 
     void vInitialize() override {
-        program = GLProgram::create(ShaderType::VERTEX,
+        program = ShaderProgram::create(ShaderType::VERTEX,
                                     "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl",
                                     ShaderType::FRAGMENT,
                                     "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl");
-        tex = new GLTexture();
+        tex = new Texture();
 
         unique_ptr<vector<Vertex>> vertices = make_unique<vector<Vertex >>();
         vertices->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
         vertices->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
         vertices->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        mesh = new GLMesh(move(vertices), DrawMode::TRIANGLES);
+        mesh = new Mesh(move(vertices), DrawMode::TRIANGLES);
 
         unique_ptr<vector<Vertex>> vertices2 = make_unique<vector<Vertex >>();
         vertices2->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
         vertices2->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
         vertices2->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        mesh2 = new GLMesh(move(vertices2), DrawMode::TRIANGLES);
+        mesh2 = new Mesh(move(vertices2), DrawMode::TRIANGLES);
 
-        model = new GLModel(&program, mesh, tex);
+        model = new Model(&program, mesh, tex);
         model->sendToGC();
 
-        model2 = new GLModel(&program, mesh2, tex);
+        model2 = new Model(&program, mesh2, tex);
         model2->sendToGC();
 
         Skybox *root = new Skybox();
@@ -106,36 +114,20 @@ public:
     }
 };
 
-class MeshObj : public Resource {
-};
-
-class MeshObjLoader : public ResourceLoader {
-protected:
-    unique_ptr<Resource> load(const char *string) const {
-        return make_unique<MeshObj>();
-    }
-};
-
-class ShaderLoader : public ResourceLoader {
-protected:
-    unique_ptr<Resource> load(const char *string) const {
-        return nullptr;
-    }
-};
-
 int main() {
     Configuration conf;
-    LOG_CHANNEL channels = LOG_CHANNEL::RENDER | LOG_CHANNEL::DEFAULT | LOG_CHANNEL::INPUT | LOG_CHANNEL::RESOURCE;
+    LOG_CHANNEL channels = LOG_CHANNEL::DEFAULT | LOG_CHANNEL::RESOURCE;
 
     conf.inputConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/inputConfiguration.json";
 
     conf.resourceConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/resourceConfiguration.json";
 
-    conf.loggers.push_back(new ConsoleLogger(LOG_LEVEL::DEBUG, LOG_CHANNEL::INPUT));
-    conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/log"));
+    conf.loggers.push_back(new ConsoleLogger(LOG_LEVEL::DEBUG, channels));
+    conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels,
+                                          "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/log"));
 
-    conf.customResourceLoaders.insert(make_pair(gInternString("MESH_OBJ"), new MeshObjLoader()));
-    conf.customResourceLoaders.insert(make_pair(gInternString("GL_SHADER"), new ShaderLoader()));
+    conf.customResourceLoaders.insert(make_pair(textureLoaderName, new PngTextureLoader()));
+    conf.customResourceLoaders.insert(make_pair(objLoaderName, new ObjModelLoader()));
 
     conf.startScene = new MainScene();
 
@@ -147,6 +139,10 @@ int main() {
     //gResource().addImporter("shader", new ShaderImporter());
     //gResource().addImporter("meshObj", new ObjResourceLoader());
     //hResource<MeshObj> foobar = gResource().getResource<MeshObj>(GH_HASH("foobar"));
+
+    gResource().loadResource(demoResourceMesh);
+    ResourceHandler<Texture> foobar = gResource().getResource<Texture>(demoResourceMesh);
+
     Application::RunLoop();
     Application::Destroy();
     return 0;

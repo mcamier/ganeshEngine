@@ -3,24 +3,23 @@
 
 #include "ghHeaders.h"
 #include "ghSceneObject.h"
-#include "graphics/ghGLModel.h"
-
+#include "graphics/ghModel.h"
 
 namespace ganeshEngine {
 
     class Actor : public SceneObject {
 
     private:
-        GLModel *mModel{nullptr};
+        Model *mModel{nullptr};
 
     public:
         Actor() : SceneObject(SceneObjectType::ACTOR) {}
 
         virtual ~Actor() {}
 
-        void setModel(GLModel *model);
+        void setModel(Model *model);
 
-        GLModel *getModel() const;
+        Model *getModel() const;
 
         void preRender() override;
 
@@ -30,6 +29,5 @@ namespace ganeshEngine {
     };
 
 }
-
 
 #endif //GANESHENGINE_GHACTOR_H

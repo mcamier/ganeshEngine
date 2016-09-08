@@ -53,13 +53,21 @@ public:
      * @param resourceId Id of the resource to get
      * @return resourceHandler on the resource
      */
-    template<typename T> ResourceHandler<T> getResource(long resourceId);
+    template<typename T> ResourceHandler<T> getResource(stringId resourceId) {
+        ASSERT((is_base_of<Resource, T>::value));
+
+        auto itr = m_resources.find(resourceId);
+        if (itr == m_resources.end()) {
+            exit(-1);
+        }
+        return ResourceHandler<T>(itr->second);
+    }
 
     /**
      *
      * @param resourceId
      */
-    void loadResource(long resourceId);
+    void loadResource(stringId resourceId);
 
 protected:
     void vInitialize();

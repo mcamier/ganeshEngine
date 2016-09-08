@@ -27,13 +27,19 @@ bool ResourceWrapper::isLoaded() const {
     return false;
 }
 
-void ResourceWrapper::load() {
+bool ResourceWrapper::load() {
     if(!isLoaded()) {
         setData(loader->load(filename.c_str()));
+
+        if(getData() == nullptr) {
+            return false;
+        }
+
         if(data->needGcLoad() && !data->isGcLoaded()) {
-            data->sendToGc();
+            return data->sendToGc();
         }
     }
+    return true;
 }
 
 }

@@ -8,7 +8,27 @@ namespace ganeshEngine {
 using namespace std;
 using namespace glm;
 
+/**
+ * Defines shader's types supported by the engine
+ */
+enum class ShaderType : GLenum {
+    VERTEX = GL_VERTEX_SHADER,
+    FRAGMENT = GL_FRAGMENT_SHADER,
+};
 
+
+/**
+ * Defines shader's current status
+ */
+enum class ShaderStatus {
+    NONE = 0x01,
+    COMPILED = 0x02,
+    FAILED = 0x03,
+};
+
+/**
+ *
+ */
 enum class DrawMode : GLenum {
     POINTS = GL_POINTS,
     LINES = GL_LINES,
@@ -19,6 +39,9 @@ enum class DrawMode : GLenum {
     TRIANGLE_FAN = GL_TRIANGLE_FAN
 };
 
+/**
+ *
+ */
 enum class AttribPointer : U32 {
     VERTEX = 0,
     COLOR = 1,
@@ -45,6 +68,27 @@ public:
     Vertex(F32 _x, F32 _y, F32 _z, F32 _r, F32 _g, F32 _b, F32 _u, F32 _v, F32 _nx, F32 _ny, F32 _nz) :
             x(_x), y(_y), z(_z), r(_r), g(_g), b(_b), u(0.0f), v(0.0f), nx(_nx), ny(ny), nz(_nz) {
     }
+};
+
+/**
+ *
+ */
+enum FrustumPlane {
+    NEAR = 0,
+    FAR = 1,
+    BOTTOM = 2,
+    TOP = 3,
+    LEFT = 4,
+    RIGHT = 5
+};
+
+/**
+ *
+ */
+enum GLProgramStatus {
+    NONE = 0b0001,
+    COMPILED = 0b0010,
+    FAILED = 0b0100
 };
 
 }

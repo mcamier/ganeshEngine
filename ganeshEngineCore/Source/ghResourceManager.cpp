@@ -1,11 +1,11 @@
 #include "ghResourceManager.h"
 
-namespace ganeshEngine {
+#include "ghCore.h"
 
+namespace ganeshEngine {
 
 void ResourceManager::vInitialize() {
     // TODO add default loaders here
-
     if (m_configuration != nullptr) {
         m_resourceLocation = m_configuration->getResourceLocation();
         for (const auto &entry : m_configuration->getResourceEntries()) {
@@ -16,7 +16,9 @@ void ResourceManager::vInitialize() {
 
                 if(ptr->isEagerLoadAllowed()) {
                     _DEBUG("eager loading for resource : "<<ptr->getName(), LOG_CHANNEL::RESOURCE);
-                    ptr->load();
+                    if(!ptr->load()) {
+                        _ERROR("Something went wrong while loading resource : " << ptr->getName(), LOG_CHANNEL::RESOURCE)
+                    }
                 }
 
                 m_resources.insert(make_pair(gInternString(entry.name.c_str()), ptr));
@@ -31,22 +33,15 @@ void ResourceManager::vInitialize() {
 
 void ResourceManager::vDestroy() {}
 
-template<typename T>
-ResourceHandler<T> ResourceManager::getResource(long resourceId) {
-    auto itr = m_resources.find(resourceId);
-    if (itr == m_resources.end()) {
-        exit(-1);
-    }
-    return ResourceHandler<T>(itr->second);
-}
-
-void ResourceManager::loadResource(long resourceId) {
+void ResourceManager::loadResource(stringId resourceId) {
     auto itr = m_resources.find(resourceId);
     if (itr == m_resources.end()) {
         exit(-1);
     }
     shared_ptr<ResourceWrapper> wrapper = itr->second;
-    wrapper->load();
+    if(!wrapper->load()) {
+        _ERROR("Something went wrong while loading resource : " << gStringFromStringId(resourceId), LOG_CHANNEL::RESOURCE)
+    }
 }
 
 ResourceManager &(*gResource)() = &ResourceManager::get;

@@ -1,10 +1,10 @@
-#include "graphics/ghGLModel.h"
+#include "graphics/ghModel.h"
 
 namespace ganeshEngine {
 
-    void GLModel::sendToGC() {
-        mpMesh->sendToGC();
-        mpTexture->sendToGC();
+    void Model::sendToGC() {
+        //mpMesh->sendToGc();
+        //mpTexture->sendToGc();
 
         glGenVertexArrays(1, &mVAO);
         glBindVertexArray(mVAO);
@@ -21,22 +21,22 @@ namespace ganeshEngine {
 
     }
 
-    GLProgram *GLModel::getProgram() {
+    ShaderProgram *Model::getProgram() {
         return mpProgram;
     }
 
-    void GLModel::preRender() {
+    void Model::preRender() {
         mpProgram->use();
         glBindVertexArray(mVAO);
 
     }
 
-    void GLModel::postRender() {
+    void Model::postRender() {
         glBindVertexArray(0);
         mpProgram->stopUsing();
     }
 
-    void GLModel::render() {
+    void Model::render() {
         glDrawArrays((GLenum) mpMesh->mDrawMode, 0, (int) mpMesh->mVertices->size());
     }
 }

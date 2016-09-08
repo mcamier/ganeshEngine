@@ -1,6 +1,5 @@
 #include "graphics/ghFrustum.h"
 #include "math.h"
-#include "math.h"
 
 namespace ganeshEngine {
 

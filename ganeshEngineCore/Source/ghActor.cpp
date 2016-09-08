@@ -5,11 +5,11 @@
 namespace ganeshEngine {
 
 
-    void Actor::setModel(GLModel *model) {
+    void Actor::setModel(Model *model) {
         mModel = model;
     }
 
-    GLModel *Actor::getModel() const {
+    Model *Actor::getModel() const {
         return mModel;
     }
 

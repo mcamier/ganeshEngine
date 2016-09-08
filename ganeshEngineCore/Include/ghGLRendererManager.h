@@ -8,7 +8,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "graphics/ghGLModel.h"
+#include "graphics/ghModel.h"
 
 class GLFWwindow;
 

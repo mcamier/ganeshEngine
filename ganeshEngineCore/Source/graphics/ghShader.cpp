@@ -1,12 +1,12 @@
-#include "graphics/ghGLShader.h"
+#include "graphics/ghShader.h"
 
-#include "graphics/ghGLProgram.h"
+#include "graphics/ghShaderProgram.h"
 #include <fstream>
 #include <ghLoggerManager.h>
 
 namespace ganeshEngine {
 
-GLShader* GLShader::fromFile(ShaderType type, const char *filename) {
+Shader* Shader::fromFile(ShaderType type, const char *filename) {
     std::ifstream t(filename);
     std::string content;
 
@@ -15,10 +15,12 @@ GLShader* GLShader::fromFile(ShaderType type, const char *filename) {
     t.seekg(0, std::ios::beg);
 
     content.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-    return new GLShader(type, content);
+    return new Shader(type, content);
 }
 
-bool GLShader::sendToGc() {
+bool Shader::sendToGc() override {
+    Resource::sendToGc();
+
     GLuint shaderId = glCreateShader((GLenum) mType);
     const char *content = mSource.c_str();
     glShaderSource(shaderId, 1, (const GLchar **) &content, nullptr);
@@ -47,16 +49,16 @@ bool GLShader::sendToGc() {
     return true;
 }
 
-bool GLShader::freeFromGc() {
-    // TODO
+bool Shader::freeFromGc() override {
+    Resource::freeFromGc();
     return true;
 }
 
-const ShaderType GLShader::getType() const {
+const ShaderType Shader::getType() const {
     return mType;
 }
 
-const ShaderStatus GLShader::getStatus() const {
+const ShaderStatus Shader::getStatus() const {
     return mStatus;
 }
 
