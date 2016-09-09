@@ -2,98 +2,189 @@
 #define GANESHENGINE_GHGLPROGRAM_H
 
 #include "ghHeaders.h"
+#include "graphics/ghHeaders.h"
 #include <initializer_list>
 #include <graphics/ghShader.h>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "ghResourceHandler.h"
 
 namespace ganeshEngine {
 
 using namespace std;
 
 
-class ShaderProgram {
-    friend class Model;
+class ShaderProgram : public Resource {
+    friend class ShaderProgramLoader;
 
 private:
-    GLProgramStatus mStatus;
+    ResourceHandler<Shader> mVertex;
+    ResourceHandler<Shader> mFragment;
+
+    /** opengl internal id */
     GLuint mInternalId;
 
+
 public:
-    ShaderProgram() : mStatus(GLProgramStatus::NONE), mInternalId(-1) {}
+    ShaderProgram(ResourceHandler<Shader> vertex, ResourceHandler<Shader> fragment) :
+            mVertex(vertex),
+            mFragment(fragment),
+            Resource(true) {}
 
     ~ShaderProgram() {}
 
-    template<typename... S>
-    static ShaderProgram create(Shader &first, S &... rest) {
-        ShaderProgram program = ShaderProgram();
-        program.mInternalId = glCreateProgram();
-
-        return ShaderProgram::create(program, first, rest...);
+    void use() const {
+        glUseProgram(mInternalId);
     }
 
-    template<typename... F>
-    static ShaderProgram create(ShaderType shaderType, const char *first, F... rest) {
-        ShaderProgram program = ShaderProgram();
-        program.mInternalId = glCreateProgram();
-
-        return ShaderProgram::create(program, shaderType, first, rest...);
+    bool inUse() const {
+        GLint param = -1;
+        glGetIntegerv(GL_CURRENT_PROGRAM, &param);
+        return ((GLint) mInternalId == param);
     }
 
-    void logProgramInfo();
-
-    void setUniform(const char *name, vec3 value);
-
-    void setUniform(const char *name, vec4 value);
-
-    void setUniform(const char *name, mat3 value);
-
-    void setUniform(const char *name, mat4 value);
-
-    bool sendToGC() const;
-
-    bool freeFromGC() const;
-
-private:
-    template<typename... S>
-    static ShaderProgram create(ShaderProgram &program, Shader &shader, S &... rest) {
-        /// try to compile the shader if it is not already compiled
-        if (shader.getStatus() == ShaderStatus::NONE) {
-            shader.sendToGc();
+    void stopUsing() const {
+        GLint param = -1;
+        glGetIntegerv(GL_CURRENT_PROGRAM, &param);
+        if ((GLint) mInternalId == param) {
+            glUseProgram(0);
         }
-        /// check if shader compilation is successfull, fail creation if not
-        if (shader.getStatus() != ShaderStatus::COMPILED) {
-            throw std::exception();
-        }
-        glAttachShader(program.mInternalId, shader.mInternalId);
-        ShaderProgram p = ShaderProgram::create(program, rest...);
-        if (program.mStatus == GLProgramStatus::COMPILED) {
-            glDetachShader(program.mInternalId, shader.mInternalId);
-        }
-        return program;
     }
 
-    template<typename... F>
-    static ShaderProgram create(ShaderProgram &program, ShaderType type, const char *filename, F... rest) {
-        Shader *shader = Shader::fromFile(type, filename);
-        shader->sendToGc();
-        /// check if shader compilation is successfull, fail creation if not
-        if (shader->getStatus() != ShaderStatus::COMPILED) {
-            throw std::exception();
+    bool sendToGc() override {
+        mInternalId = glCreateProgram();
+        glAttachShader(mInternalId, mVertex->mInternalId);
+        glAttachShader(mInternalId, mFragment->mInternalId);
+
+        glLinkProgram(mInternalId);
+
+        /// error checking
+        int isLinked = 0;
+        glGetProgramiv(mInternalId, GL_LINK_STATUS, &isLinked);
+        if (isLinked != GL_TRUE) {
+            GLint maxLength = 0;
+            glGetProgramiv(mInternalId, GL_INFO_LOG_LENGTH, &maxLength);
+            char *strInfoLog = new char[maxLength + 1];
+            glGetProgramInfoLog(mInternalId, maxLength, nullptr, strInfoLog);
+            strInfoLog[maxLength] = '\0';
+            glDeleteProgram(mInternalId);
+            _ERROR(strInfoLog, LOG_CHANNEL::RENDER);
+            delete[] strInfoLog;
+            //program.mStatus = GLProgramStatus::FAILED;
+
+            return false;
         }
-        glAttachShader(program.mInternalId, shader->mInternalId);
-        ShaderProgram p = ShaderProgram::create(program, rest...);
-        if (program.mStatus == GLProgramStatus::COMPILED) {
-            glDetachShader(program.mInternalId, shader->mInternalId);
+        int isValid = -1;
+        glValidateProgram(mInternalId);
+        glGetProgramiv(mInternalId, GL_VALIDATE_STATUS, &isValid);
+        if (GL_TRUE != isValid) {
+            //program.mStatus = GLProgramStatus::FAILED;
+            int maxLength = 2048;
+            int currentLength = 0;
+            char log[maxLength];
+            glGetProgramInfoLog(mInternalId, maxLength, &currentLength, log);
+            _ERROR("Shader program failed to validate : " << log, LOG_CHANNEL::RENDER);
+
+            return false;
         }
-        return program;
+
+        return Resource::sendToGc();
     }
 
-    static ShaderProgram create(ShaderProgram &program);
+    bool freeFromGc() override {
+        Resource::freeFromGc();
+        return true;
+    }
 
-    void use();
 
-    bool inUse();
+    void logProgramInfo() {
+        _DEBUG("Shader program infos : " << mInternalId, LOG_CHANNEL::DEFAULT);
+        int params = -1;
 
-    void stopUsing();
+        glGetProgramiv(mInternalId, GL_LINK_STATUS, &params);
+        _DEBUG("\tGL_LINK_STATUS : " << params, LOG_CHANNEL::RENDER);
+
+        glGetProgramiv(mInternalId, GL_ATTACHED_SHADERS, &params);
+        _DEBUG("\tGL_ATTACHED_SHADERS : " << params, LOG_CHANNEL::RENDER);
+
+        glGetProgramiv(mInternalId, GL_ACTIVE_ATTRIBUTES, &params);
+        _DEBUG("\tGL_ACTIVE_ATTRIBUTES : " << params, LOG_CHANNEL::RENDER);
+        for (GLuint i = 0; i < (GLuint) params; i++) {
+            char name[64];
+            int maxLenght = 64;
+            int currentLenght = 0;
+            int size = 0;
+            GLenum type;
+
+            glGetActiveAttrib(mInternalId, i, maxLenght, &currentLenght, &size, &type, name);
+            if (size > 1) {
+                for (int j = 0; j < size; j++) {
+                    char long_name[64];
+                    sprintf(long_name, "%s[%i]", name, j);
+                    int location = glGetAttribLocation(mInternalId, long_name);
+                    //_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
+                }
+            } else {
+                int location = glGetAttribLocation(mInternalId, name);
+                //_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
+            }
+        }
+
+        glGetProgramiv(mInternalId, GL_ACTIVE_UNIFORMS, &params);
+        _DEBUG("\tGL_ACTIVE_UNIFORMS : " << params, LOG_CHANNEL::RENDER);
+        for (GLuint i = 0; i < (GLuint) params; i++) {
+            char name[64];
+            int maxLenght = 64;
+            int currentLenght = 0;
+            int size = 0;
+            GLenum type;
+
+            glGetActiveUniform(mInternalId, i, maxLenght, &currentLenght, &size, &type, name);
+            if (size > 1) {
+                for (int j = 0; j < size; j++) {
+                    char long_name[64];
+                    sprintf(long_name, "%s[%i]", name, j);
+                    int location = glGetUniformLocation(mInternalId, long_name);
+                    //_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
+                }
+            } else {
+                int location = glGetUniformLocation(mInternalId, name);
+                //_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
+            }
+        }
+
+    }
+
+    /*
+
+void setUniform(const char *name, mat4 value) {
+    GLint id = glGetUniformLocation(this->mInternalId, name);
+    if (id != -1 && inUse()) {
+        glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(value));
+    }
+}
+
+void setUniform(const char *name, mat3 value) {
+    GLint id = glGetUniformLocation(this->mInternalId, name);
+    if (id != -1 && inUse()) {
+        glUniformMatrix3fv(id, 1, GL_FALSE, glm::value_ptr(value));
+    }
+}
+
+void setUniform(const char *name, vec3 value) {
+    GLint id = glGetUniformLocation(this->mInternalId, name);
+    if (id != -1 && inUse()) {
+        glUniform3fv(id, 1, glm::value_ptr(value));
+    }
+}
+
+void setUniform(const char *name, vec4 value) {
+    GLint id = glGetUniformLocation(this->mInternalId, name);
+    if (id != -1 && inUse()) {
+        glUniform4fv(id, 1, glm::value_ptr(value));
+    }
+}
+     */
 };
 
 }

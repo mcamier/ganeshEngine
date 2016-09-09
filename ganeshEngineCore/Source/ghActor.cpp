@@ -20,7 +20,7 @@ namespace ganeshEngine {
 
     void Actor::render() {
         mModel->preRender();
-        mModel->getProgram()->setUniform("gh_u_modelview_mat", this->getTransform());
+        //mModel->getProgram()->setUniform("gh_u_modelview_mat", this->getTransform());
         //mModel->getProgram()->setUniform("gh_u_eye_mat", mOwner->getCamera()->getEyeMatrix());
         //mModel->getProgram()->setUniform("gh_u_projection_mat", mOwner->getCamera()->getProjection());
         mModel->render();

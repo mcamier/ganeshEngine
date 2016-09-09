@@ -6,6 +6,7 @@
 
 #include "ghResource.h"
 #include "ghResourceLoader.h"
+#include "ghResourceUtil.h"
 
 namespace ganeshEngine {
 
@@ -20,32 +21,42 @@ using namespace std;
  */
 class ResourceWrapper {
 private:
+    /* the resource */
     shared_ptr<Resource> data;
 
     /** Unique ID for each resource managed via a ResourceWrapper */
-    stringId id;
+    stringId mId;
 
-    /** Resource name */
-    string name;
+    /** Contains all informations about the resources, like name, filename, metadatas or dependencies */
+    ResourceInfos mInfos;
 
-    /** Resource filename, location from where the Resource is laoded */
-    string filename;
+    /** Pointer to the loaded to use in order to loaded the underlying resource */
+    shared_ptr<ResourceLoader> mLoader;
 
-    /** Pointer to the loaded to use in order to loaded the underlying
-     * resource */
-    shared_ptr<ResourceLoader> loader;
+    /** Load the resource as soon as possible if true, otherwise the resource will be loaded during call to get method */
+    bool mEagerLoading;
 
-    /** Load the resource as soon as possible if true, otherwise the resource
-     * will be loaded during call to get method */
-    bool eagerLoading;
+    /** Store whether the resource is already loaded into the GC memory */
+    bool mIsGccLoaded;
 
 public:
-    ResourceWrapper(const string &name, const string &filename, shared_ptr<ResourceLoader> loader, bool eagerLoading = false) :
-        id(gInternString(filename.c_str())),
-        name(name),
-        filename(filename),
-        loader(loader),
-        eagerLoading(eagerLoading) {}
+    ResourceWrapper(ResourceInfos infos, shared_ptr<ResourceLoader> loader, bool eagerLoading) :
+            mInfos(infos),
+            mIsGccLoaded(false),
+            mEagerLoading(eagerLoading),
+            mLoader(loader),
+            mId(gInternString(infos.getName().c_str())) {}
+
+    ResourceWrapper(const ResourceWrapper& rw) :
+            mInfos(rw.mInfos),
+            mIsGccLoaded(rw.mIsGccLoaded),
+            mEagerLoading(rw.mEagerLoading),
+            mLoader(rw.mLoader),
+            mId(gInternString(rw.mInfos.getName().c_str())) {}
+
+    ResourceWrapper &operator=(const ResourceWrapper& rw) = default;
+
+    ~ResourceWrapper() {}
 
     /**
      * Set the Resource pointed by the wrapper

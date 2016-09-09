@@ -10,17 +10,14 @@ namespace ganeshEngine {
  * inherit this base class
  */
 class Resource {
+    friend class ResourceWrapper;
+
 private:
     /** Specify whether resource need to be uploaded to GC to be properly used */
     bool m_needGcInit;
 
-    /** Specify whether resource is already uploaded in GC memory */
-    bool m_isGcLoaded;
-
 public:
-    Resource() : m_needGcInit(false), m_isGcLoaded(false) {}
-
-    Resource(bool needGcInit) : m_needGcInit(needGcInit), m_isGcLoaded(false) {}
+    Resource(bool needGcInit) : m_needGcInit(needGcInit) {}
 
     Resource(const Resource &) = delete;
 
@@ -29,34 +26,23 @@ public:
     virtual ~Resource() {}
 
     /**
+     * Indicates if resource need to be loaded on GC's memory
+     * @return true if resource need to be loaded, false otherwise
+     */
+    bool needGcLoad() const { return m_needGcInit; }
+
+protected:
+    /**
      * Load the resource to GC memory
      * @return True is upload to GC happened without trouble, false otherwise
      */
-    virtual bool sendToGc() {
-        m_isGcLoaded = true;
-        return true;
-    };
+    virtual bool sendToGc() {return true;};
 
     /**
      * Remove the resource from the GC memory, this object still unchanged
      * @return True is memory freeing happened without trouble, false otherwise
      */
-    virtual bool freeFromGc() {
-        m_isGcLoaded = false;
-        return true;
-    };
-
-    /**
-     * Indicates if resource is loaded on GC's memory
-     * @return true if loaded, false otherwise
-     */
-    inline bool isGcLoaded() const { return m_isGcLoaded; }
-
-    /**
-     * Indicates if resource need to be loaded on GC's memory
-     * @return true if resource need to be loaded, false otherwise
-     */
-    inline bool needGcLoad() const { return m_needGcInit; }
+    virtual bool freeFromGc() {return true;};
 };
 
 }

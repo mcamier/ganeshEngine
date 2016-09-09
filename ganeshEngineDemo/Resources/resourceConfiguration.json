@@ -1,44 +1,45 @@
 {
-  "resourceLocationType": "folder",
-
-  "resourcesLocation": "C:/Users/mickael.camier/workspace/ganeshEngine/ganeshEngineDemo/Resources/",
-
   "resources": [
     {
       "name": "defaultFragmentShader",
-      "loaderName": "__MESH_OBJ_LOADER",
-      "filename": "fDefault.glsl",
+      "loaderName": "__SHADER_LOADER",
+      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl",
       "eagerLoading": false,
-      "metadatas": [
-        {
-          "key": "stage",
-          "value": "fragment"
-        }
-      ]
+      "metadatas": {
+        "stage": "fragment"
+      }
     },
     {
       "name": "defaultVertexShader",
-      "loaderName": "__MESH_OBJ_LOADER",
-      "filename": "vDefault.glsl",
+      "loaderName": "__SHADER_LOADER",
+      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl",
       "eagerLoading": false,
-      "metadatas": [
-        {
-          "key": "stage",
-          "value": "vertex"
-        }
-      ]
+      "metadatas": {
+        "stage": "vertex"
+      }
+
+    },
+    {
+      "name": "defaultShaderProgram",
+      "loaderName": "__SHADER_PROGRAM_LOADER",
+      "filename": "",
+      "eagerLoading": false,
+      "dependencies": {
+        "vertex": "defaultVertexShader",
+        "fragment": "defaultFragmentShader"
+      }
     },
     {
       "name": "foobar",
       "loaderName": "__MESH_OBJ_LOADER",
-      "filename": "foobar.obj",
-      "eagerLoading": true
+      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/foobar.obj",
+      "eagerLoading": false
     },
     {
       "name": "dirty",
       "loaderName": "__TEXTURE_PNG_LOADER",
       "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/dirty.png",
-      "eagerLoading": true
+      "eagerLoading": false
     }
   ]
 }

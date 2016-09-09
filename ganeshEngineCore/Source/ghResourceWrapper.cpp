@@ -2,7 +2,7 @@
 
 namespace ganeshEngine {
 
-void ResourceWrapper::setData(shared_ptr <Resource> data) {
+void ResourceWrapper::setData(shared_ptr<Resource> data) {
     this->data = data;
 }
 
@@ -11,15 +11,15 @@ shared_ptr<Resource> ResourceWrapper::getData() const {
 }
 
 bool ResourceWrapper::isEagerLoadAllowed() const {
-    return this->eagerLoading;
+    return this->mEagerLoading;
 }
 const string& ResourceWrapper::getName() const {
-    return this->name;
+    return this->mInfos.getName();
 }
 
 bool ResourceWrapper::isLoaded() const {
     if (data != nullptr) {
-        if (data->needGcLoad() && !data->isGcLoaded()) {
+        if (data->needGcLoad() && !mIsGccLoaded) {
             return false;
         }
         return true;
@@ -29,13 +29,13 @@ bool ResourceWrapper::isLoaded() const {
 
 bool ResourceWrapper::load() {
     if(!isLoaded()) {
-        setData(loader->load(filename.c_str()));
+        setData(mLoader->load(mInfos));
 
         if(getData() == nullptr) {
             return false;
         }
 
-        if(data->needGcLoad() && !data->isGcLoaded()) {
+        if(data->needGcLoad() && !mIsGccLoaded) {
             return data->sendToGc();
         }
     }

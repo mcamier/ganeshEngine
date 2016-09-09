@@ -6,12 +6,16 @@
 
 #include "ghResource.h"
 
+#include <vector>
+#include <glm/glm.hpp>
+
 namespace ganeshEngine {
 
+using namespace glm;
 using namespace std;
 
 class Mesh : public Resource {
-    friend class Model;
+friend class Model;
 
 private:
     unique_ptr<vector<Vertex>> mVertices{nullptr};
@@ -19,16 +23,16 @@ private:
     GLuint mVBO;
 
 public:
-    Mesh() {}
-
-    Mesh(unique_ptr<vector<Vertex>> vertices, DrawMode drawMode) :
-            mVertices(std::move(vertices)), mDrawMode(drawMode), mVBO(-1) {}
+    Mesh() : Resource(true) {
+        mDrawMode = DrawMode::TRIANGLES;
+    }
 
     ~Mesh() {}
 
-    bool sendToGc();
+protected:
+    bool sendToGc() override;
 
-    bool freeFromGc();
+    bool freeFromGc() override;
 };
 
 }

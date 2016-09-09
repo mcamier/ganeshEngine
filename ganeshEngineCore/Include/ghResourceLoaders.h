@@ -3,6 +3,9 @@
 
 #include "ghResourceLoader.h"
 
+#include "ghResourceManager.h"
+
+#include "ghStringId.h"
 #include "graphics/ghTexture.h"
 #include "graphics/ghMesh.h"
 #include "graphics/ghShaderProgram.h"
@@ -10,16 +13,25 @@
 
 #include <png.h>
 
+
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 #include <cstdio>
+#include <fstream>
+
+#include <glm/glm.hpp>
 
 namespace ganeshEngine {
 
+using namespace glm;
 using namespace rapidjson;
 using namespace std;
 
+static stringId ghTextureLoaderName         = gInternString("__TEXTURE_PNG_LOADER");
+static stringId ghObjLoaderName             = gInternString("__MESH_OBJ_LOADER");
+static stringId ghShaderLoaderName          = gInternString("__SHADER_LOADER");
+static stringId ghShaderProgramLoaderName   = gInternString("__SHADER_PROGRAM_LOADER");
 
 class PngTextureLoader : public ResourceLoader {
 
@@ -29,15 +41,15 @@ public:
      * @note the code of this methods comes from :
      * https://en.wikibooks.org/wiki/OpenGL_Programming/Intermediate/Textures#A_simple_libpng_example
      *
-     * @param filename filename of the png file to load
+     * @param infos
      * @return unique_ptr to the loaded resource or nullptr in case of error
      */
-    unique_ptr<Resource> load(const char *filename) const override {
+    unique_ptr<Resource> load(const ResourceInfos &infos) const override {
         Texture *t = new Texture();
         png_byte header[8];
 
         //open file as binary
-        FILE *fp = fopen(filename, "rb");
+        FILE *fp = fopen(infos.getFilename().c_str(), "rb");
         if (!fp) {
             return nullptr;
         }
@@ -145,9 +157,63 @@ public:
     }
 };
 
+
 class ObjModelLoader : public ResourceLoader {
 public:
-    unique_ptr<Resource> load(const char *filename) const override {
+    unique_ptr<Resource> load(const ResourceInfos &infos) const override {
+        std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
+        std::vector< glm::vec3 > temp_vertices;
+        std::vector< glm::vec2 > temp_uvs;
+        std::vector< glm::vec3 > temp_normals;
+
+        FILE * file = fopen(infos.getFilename().c_str(), "r");
+        if( file == NULL ){
+            printf("Impossible to open the file !\n");
+            return nullptr;
+        }
+
+        while( 1 ) {
+
+            char lineHeader[128];
+            // read the first word of the line
+            int res = fscanf(file, "%s", lineHeader);
+            if (res == EOF)
+                break; // EOF = End Of File. Quit the loop.
+
+            if ( strcmp( lineHeader, "v" ) == 0 ){
+                glm::vec3 vertex;
+                fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
+                temp_vertices.push_back(vertex);
+            }else if ( strcmp( lineHeader, "vt" ) == 0 ){
+                glm::vec2 uv;
+                fscanf(file, "%f %f\n", &uv.x, &uv.y );
+                temp_uvs.push_back(uv);
+            }else if ( strcmp( lineHeader, "vn" ) == 0 ){
+                glm::vec3 normal;
+                fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
+                temp_normals.push_back(normal);
+            }else if ( strcmp( lineHeader, "f" ) == 0 ) {
+                std::string vertex1, vertex2, vertex3;
+                unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+                int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0],
+                                     &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2],
+                                     &uvIndex[2], &normalIndex[2]);
+                if (matches != 9) {
+                    printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+                    return false;
+                }
+                vertexIndices.push_back(vertexIndex[0]);
+                vertexIndices.push_back(vertexIndex[1]);
+                vertexIndices.push_back(vertexIndex[2]);
+                uvIndices.push_back(uvIndex[0]);
+                uvIndices.push_back(uvIndex[1]);
+                uvIndices.push_back(uvIndex[2]);
+                normalIndices.push_back(normalIndex[0]);
+                normalIndices.push_back(normalIndex[1]);
+                normalIndices.push_back(normalIndex[2]);
+            }
+        }
+
         Mesh *m = new Mesh();
         return unique_ptr<Resource>(m);
     }
@@ -155,16 +221,68 @@ public:
 
 class ShaderLoader : public ResourceLoader {
 public:
-    unique_ptr<Resource> load(const char *filename) const override {
-        //check presence of metadata type, fail if missing
-        // fail if value is not vertex or fragment
+    unique_ptr<Resource> load(const ResourceInfos &infos) const override {
+        auto itr = infos.getMetadatas().find(gInternString("stage"));
+        if(itr == infos.getMetadatas().end()) {
+            _ERROR("The metadata 'stage' is required in order to load a Shader", LOG_CHANNEL::RESOURCE);
+            return nullptr;
+        }
+        const char* stage = itr->second.value.asString;
+
+        ShaderType type;
+        if(strcmp(stage, "vertex") == 0) {
+            type = ShaderType::VERTEX;
+        }
+        else if(strcmp(stage, "fragment") == 0) {
+            type = ShaderType::FRAGMENT;
+        }
+        else {
+            _ERROR("The metadata 'stage' doesn't contains an expected value", LOG_CHANNEL::RESOURCE);
+            return nullptr;
+        }
+
+        Shader *s = new Shader();
+
+        std::ifstream t{infos.getFilename().c_str()};
+        std::string content;
+
+        t.seekg(0, std::ios::end);
+        content.reserve(t.tellg());
+        t.seekg(0, std::ios::beg);
+
+        s->mType = type;
+        content.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+        s->mSource = content;
+
+        return unique_ptr<Shader>(s);
     }
 };
 
-
 class ShaderProgramLoader : public ResourceLoader {
+
 public:
-    unique_ptr<Resource> load(const char *filename) const override {
+    unique_ptr<Resource> load(const ResourceInfos &infos) const override {
+        const stringId vertexResourceRequired = gInternString("vertex");
+        const stringId fragmentResourceRequired = gInternString("fragment");
+
+        auto vres = infos.getDependencies().find(vertexResourceRequired);
+        auto fres = infos.getDependencies().find(vertexResourceRequired);
+
+        if (vres == infos.getDependencies().end() || fres == infos.getDependencies().end()) {
+            _ERROR("The metadatas 'vertex' and 'fragment' are both required in order to load a ShaderProgram", LOG_CHANNEL::RESOURCE);
+            return nullptr;
+        }
+
+        ResourceHandler<Shader> vertex = gResource().getResource<Shader>(vres->second);
+        ResourceHandler<Shader> fragment = gResource().getResource<Shader>(fres->second);
+
+        if(vertex == nullptr || fragment == nullptr) {
+            return nullptr;
+        }
+
+        ShaderProgram *sp = new ShaderProgram(vertex, fragment);
+
+        return unique_ptr<ShaderProgram>(sp);
     }
 };
 

@@ -3,9 +3,6 @@
 namespace ganeshEngine {
 
     void Model::sendToGC() {
-        //mpMesh->sendToGc();
-        //mpTexture->sendToGc();
-
         glGenVertexArrays(1, &mVAO);
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mpMesh->mVBO);
@@ -18,10 +15,9 @@ namespace ganeshEngine {
         glEnableVertexAttribArray(2);
         glEnableVertexAttribArray(3);
         glBindVertexArray(0);
-
     }
 
-    ShaderProgram *Model::getProgram() {
+    ResourceHandler<ShaderProgram> Model::getProgram() {
         return mpProgram;
     }
 

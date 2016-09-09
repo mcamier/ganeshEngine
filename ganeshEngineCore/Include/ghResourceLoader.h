@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "ghResource.h"
+#include "ghResourceUtil.h"
 
 namespace ganeshEngine {
 
@@ -15,10 +16,11 @@ public:
      * Load a file as a generic Resource object and return it via an
      * unique_ptr
      *
-     * @param string path to the file to load
+     * @param filename path to the file to load
+     * @param metadatas
      * @return Unique pointer pointing to loaded resource
      */
-    virtual unique_ptr<Resource> load(const char *string) const = 0;
+    virtual unique_ptr<Resource> load(const ResourceInfos &infos) const = 0;
 };
 
 }

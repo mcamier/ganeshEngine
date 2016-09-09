@@ -8,6 +8,40 @@ namespace ganeshEngine {
 using namespace std;
 using namespace glm;
 
+/*
+const char *GL_type_to_string(GLenum type) {
+    switch (type) {
+        case GL_BOOL:
+            return "bool";
+        case GL_INT:
+            return "int";
+        case GL_FLOAT:
+            return "float";
+        case GL_FLOAT_VEC2:
+            return "vec2";
+        case GL_FLOAT_VEC3:
+            return "vec3";
+        case GL_FLOAT_VEC4:
+            return "vec4";
+        case GL_FLOAT_MAT2:
+            return "mat2";
+        case GL_FLOAT_MAT3:
+            return "mat3";
+        case GL_FLOAT_MAT4:
+            return "mat4";
+        case GL_SAMPLER_2D:
+            return "sample2d";
+        case GL_SAMPLER_3D:
+            return "sample3d";
+        case GL_SAMPLER_CUBE:
+            return "sampleCube";
+        case GL_SAMPLER_2D_SHADOW:
+            return "sample2dShadow";
+        default:
+            return "other";
+    }
+}*/
+
 /**
  * Defines shader's types supported by the engine
  */

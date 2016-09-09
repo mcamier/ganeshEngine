@@ -1,26 +1,25 @@
 #include "ghResourceManager.h"
 
+#include "ghResourceLoaders.h"
+
 #include "ghCore.h"
 
 namespace ganeshEngine {
 
 void ResourceManager::vInitialize() {
-    // TODO add default loaders here
+    m_loaders.insert(make_pair(ghTextureLoaderName, make_shared<PngTextureLoader>()));
+    m_loaders.insert(make_pair(ghObjLoaderName, make_shared<ObjModelLoader>()));
+    m_loaders.insert(make_pair(ghShaderLoaderName, make_shared<ShaderLoader>()));
+    m_loaders.insert(make_pair(ghShaderProgramLoaderName, make_shared<ShaderProgramLoader>()));
+
     if (m_configuration != nullptr) {
-        m_resourceLocation = m_configuration->getResourceLocation();
-        for (const auto &entry : m_configuration->getResourceEntries()) {
+        for (auto &entry : m_configuration->getResourceEntries()) {
 
             auto loadersItr = m_loaders.find(gInternString(entry.loaderName.c_str()));
             if (loadersItr != m_loaders.end()) {
-                auto ptr = make_shared<ResourceWrapper>(entry.name, entry.filename, loadersItr->second, entry.eagerLoading);
+                ResourceInfos infos = ResourceInfos(entry.name, entry.filename, entry.metadatas, entry.dependencies);
 
-                if(ptr->isEagerLoadAllowed()) {
-                    _DEBUG("eager loading for resource : "<<ptr->getName(), LOG_CHANNEL::RESOURCE);
-                    if(!ptr->load()) {
-                        _ERROR("Something went wrong while loading resource : " << ptr->getName(), LOG_CHANNEL::RESOURCE)
-                    }
-                }
-
+                auto ptr = make_shared<ResourceWrapper>(infos, loadersItr->second, entry.eagerLoading);
                 m_resources.insert(make_pair(gInternString(entry.name.c_str()), ptr));
             } else {
                 _ERROR("Resource doesn't have valid loader present", LOG_CHANNEL::RESOURCE);
@@ -30,6 +29,17 @@ void ResourceManager::vInitialize() {
         m_configuration.release();
     }
 }
+
+void ResourceManager::doEagerLoading() {
+    for(auto& res : m_resources) {
+        if(res.second->isEagerLoadAllowed()) {
+            _DEBUG("eager loading for resource : " << res.second->getName(), LOG_CHANNEL::RESOURCE);
+            if(!res.second->load()) {
+                _ERROR("Something went wrong while loading resource : " << res.second->getName(), LOG_CHANNEL::RESOURCE)
+            }
+        }
+    }
+};
 
 void ResourceManager::vDestroy() {}
 

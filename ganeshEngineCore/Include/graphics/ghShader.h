@@ -15,6 +15,7 @@ class ShaderProgram;
 
 
 class Shader : public Resource {
+    friend class ShaderLoader;
     friend class ShaderProgram;
 
 private:
@@ -26,30 +27,13 @@ private:
      */
     ShaderType mType;
 
-    /** The shader's status
-     * After creation its value is NONE, should be COMPILED after a successful call
-     * to doCompile, FAILED oterwise
-     */
-    ShaderStatus mStatus;
-
     /** The source code of the shader
      */
     string mSource;
 
 public:
-    Shader(ShaderType type, string source) :
-            mInternalId(-1),
-            mType(type),
-            mStatus(ShaderStatus::NONE),
-            mSource(source) {}
-
+    Shader() : mInternalId(-1), mSource(""), Resource(true) {}
     ~Shader() {}
-
-    static Shader* fromFile(ShaderType type, const char *filename);
-
-    bool sendToGc() override;
-
-    bool freeFromGc() override;
 
     /**
      *
@@ -57,11 +41,10 @@ public:
      */
     const ShaderType getType() const;
 
-    /**
-     *
-     * @return shader's status
-     */
-    const ShaderStatus getStatus() const;
+protected:
+    bool sendToGc() override;
+
+    bool freeFromGc() override;
 };
 
 

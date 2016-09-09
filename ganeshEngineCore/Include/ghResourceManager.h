@@ -26,8 +26,6 @@ private:
      * the manager */
     unique_ptr<ResourceConfiguration> m_configuration;
 
-    string m_resourceLocation;
-
     /** Registered resources loaders */
     map<stringId, shared_ptr<ResourceLoader>> m_loaders;
 
@@ -60,6 +58,9 @@ public:
         if (itr == m_resources.end()) {
             exit(-1);
         }
+
+        itr->second->load();
+
         return ResourceHandler<T>(itr->second);
     }
 
@@ -72,6 +73,8 @@ public:
 protected:
     void vInitialize();
     void vDestroy();
+
+    void doEagerLoading();
 };
 
 extern ResourceManager &(*gResource)();

@@ -42,6 +42,7 @@ public:
         return mColorType;
     }
 
+protected:
     bool sendToGc() override {
         Resource::sendToGc();
         glGenTextures(1, &mTextureId);
