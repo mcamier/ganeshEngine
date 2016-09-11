@@ -1,5 +1,8 @@
 #include "ghResourceWrapper.h"
 
+#include "ghResourceManager.h"
+#include "ghResourceLoader.h"
+
 namespace ganeshEngine {
 
 void ResourceWrapper::setData(shared_ptr<Resource> data) {
@@ -18,6 +21,13 @@ const string& ResourceWrapper::getName() const {
 }
 
 bool ResourceWrapper::isLoaded() const {
+    /* check for dependencies in memory presence, return false if any of them is missing */
+    for(auto dep : mInfos.getDependencies()) {
+        if(!gResource().isLoaded(dep.second)) {
+            return false;
+        }
+    }
+    /* check if resource is well loaded, as well as loaded in GC memory if needed*/
     if (data != nullptr) {
         if (data->needGcLoad() && !mIsGccLoaded) {
             return false;
@@ -29,6 +39,7 @@ bool ResourceWrapper::isLoaded() const {
 
 bool ResourceWrapper::load() {
     if(!isLoaded()) {
+
         setData(mLoader->load(mInfos));
 
         if(getData() == nullptr) {

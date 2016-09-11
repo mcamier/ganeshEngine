@@ -13,6 +13,38 @@ namespace ganeshEngine {
 
 using namespace std;
 
+/*const char *glType2String(GLenum type) {
+    switch (type) {
+        case GL_BOOL:
+            return "bool";
+        case GL_INT:
+            return "int";
+        case GL_FLOAT:
+            return "float";
+        case GL_FLOAT_VEC2:
+            return "vec2";
+        case GL_FLOAT_VEC3:
+            return "vec3";
+        case GL_FLOAT_VEC4:
+            return "vec4";
+        case GL_FLOAT_MAT2:
+            return "mat2";
+        case GL_FLOAT_MAT3:
+            return "mat3";
+        case GL_FLOAT_MAT4:
+            return "mat4";
+        case GL_SAMPLER_2D:
+            return "sample2d";
+        case GL_SAMPLER_3D:
+            return "sample3d";
+        case GL_SAMPLER_CUBE:
+            return "sampleCube";
+        case GL_SAMPLER_2D_SHADOW:
+            return "sample2dShadow";
+        default:
+            return "other";
+    }
+}*/
 
 class ShaderProgram : public Resource {
     friend class ShaderProgramLoader;
@@ -24,12 +56,12 @@ private:
     /** opengl internal id */
     GLuint mInternalId;
 
-
 public:
     ShaderProgram(ResourceHandler<Shader> vertex, ResourceHandler<Shader> fragment) :
+            Resource(true),
             mVertex(vertex),
             mFragment(fragment),
-            Resource(true) {}
+            mInternalId(-1) {}
 
     ~ShaderProgram() {}
 
@@ -121,12 +153,12 @@ public:
                 for (int j = 0; j < size; j++) {
                     char long_name[64];
                     sprintf(long_name, "%s[%i]", name, j);
-                    int location = glGetAttribLocation(mInternalId, long_name);
-                    //_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
+                    //int location = glGetAttribLocation(mInternalId, long_name);
+                    //_DEBUG("\t\t" << i << "> type: " << glType2String(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
                 }
             } else {
-                int location = glGetAttribLocation(mInternalId, name);
-                //_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
+                //int location = glGetAttribLocation(mInternalId, name);
+                //_DEBUG("\t\t" << i << "> type: " << glType2String(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
             }
         }
 
@@ -144,17 +176,16 @@ public:
                 for (int j = 0; j < size; j++) {
                     char long_name[64];
                     sprintf(long_name, "%s[%i]", name, j);
-                    int location = glGetUniformLocation(mInternalId, long_name);
-                    //_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
+                    //int location = glGetUniformLocation(mInternalId, long_name);
+                    //_DEBUG("\t\t" << i << "> type: " << glType2String(type) << " name: " << long_name << " location: " << location, LOG_CHANNEL::RENDER);
                 }
             } else {
-                int location = glGetUniformLocation(mInternalId, name);
-                //_DEBUG("\t\t" << i << "> type: " << GL_type_to_string(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
+                //int location = glGetUniformLocation(mInternalId, name);
+                //_DEBUG("\t\t" << i << "> type: " << glType2String(type) << " name: " << name << " location: " << location, LOG_CHANNEL::RENDER);
             }
         }
 
     }
-
     /*
 
 void setUniform(const char *name, mat4 value) {

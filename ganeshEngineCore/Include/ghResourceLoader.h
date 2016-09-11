@@ -5,6 +5,7 @@
 
 #include "ghResource.h"
 #include "ghResourceUtil.h"
+#include "ghResourceHandler.h"
 
 namespace ganeshEngine {
 

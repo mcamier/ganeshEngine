@@ -6,8 +6,7 @@
 namespace ganeshEngine {
 
 /**
- * All Object that could be used as resource should
- * inherit this base class
+ * All Object that could be used as resource should inherit this base class
  */
 class Resource {
     friend class ResourceWrapper;
@@ -33,14 +32,14 @@ public:
 
 protected:
     /**
-     * Load the resource to GC memory
-     * @return True is upload to GC happened without trouble, false otherwise
+     * Load the resource into the GC memory
+     * @return True if upload to GC happened without trouble, false otherwise
      */
     virtual bool sendToGc() {return true;};
 
     /**
-     * Remove the resource from the GC memory, this object still unchanged
-     * @return True is memory freeing happened without trouble, false otherwise
+     * Remove the resource from the GC memory, this object will stay unchanged
+     * @return True if memory freeing happened without trouble, false otherwise
      */
     virtual bool freeFromGc() {return true;};
 };

@@ -36,7 +36,7 @@ public:
 	 * @return Reference to the specific system instance
 	 */
 	static T &get() {
-		ASSERT(_instance != nullptr);
+		ASSERT(_instance() != nullptr);
 		ASSERT_FLAG(_state(), INITIALIZED);
 		return *_instance();
 	}
@@ -108,6 +108,9 @@ protected:
 	virtual void vDestroy() {}
 
 	virtual void vUpdate(const Clock &clock) {}
+
+	System(){}
+	virtual ~System(){}
 };
 
 }

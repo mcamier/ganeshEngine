@@ -16,7 +16,7 @@ namespace ganeshEngine {
 
         mpFreePtr = mpMemSection;
 
-        for (int i = 1; i < mBlockAmount; i++) {
+        for (U32 i = 1; i < mBlockAmount; i++) {
             nextPtrAddr = beginAddr + (i * mBlockSize) + ((i - 1) * sizeof(uintptr_t));
             uintptr_t *ppp = reinterpret_cast<uintptr_t *>(nextPtrAddr);
 

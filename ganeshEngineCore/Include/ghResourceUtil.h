@@ -57,13 +57,16 @@ private:
 
 public:
     ResourceInfos(const string& name) :
-            mName(name) {}
+            mName(name),
+            mFilename(""),
+            mMetadatas(map<stringId, resourceMetadata>()),
+            mDependencies(map<stringId, stringId>()) {}
 
     ResourceInfos(const string& name, const string& filename, map<stringId, resourceMetadata>& metadata, map<stringId, stringId>& dependencies) :
             mName(name),
             mFilename(filename),
-            mDependencies(move(dependencies)),
-            mMetadatas(move(metadata)) {}
+            mMetadatas(move(metadata)),
+            mDependencies(move(dependencies)) {}
 
     ~ResourceInfos() {}
 

@@ -50,18 +50,7 @@ public:
                 gResource().getResource<Mesh>(demoResourceMesh),
                 gResource().getResource<Texture>(demoResourceTexture));
 
-        /*tex = new Texture();
-        unique_ptr<vector<Vertex>> vertices = make_unique<vector<Vertex >>();
-        vertices->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        vertices->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        vertices->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        mesh = new Mesh(move(vertices), DrawMode::TRIANGLES);
-
-        unique_ptr<vector<Vertex>> vertices2 = make_unique<vector<Vertex >>();
-        vertices2->push_back(Vertex(0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        vertices2->push_back(Vertex(0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        vertices2->push_back(Vertex(-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f));
-        mesh2 = new Mesh(move(vertices2), DrawMode::TRIANGLES);*/
+        model->sendToGC();
 
         Skybox *root = new Skybox();
 
@@ -121,22 +110,6 @@ int main() {
      *  are created and initialized, so all engine's customization, plugins
      *  addition should take place here, before the start of the main loop
      */
-
-    gResource().loadResource(demoResourceTexture);
-    gResource().loadResource(demoResourceShaderV);
-    gResource().loadResource(demoResourceShaderF);
-    gResource().loadResource(demoResourceShaderP);
-
-    ResourceHandler<Texture> foobar = gResource().getResource<Texture>(demoResourceTexture);
-    ResourceHandler<Shader> test = gResource().getResource<Shader>(demoResourceShaderV);
-    ResourceHandler<Shader> testf = gResource().getResource<Shader>(demoResourceShaderF);
-    ResourceHandler<ShaderProgram> testp = gResource().getResource<ShaderProgram>(demoResourceShaderP);
-
-    const Texture *ref = foobar.get();
-    const Shader *refTest = test.get();
-    const Shader *refTestf = testf.get();
-    const ShaderProgram *testprogram = testp.get();
-
     Application::RunLoop();
     Application::Destroy();
     return 0;

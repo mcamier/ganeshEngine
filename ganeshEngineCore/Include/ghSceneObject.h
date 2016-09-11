@@ -25,21 +25,22 @@ namespace ganeshEngine {
 
 /*TODO limit the scope to private for some or all members */
     protected:
-        static U32 sLastId;
-
-        const SceneObjectType mType;
-
         U32 mId;
+        const SceneObjectType mType;
+        bool mDirty;
+
+        vec3 mPosition;
+        vec3 mRotation;
+        vec3 mScale;
+
         vector<SceneObject *> mChildren;
         SceneObject *mParent{nullptr};
 
         Scene *mOwner{nullptr};
 
-        vec3 mPosition;
-        vec3 mRotation;
-        vec3 mScale;
         mat4 mTransform;
-        bool mDirty;
+
+        static U32 sLastId;
 
         /**
          * Reset dirtyFlag to None
@@ -53,7 +54,11 @@ namespace ganeshEngine {
                 mDirty(true),
                 mPosition(vec3(0.0f, 0.0f, 0.0f)),
                 mRotation(vec3(0.0f, 0.0f, 0.0f)),
-                mScale(vec3(1.0f, 1.0f, 1.0f)) {}
+                mScale(vec3(1.0f, 1.0f, 1.0f)),
+                mChildren(vector<SceneObject *>()),
+                mParent(nullptr),
+                mOwner(nullptr),
+                mTransform(mat4()) {}
 
         virtual ~SceneObject() {}
 

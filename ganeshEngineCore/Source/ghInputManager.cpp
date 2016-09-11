@@ -17,7 +17,7 @@ void InputManager::vInitialize() {
 	_DEBUG("############################", LOG_CHANNEL::INPUT);
 	mInputConfig.dump();
 	vector<InputContext *> &ictxs = mInputConfig.getInputContexts();
-	for (int i = 0; i < ictxs.size(); i++) {
+	for (U32 i = 0; i < ictxs.size(); i++) {
 		InputContext *ptr = ictxs[i];
 		int id = ptr->getId();
 		mInputContexts.insert(pair<stringId, unique_ptr<InputContext>>(id, unique_ptr<InputContext>(ptr)));

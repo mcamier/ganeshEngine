@@ -142,7 +142,7 @@ public:
             return nullptr;
         }
         // set the individual row_pointers to point at the correct offsets of image_data
-        for (int i = 0; i < theight; ++i)
+        for (U32 i = 0; i < theight; ++i)
             row_pointers[theight - 1 - i] = image_data + i * rowbytes;
 
         //read the png into image_data through row_pointers
@@ -161,6 +161,8 @@ public:
 class ObjModelLoader : public ResourceLoader {
 public:
     unique_ptr<Resource> load(const ResourceInfos &infos) const override {
+        Mesh *m = new Mesh();
+
         std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
         std::vector< glm::vec3 > temp_vertices;
         std::vector< glm::vec2 > temp_uvs;
@@ -195,9 +197,10 @@ public:
             }else if ( strcmp( lineHeader, "f" ) == 0 ) {
                 std::string vertex1, vertex2, vertex3;
                 unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
-                int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0],
+                int matches = fscanf(file, "%u/%u/%u %u/%u/%u %u/%u/%u\n", &vertexIndex[0], &uvIndex[0],
                                      &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2],
                                      &uvIndex[2], &normalIndex[2]);
+
                 if (matches != 9) {
                     printf("File can't be read by our simple parser : ( Try exporting with other options\n");
                     return false;
@@ -214,7 +217,17 @@ public:
             }
         }
 
-        Mesh *m = new Mesh();
+        vec3 point(0.0f, 0.5f, 0.0f);
+        vec3 point2(0.5f, -0.5f, 0.0f);
+        vec3 point3(-0.5f, -0.5f, 0.0f);
+        vec3 color(0.0f, 0.0f, 0.0f);
+        vec3 normal(0.0f, 0.0f, 1.0f);
+
+        m->mVertices.push_back(Vertex(point, color, normal));
+        m->mVertices.push_back(Vertex(point2, color, normal));
+        m->mVertices.push_back(Vertex(point3, color, normal));
+
+        m->mDrawMode = DrawMode::TRIANGLES;
         return unique_ptr<Resource>(m);
     }
 };
@@ -230,10 +243,10 @@ public:
         const char* stage = itr->second.value.asString;
 
         ShaderType type;
-        if(strcmp(stage, "vertex") == 0) {
+        if(std::strcmp(stage, "vertex") == 0) {// TODO Error #4: UNADDRESSABLE ACCESS beyond heap bounds: 1 byte
             type = ShaderType::VERTEX;
         }
-        else if(strcmp(stage, "fragment") == 0) {
+        else if(std::strcmp(stage, "fragment") == 0) {// TODO Error #4: UNADDRESSABLE ACCESS beyond heap bounds: 1 byte
             type = ShaderType::FRAGMENT;
         }
         else {
@@ -262,11 +275,8 @@ class ShaderProgramLoader : public ResourceLoader {
 
 public:
     unique_ptr<Resource> load(const ResourceInfos &infos) const override {
-        const stringId vertexResourceRequired = gInternString("vertex");
-        const stringId fragmentResourceRequired = gInternString("fragment");
-
-        auto vres = infos.getDependencies().find(vertexResourceRequired);
-        auto fres = infos.getDependencies().find(vertexResourceRequired);
+        auto vres = infos.getDependencies().find(gInternString("vertex"));
+        auto fres = infos.getDependencies().find(gInternString("fragment"));
 
         if (vres == infos.getDependencies().end() || fres == infos.getDependencies().end()) {
             _ERROR("The metadatas 'vertex' and 'fragment' are both required in order to load a ShaderProgram", LOG_CHANNEL::RESOURCE);
@@ -281,7 +291,6 @@ public:
         }
 
         ShaderProgram *sp = new ShaderProgram(vertex, fragment);
-
         return unique_ptr<ShaderProgram>(sp);
     }
 };

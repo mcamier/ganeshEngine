@@ -46,7 +46,7 @@ public:
     virtual ~ResourceManager() {}
 
     /**
-     * Returns a resourceHandler
+     * Returns a resourceHandler to the requested resource of the given type T
      *
      * @param resourceId Id of the resource to get
      * @return resourceHandler on the resource
@@ -65,10 +65,27 @@ public:
     }
 
     /**
+     * Returns a resourceHandler to the requested resource of the generic type Resource
+     *
+     * @param resourceId
+     * @return
+     */
+    ResourceHandler<Resource> getResource(stringId resourceId) {
+        auto itr = m_resources.find(resourceId);
+        if (itr == m_resources.end()) {
+            exit(-1);
+        }
+        itr->second->load();
+        return ResourceHandler<Resource>(itr->second);
+    }
+
+    /**
      *
      * @param resourceId
      */
     void loadResource(stringId resourceId);
+
+    bool isLoaded(stringId resourceId);
 
 protected:
     void vInitialize();

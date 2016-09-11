@@ -26,7 +26,7 @@ void ResourceManager::vInitialize() {
             }
         }
 
-        m_configuration.release();
+        //m_configuration.release();
     }
 }
 
@@ -39,7 +39,7 @@ void ResourceManager::doEagerLoading() {
             }
         }
     }
-};
+}
 
 void ResourceManager::vDestroy() {}
 
@@ -52,6 +52,14 @@ void ResourceManager::loadResource(stringId resourceId) {
     if(!wrapper->load()) {
         _ERROR("Something went wrong while loading resource : " << gStringFromStringId(resourceId), LOG_CHANNEL::RESOURCE)
     }
+}
+
+bool ResourceManager::isLoaded(stringId resourceId) {
+    auto itr = m_resources.find(resourceId);
+    if (itr == m_resources.end()) {
+        return false;
+    }
+    return itr->second->isLoaded();
 }
 
 ResourceManager &(*gResource)() = &ResourceManager::get;

@@ -11,7 +11,10 @@ namespace ganeshEngine {
 template<typename T>
 class ResourceHandler {
 private:
-    /** Pointer to the ResourceWrapper managed by ResourceManager */
+    /** Pointer to the ResourceWrapper managed by ResourceManager
+     * The underlying ResourceWrapper cannot be directly used through this handler, it's to avoid user messing with
+     * internal state of an object managed by the ResourceManager
+     */
     shared_ptr<ResourceWrapper> m_wrapper;
 
 public:
@@ -21,11 +24,8 @@ public:
     ResourceHandler(const ResourceHandler &) = default;
     ResourceHandler &operator=(const ResourceHandler &) = default;
 /*
-    ResourceHandler(ResourceHandler&&) {
-    }
-
-    ResourceHandler &operator=(ResourceHandler&&) {
-    }
+    ResourceHandler(ResourceHandler&&) {}
+    ResourceHandler &operator=(ResourceHandler&&) {}
 */
     /**
      * Gives direct access to a pointer of the underlying resource
@@ -37,6 +37,15 @@ public:
     }
 
     /**
+     * Gives direct access to a pointer of the underlying resource
+     * @note could return a nullptr in certain conditions
+     * @return pointer to const resource
+     */
+    const T& operator*() const {
+        return (dynamic_pointer_cast<T>(m_wrapper->getData())).get();
+    }
+
+    /**
      * @note internal use only
      * @return pointer to const resource
      */
@@ -44,13 +53,13 @@ public:
         return (dynamic_pointer_cast<T>(m_wrapper->getData())).get();
     }
 
-    /*
-     * const T& operator*() const;
-     * const T* operator->() const;
-     */
-
     ResourceWrapper &operator=(std::nullptr_t ptr) {
         m_wrapper = nullptr;
+        return this;
+    }
+
+    ResourceHandler<T> &operator=(ResourceHandler<Resource> ttttt) {
+        _DEBUG("putain", LOG_CHANNEL::RESOURCE);
     }
 
     bool operator==(std::nullptr_t ptr) {
@@ -59,6 +68,11 @@ public:
 
     bool operator!=(std::nullptr_t ptr) {
         return m_wrapper.get() != nullptr;
+    }
+
+    const string& getName() const {
+        static string putain = "putain";
+        return putain;
     }
 };
 

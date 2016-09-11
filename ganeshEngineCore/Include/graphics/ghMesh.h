@@ -16,9 +16,10 @@ using namespace std;
 
 class Mesh : public Resource {
 friend class Model;
+friend class ObjModelLoader;
 
 private:
-    unique_ptr<vector<Vertex>> mVertices{nullptr};
+    vector<Vertex> mVertices;
     DrawMode mDrawMode;
     GLuint mVBO;
 

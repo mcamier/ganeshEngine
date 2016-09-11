@@ -528,7 +528,7 @@ public:
     }
 
     int findFirstInputFrom(vector<RawInput> &listInputs) const {
-        for(int i = 0 ; i<listInputs.size() ; ++i) {
+        for(U32 i = 0 ; i<listInputs.size() ; ++i) {
             auto const& ri = listInputs[i];
             if(this->_1.m_source == ri.source &&
                this->_1.m_type == ri.type &&
@@ -540,7 +540,7 @@ public:
     }
 
     int findSecondInputFrom(vector<RawInput> &listInputs) const {
-        for(int i = 0 ; i<listInputs.size() ; ++i) {
+        for(U32 i = 0 ; i<listInputs.size() ; ++i) {
             auto const& ri = listInputs[i];
             if(this->_2.m_source == ri.source &&
                this->_2.m_type == ri.type &&
@@ -553,7 +553,7 @@ public:
 
     int findThirdInputFrom(vector<RawInput> &listInputs) const {
         if(size != InputChordSize::_3) return -1;
-        for(int i = 0 ; i<listInputs.size() ; ++i) {
+        for(U32 i = 0 ; i<listInputs.size() ; ++i) {
             auto const& ri = listInputs[i];
             if(this->_3.m_source == ri.source &&
                this->_3.m_type == ri.type &&
@@ -585,10 +585,10 @@ private:
 public:
 	Joystick() :
 		mIndex(-1),
-		mConnected(false),
-		mInitialized(false),
 		mAxesCount(0),
 		mButtonsCount(0),
+		mConnected(false),
+		mInitialized(false),
 		mAxeStates(nullptr),
 		mPreviousAxeStates(nullptr),
 		mButtonStates(nullptr),

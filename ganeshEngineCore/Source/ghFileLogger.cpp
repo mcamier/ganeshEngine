@@ -16,7 +16,7 @@ namespace ganeshEngine {
     void FileLogger::vInitialize(void) {
         FILE *fp = fopen(mFilename, "w");
         if (fp != nullptr) {
-            fprintf(fp, "");
+            fprintf(fp, "FileLogger initialized");
             fclose(fp);
         }
     }

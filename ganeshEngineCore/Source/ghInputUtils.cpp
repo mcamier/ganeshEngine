@@ -187,6 +187,7 @@ InputSource fromString<InputSource>(const char *value) {
 	if (strcmp(value, sourceMouse) == 0) return InputSource::MOUSE;
 	if (strcmp(value, sourceKeyboard) == 0) return InputSource::KEYBOARD;
 	if (strcmp(value, sourceDevice) == 0) return InputSource::DEVICE;
+
 }
 
 template<>
@@ -540,6 +541,13 @@ Joystick::Joystick(int index) {
 
 			mPreviousAxeStates = (float *) std::malloc(mAxesCount * sizeof(float));
 			mPreviousButtonStates = (unsigned char *) std::malloc(mButtonsCount * sizeof(unsigned char));
+
+            for(int i = 0 ; i < mAxesCount ; i++) {
+                mPreviousButtonStates[i] = 0.0f;
+            }
+            for(int i = 0 ; i < mButtonsCount ; i++) {
+                mPreviousButtonStates[i] = 0;
+            }
 			break;
 
 		default:
@@ -573,6 +581,13 @@ void Joystick::initialize(int index) {
 
 		mPreviousAxeStates = (float *) std::malloc(mAxesCount * sizeof(float));
 		mPreviousButtonStates = (unsigned char *) std::malloc(mButtonsCount * sizeof(unsigned char));
+
+        for(int i = 0 ; i < mAxesCount ; i++) {
+            mPreviousButtonStates[i] = 0.0f;
+        }
+        for(int i = 0 ; i < mButtonsCount ; i++) {
+            mPreviousButtonStates[i] = 0;
+        }
 	}
 }
 

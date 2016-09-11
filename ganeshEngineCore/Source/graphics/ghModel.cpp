@@ -33,6 +33,6 @@ namespace ganeshEngine {
     }
 
     void Model::render() {
-        glDrawArrays((GLenum) mpMesh->mDrawMode, 0, (int) mpMesh->mVertices->size());
+        glDrawArrays((GLenum) mpMesh->mDrawMode, 0, (int) mpMesh->mVertices.size());
     }
 }

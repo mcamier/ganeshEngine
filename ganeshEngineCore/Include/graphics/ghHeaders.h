@@ -8,40 +8,6 @@ namespace ganeshEngine {
 using namespace std;
 using namespace glm;
 
-/*
-const char *GL_type_to_string(GLenum type) {
-    switch (type) {
-        case GL_BOOL:
-            return "bool";
-        case GL_INT:
-            return "int";
-        case GL_FLOAT:
-            return "float";
-        case GL_FLOAT_VEC2:
-            return "vec2";
-        case GL_FLOAT_VEC3:
-            return "vec3";
-        case GL_FLOAT_VEC4:
-            return "vec4";
-        case GL_FLOAT_MAT2:
-            return "mat2";
-        case GL_FLOAT_MAT3:
-            return "mat3";
-        case GL_FLOAT_MAT4:
-            return "mat4";
-        case GL_SAMPLER_2D:
-            return "sample2d";
-        case GL_SAMPLER_3D:
-            return "sample3d";
-        case GL_SAMPLER_CUBE:
-            return "sampleCube";
-        case GL_SAMPLER_2D_SHADOW:
-            return "sample2dShadow";
-        default:
-            return "other";
-    }
-}*/
-
 /**
  * Defines shader's types supported by the engine
  */
@@ -95,12 +61,18 @@ public:
     F32 u, v;
     F32 nx, ny, nz;
 
-    Vertex(F32 _x, F32 _y, F32 _z, F32 _u, F32 _v, F32 _nx, F32 _ny, F32 _nz) :
-            x(_x), y(_y), z(_z), r(1.0f), g(1.0f), b(1.0f), u(0.0f), v(0.0f), nx(_nx), ny(ny), nz(_nz) {
+    explicit Vertex(vec3 point, vec3 color, vec2 uv, vec3 normal) :
+            x(point.x), y(point.y), z(point.z),
+            r(color.r), g(color.g), b(color.b),
+            u(uv.x), v(uv.y),
+            nx(normal.x), ny(normal.y), nz(normal.z) {
     }
 
-    Vertex(F32 _x, F32 _y, F32 _z, F32 _r, F32 _g, F32 _b, F32 _u, F32 _v, F32 _nx, F32 _ny, F32 _nz) :
-            x(_x), y(_y), z(_z), r(_r), g(_g), b(_b), u(0.0f), v(0.0f), nx(_nx), ny(ny), nz(_nz) {
+    explicit Vertex(vec3 point, vec3 color, vec3 normal) :
+            x(point.x), y(point.y), z(point.z),
+            r(color.r), g(color.g), b(color.b),
+            u(0.0f), v(0.0f),
+            nx(normal.x), ny(normal.y), nz(normal.z) {
     }
 };
 

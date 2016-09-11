@@ -32,7 +32,9 @@ private:
     string mSource;
 
 public:
-    Shader() : mInternalId(-1), mSource(""), Resource(true) {}
+    Shader() : Resource(true),
+               mInternalId(-1),
+               mSource("") {}
     ~Shader() {}
 
     /**

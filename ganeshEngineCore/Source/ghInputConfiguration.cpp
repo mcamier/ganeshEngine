@@ -124,18 +124,15 @@ Chord *InputManagerConfiguration::readChord(const Value &node, Chord *&chord) {
         return chord;
     }
 
-    InputChordSize csize;
     U32 callbackNameHash = gInternString(node[gh_im_callbackName].GetString());
     InputMatch i1, i2, i3;
 
     if (node.HasMember("_3")) {
-        csize = InputChordSize::_3;
         i1 = readMatchFromChord(node["_1"]);
         i2 = readMatchFromChord(node["_2"]);
         i3 = readMatchFromChord(node["_3"]);
         chord = new Chord(callbackNameHash, i1, i2, i3);
     } else {
-        csize = InputChordSize::_2;
         i1 = readMatchFromChord(node["_1"]);
         i2 = readMatchFromChord(node["_2"]);
         chord = new Chord(callbackNameHash, i1, i2);
@@ -185,12 +182,12 @@ void InputManagerConfiguration::readChords(const Value &node, InputContext *ctx)
 void InputManagerConfiguration::dump() {
     _DEBUG("Dump of InputManagerConfiguration", LOG_CHANNEL::INPUT);
 
-    for (int i = 0; i < this->mInputContexts.size(); i++) {
+    for (U32 i = 0; i < this->mInputContexts.size(); i++) {
         const auto ptr = this->mInputContexts[i];
         _DEBUG("\t Input Context : " << ptr->getId() << ", with " << ptr->m_inputMatches.size()
                                      << " input matches", LOG_CHANNEL::INPUT);
 
-        for (int j = 0; j < ptr->m_inputMatches.size(); j++) {
+        for (U32 j = 0; j < ptr->m_inputMatches.size(); j++) {
             const auto match = ptr->m_inputMatches[j];
             _DEBUG("\t\t Source = " << inputDetails::toString(match.m_source), LOG_CHANNEL::INPUT);
             _DEBUG("\t\t Type = " << inputDetails::toString(match.m_type), LOG_CHANNEL::INPUT);

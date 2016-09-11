@@ -29,19 +29,22 @@ private:
 
 public:
 	explicit Clock(U64 baseTimeNanoSeconds = 0) :
+		mTotalNanoSeconds(baseTimeNanoSeconds),
+		mLastTimeAdded(0),
 		mScale(1.0f),
-		mIsPaused(true),
-		mTotalNanoSeconds(baseTimeNanoSeconds) {}
+		mIsPaused(true) {}
 
 	explicit Clock(U64 baseTimeNanoSeconds, float scale) :
+		mTotalNanoSeconds(baseTimeNanoSeconds),
+		mLastTimeAdded(0),
 		mScale(scale),
-		mIsPaused(true),
-		mTotalNanoSeconds(baseTimeNanoSeconds) {}
+		mIsPaused(true) {}
 
 	explicit Clock(U64 baseTimeNanoSeconds, float scale, bool paused) :
+		mTotalNanoSeconds(baseTimeNanoSeconds),
+		mLastTimeAdded(0),
 		mScale(scale),
-		mIsPaused(paused),
-		mTotalNanoSeconds(baseTimeNanoSeconds) {}
+		mIsPaused(paused) {}
 
 	~Clock() {}
 

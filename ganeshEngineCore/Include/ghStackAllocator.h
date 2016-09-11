@@ -28,9 +28,9 @@ namespace ganeshEngine {
         StackAllocator(unsigned long byteSize) :
                 mByteSize(byteSize),
                 mIsInitialized(false),
-                mpCurrentAddr(nullptr),
+                mpFirstAddr(nullptr),
                 mpLastAddr(nullptr),
-                mpFirstAddr(nullptr) {}
+                mpCurrentAddr(nullptr) {}
 
         bool initialize(void);
 

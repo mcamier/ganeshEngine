@@ -14,9 +14,9 @@ namespace ganeshEngine {
 
     public:
         DoubleBufferedStackAllocator(unsigned long byteSize) :
+                mpCurrentBuffer(&mBufferOne),
                 mBufferOne(byteSize),
-                mBufferTwo(byteSize),
-                mpCurrentBuffer(&mBufferOne) {}
+                mBufferTwo(byteSize) {}
 
         DoubleBufferedStackAllocator &operator=(const DoubleBufferedStackAllocator &) = delete;
 

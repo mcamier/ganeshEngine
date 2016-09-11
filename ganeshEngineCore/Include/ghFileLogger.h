@@ -19,47 +19,38 @@ namespace ganeshEngine {
     class FileLogger : public ILogger {
 
     private:
-        /**
-         * Max amount of LogEntry stored in memory before being written in the log file
-         */
+        /** Max amount of LogEntry stored in memory before being written in the log file */
         int mMaxBulkEntry;
 
-        /**
-         * Current amount of LogEntry stored in memory before being written in the log file
-         */
+        /** Current amount of LogEntry stored in memory before being written in the log file */
         int mCurrentAmount;
 
-        /**
-         * Target logging filename
-         */
+        /** Target logging filename */
         const char *mFilename;
 
-        /**
-         * Storage for LogEntry s
-         * DoubleBufferedStackAllocator is used to separate LogEntry to write at a time and
-         * those that will wait until next file writing
+        /** Storage for LogEntry s
+         * DoubleBufferedStackAllocator is used to separate LogEntry to write at a time and those that will wait until
+         * next file writing
          */
         DoubleBufferedStackAllocator *mDBSAllocator;
 
-        /**
-         * List of LogEntry s that are written or has been written
-         */
+        /** List of LogEntry s that are written or has been written */
         list<LogEntry *> mCurrentEntries;
 
-        /**
-         * List of LogEntry s that will be written later
-         */
+        /** List of LogEntry s that will be written later */
         list<LogEntry *> mPendingEntries;
 
     public:
         FileLogger(LOG_LEVEL logLvl, LOG_CHANNEL logChannel, const char *filename, int maxBulkEntry = 5000) :
+                ILogger(logLvl, logChannel),
                 mMaxBulkEntry(maxBulkEntry),
-                mFilename(filename),
-                ILogger(logLvl, logChannel) {
+                mCurrentAmount(0),
+                mFilename(filename) {
 
             mDBSAllocator = new DoubleBufferedStackAllocator(mMaxBulkEntry * sizeof(LogEntry));
             mDBSAllocator->initialize();
-            mCurrentAmount = 0;
+            mCurrentEntries = list<LogEntry *>();
+            mPendingEntries = list<LogEntry *>();
         }
 
         FileLogger(const FileLogger &) = delete;

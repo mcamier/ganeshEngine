@@ -45,16 +45,16 @@ void Application::run() {
 		while (accumulator >= dt) {
 			mMainClock.update(dt);
 			PROFILE("input", gInput().vUpdate(mMainClock));
-			//PROFILE("scene", mMainScene->update(mMainClock.getLastFrameElapsedTimeAsSecond()));
+			PROFILE("scene", mMainScene->update(mMainClock.getLastFrameElapsedTimeAsSecond()));
 			PROFILE("event", gEvent().vUpdate(mMainClock));
 
 			accumulator -= dt;
 			totalTime += dt;
 		}
 		//TODO use accumulator to lerp the rendering state
-		//PROFILE("rendering", gRenderer().preRender());
-		//PROFILE("rendering", gRenderer().render(mMainScene.get()));
-		//PROFILE("rendering", gRenderer().postRender());
+		PROFILE("rendering", gRenderer().preRender());
+		PROFILE("rendering", gRenderer().render(mMainScene.get()));
+		PROFILE("rendering", gRenderer().postRender());
 		gProfiler().update();
 	}
 }
@@ -63,7 +63,7 @@ void Application::vInitialize() {
 	mMainClock = Clock(0, 1.0f, false);
 
 	LoggerManager::Initialize();
-	for (int i = 0; i < m_configuration.loggers.size(); i++) {
+	for (U32 i = 0; i < m_configuration.loggers.size(); i++) {
 		gLogger().addLogger(m_configuration.loggers[i]);
 	}
 
@@ -73,7 +73,7 @@ void Application::vInitialize() {
 
 	auto rc = ResourceConfiguration::loadFromFile(m_configuration.resourceConfigurationFilename);
 	ResourceManager::Initialize(move(rc), m_configuration.customResourceLoaders);
-	gResource().doEagerLoading();
+	//gResource().doEagerLoading();
 
 	ProfilerManager::Initialize();
 
@@ -81,9 +81,9 @@ void Application::vInitialize() {
 	InputManager::Initialize(ic);
 
 	RendererManager::Initialize();
-/*
+
 	mMainScene = unique_ptr<Scene>(m_configuration.startScene);
-	mMainScene->vInitialize();*/
+	mMainScene->vInitialize();
 
 	gEvent().addListener<Application>(GH_EVENT_EXIT_GAME, this, &Application::onShutdown);
 }

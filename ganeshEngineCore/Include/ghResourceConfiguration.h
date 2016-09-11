@@ -89,7 +89,7 @@ private:
                     } else if (itr->value.IsString()) {
                         const char *strvalue = itr->value.GetString();
                         int length = strlen(strvalue);
-                        char *ptr = (char *) std::malloc(length * sizeof(char));
+                        char *ptr = (char *) std::malloc(length * sizeof(char)+1);
                         std::strcpy(ptr, strvalue);
                         metadata.value.asString = ptr;
                         re.metadatas.insert(make_pair(metaName, metadata));
@@ -100,6 +100,7 @@ private:
                         _DEBUG("Not valid type for metadata value, this metadata will be ignored",
                                LOG_CHANNEL::RESOURCE);
                     }
+
                 }
             }
 
