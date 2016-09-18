@@ -2,25 +2,20 @@
 
 namespace ganeshEngine {
 
-    void Scene::setRoot(SceneObject *newRoot) {
-        mRoot = newRoot;
-        mRoot->mOwner = this;
-    }
+Scene::Scene() : mActors(vector<Actor*>()) {}
 
-    SceneObject *Scene::getRoot() {
-        return mRoot;
-    }
+Scene::~Scene() {}
 
-    shared_ptr<Camera> Scene::getCamera() {
-        return mCamera;
-    }
+void Scene::addActor(Actor* newActor) {
+    mActors.push_back(newActor);
+}
 
-    void Scene::setCamera(shared_ptr<Camera> camera) {
-        mCamera = camera;
-    }
+void render();
 
-    void Scene::render() {
-        mRoot->render();
+void Scene::vUpdate(const Clock &clock) {
+    for(Actor* actor : mActors) {
+        actor->update(clock);
     }
+}
 
 }

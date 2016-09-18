@@ -16,8 +16,13 @@ shared_ptr<Resource> ResourceWrapper::getData() const {
 bool ResourceWrapper::isEagerLoadAllowed() const {
     return this->mEagerLoading;
 }
+
 const string& ResourceWrapper::getName() const {
     return this->mInfos.getName();
+}
+
+const stringId ResourceWrapper::getId() const {
+    return this->mId;
 }
 
 bool ResourceWrapper::isLoaded() const {

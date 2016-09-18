@@ -4,7 +4,6 @@
 #include "ghHeaders.h"
 #include "ghSystem.h"
 #include "ghScene.h"
-#include "ghActor.h"
 #include "ghClock.h"
 #include "ghEvent.h"
 #include "ghConfiguration.h"

@@ -2,6 +2,7 @@
 #define GANESHENGINE_GHILOGGER_H
 
 #include "ghHeaders.h"
+#include <type_traits>
 
 namespace ganeshEngine {
 
@@ -18,15 +19,15 @@ enum LOG_LEVEL {
  *
  */
 enum class LOG_CHANNEL : int {
-	DEFAULT 	= 0x000001,
-	RENDER 		= 0x000010,
-	PHYSICS 	= 0x000100,
-	INPUT 		= 0x001000,
-	AI 			= 0x010000,
-	RESOURCE 	= 0x100000
+	DEFAULT 	= 0x01,
+	RENDER 		= 0x02,
+	PHYSICS 	= 0x04,
+	INPUT 		= 0x08,
+	AI 			= 0x16,
+	RESOURCE 	= 0x32
 };
 
-using _LC = std::underlying_type_t<LOG_CHANNEL>;
+using _LC = std::underlying_type<LOG_CHANNEL>::type;
 
 inline LOG_CHANNEL operator|(LOG_CHANNEL lhs, LOG_CHANNEL rhs) {
 	return (LOG_CHANNEL) (static_cast<_LC>(lhs) | static_cast<_LC>(rhs));

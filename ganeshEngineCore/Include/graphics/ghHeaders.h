@@ -92,9 +92,9 @@ enum FrustumPlane {
  *
  */
 enum GLProgramStatus {
-    NONE = 0b0001,
-    COMPILED = 0b0010,
-    FAILED = 0b0100
+    NONE = 0x1,
+    COMPILED = 0x2,
+    FAILED = 0x4
 };
 
 }

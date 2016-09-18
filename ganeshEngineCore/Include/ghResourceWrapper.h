@@ -93,6 +93,12 @@ public:
     const string& getName() const;
 
     /**
+     * Getter of the resource's id
+     * @return id of the resource
+     */
+    const stringId getId() const;
+
+    /**
      * Load the underlying resource with the embedded resourceLoader
      */
     bool load();

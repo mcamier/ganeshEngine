@@ -62,6 +62,11 @@ set(GLM_TAG "0.9.7")
 set(GLM_DIR "${LIB_DIR}/glm")
 
 
+set(GTEST_URL "https://github.com/google/googletest.git")
+set(GTEST_TAG "release-1.8.0")
+set(GTEST_DIR "${LIB_DIR}/gtest")
+
+
 if(NOT EXISTS "${LIB_DIR}")
     file(MAKE_DIRECTORY "${LIB_DIR}")
 endif()
@@ -79,6 +84,7 @@ get_lib_from_github(${RAPIDJSON_DIR} ${RAPIDJSON_URL} ${RAPIDJSON_TAG})
 get_lib_from_github(${GLFW_DIR} ${GLFW_URL} ${GLFW_TAG})
 get_lib_from_github(${GLM_DIR} ${GLM_URL} ${GLM_TAG})
 get_lib_from_github(${GLEW_DIR} ${GLEW_URL} ${GLEW_TAG})
+get_lib_from_github(${GTEST_DIR} ${GTEST_URL} ${GTEST_TAG})
 
 if(NOT EXISTS "${GLEW_DIR}/src/glew.c")
     set(GEN_CMD "C:/MinGW/msys/1.0/bin/bash.exe")
@@ -113,4 +119,4 @@ add_subdirectory(libs)
 
 add_subdirectory(ganeshEngineCore)
 add_subdirectory(ganeshEngineDemo)
-#add_subdirectory(ganeshEngineTest)
+add_subdirectory(ganeshEngineTest)

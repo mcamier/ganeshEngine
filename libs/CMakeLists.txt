@@ -10,6 +10,10 @@ add_definitions(
         -D_CRT_SECURE_NO_WARNINGS
 )
 
+### GTEST ###$
+add_subdirectory (gtest/googletest)
+include_directories(gtest/googletest)
+
 ### GLM ###
 add_subdirectory (glm)
 include_directories(glm)

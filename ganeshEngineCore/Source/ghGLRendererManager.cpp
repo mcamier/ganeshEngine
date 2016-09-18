@@ -2,7 +2,6 @@
 
 #include <time.h>
 #include <ghPlatform.h>
-#include "ghSceneObject.h"
 #include "ghApplication.h"
 
 namespace ganeshEngine {
@@ -17,7 +16,7 @@ namespace ganeshEngine {
     }
 
     void RendererManager::render(Scene *scene) {
-        scene->render();
+        //scene->render();
     }
 
     void RendererManager::postRender() {

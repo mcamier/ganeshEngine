@@ -2,68 +2,32 @@
 #define GANESHENGINE_GHSCENE_H
 
 #include "ghHeaders.h"
-#include "ghSceneObject.h"
-#include "ghCamera.h"
-#include "ghSkybox.h"
+#include "ghClock.h"
+#include "ecs/ghActor.h"
 
 namespace ganeshEngine {
 
-    using namespace std;
-
-/**
- * Scene graph data structure
- */
-    class Scene {
-
-    private:
-        /**
-         * Scene graph root node
-         */
-        SceneObject *mRoot;
-
-        /**
-         * Skybox used by the scene, might be nullptr
-         */
-        unique_ptr<Skybox> mSkybox;
-
-        /**
-         * Main camera used to draw the scene
-         * the camera should belong to the scene graph
-         */
-        shared_ptr<Camera> mCamera;
+using namespace std;
 
 
-    public:
-        Scene() {
-            mCamera = make_shared<Camera>(4.0f / 3.0f, 80, 1, 100);
-        }
+class Scene {
 
-        Scene(SceneObject *root) : mRoot(root) {}
+protected:
+    vector<Actor*> mActors;
 
-        ~Scene() {}
+public:
+    Scene();
 
-        /**
-         * @param SceneObject*
-         */
-        void setRoot(SceneObject *newRoot);
+    ~Scene();
 
-        shared_ptr<Camera> getCamera();
+    void addActor(Actor* newActor);
 
-        void setCamera(shared_ptr<Camera> camera);
+    void render();
 
-        SceneObject *getRoot();
+    virtual void vUpdate(const Clock &clock);
 
-        /**
-         * @param SceneObject*
-         */
-        void render();
-
-        /**
-         *
-         */
-        virtual void update(float deltaTime) {}
-        virtual void vInitialize() = 0;
-    };
+    virtual void vInitialize() = 0;
+};
 
 }
 

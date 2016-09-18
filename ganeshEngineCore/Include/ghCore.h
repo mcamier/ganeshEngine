@@ -15,7 +15,7 @@
 #include <string.h>
 
 #ifdef WIN32
-#include <intrin.h>
+//#include <intrin.h>
 #define BREAK() __debugbreak()
 #else
 #define BREAK() __builtin_trap()
@@ -49,20 +49,20 @@
 
 namespace ganeshEngine {
 
-    using U8 = std::uint8_t;
-    using I8 = std::int8_t;
+using U8 = std::uint8_t;
+using I8 = std::int8_t;
 
-    using U16 = std::uint16_t;
-    using I16 = std::int16_t;
+using U16 = std::uint16_t;
+using I16 = std::int16_t;
 
-    using U32 = std::uint32_t;
-    using I32 = std::int32_t;
+using U32 = std::uint32_t;
+using I32 = std::int32_t;
 
-    using U64 = std::uint64_t;
-    using I64 = std::int64_t;
+using U64 = std::uint64_t;
+using I64 = std::int64_t;
 
-    using F32 = float;
-    using F64 = double;
+using F32 = float;
+using F64 = double;
 
 /**
  * Print an error message and break the program execution where the assertion failed
@@ -71,7 +71,7 @@ namespace ganeshEngine {
  * @param file where the failing statement is located
  * @param line in the file of the failing statement
  */
-    void gAssertFailure(const char *expr, const char *file, U32 line);
+void gAssertFailure(const char *expr, const char *file, U32 line);
 
 /**
  * Generate random number within the given range
@@ -80,7 +80,7 @@ namespace ganeshEngine {
  * @param max the larger bound
  * @return random number generated as U32
  */
-    U32 gRandr(unsigned int min, unsigned int max);
+U32 gRandr(unsigned int min, unsigned int max);
 
 
 /**
@@ -91,7 +91,13 @@ namespace ganeshEngine {
  * @param line
  * @param string
  */
-    void gLog(LOG_LEVEL logLevel, LOG_CHANNEL channels, const char *file, int line, std::string &string);
+void gLog(LOG_LEVEL logLevel, LOG_CHANNEL channels, const char *file, int line, std::string &string);
+
+/**
+ *
+ * @return
+ */
+U32 gGetNextId();
 
 }
 #endif //GANESHENGINE_GLCORE_H

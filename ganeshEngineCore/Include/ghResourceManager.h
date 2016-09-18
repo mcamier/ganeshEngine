@@ -75,7 +75,7 @@ public:
         if (itr == m_resources.end()) {
             exit(-1);
         }
-        itr->second->load();
+        //itr->second->load();
         return ResourceHandler<Resource>(itr->second);
     }
 

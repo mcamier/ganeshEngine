@@ -2,6 +2,7 @@
 #define GANESHENGINE_GHRESOURCEHANDLER_H
 
 #include "ghResourceWrapper.h"
+#include "ghSerializable.h"
 
 namespace ganeshEngine {
 
@@ -58,10 +59,6 @@ public:
         return this;
     }
 
-    ResourceHandler<T> &operator=(ResourceHandler<Resource> ttttt) {
-        _DEBUG("putain", LOG_CHANNEL::RESOURCE);
-    }
-
     bool operator==(std::nullptr_t ptr) {
         return m_wrapper.get() == nullptr;
     }
@@ -73,6 +70,10 @@ public:
     const string& getName() const {
         static string putain = "putain";
         return putain;
+    }
+
+    const stringId getId() const {
+        return m_wrapper->getId();
     }
 };
 

@@ -7,7 +7,6 @@ include_directories(${EngineInclude})
 find_package(OpenGL REQUIRED)
 
 set(EngineIncludes
-        "Include/ghActor.h"
         "Include/ghApplication.h"
         "Include/ghCamera.h"
         "Include/ghClock.h"
@@ -47,9 +46,7 @@ set(EngineIncludes
         "Include/graphics/ghShader.h")
 
 set(EngineSources
-        "Source/ghActor.cpp"
         "Source/ghApplication.cpp"
-        "Source/ghCamera.cpp"
         "Source/ghClock.cpp"
         "Source/ghConsoleLogger.cpp"
         "Source/ghCore.cpp"
@@ -71,8 +68,6 @@ set(EngineSources
         "Source/ghEvent.cpp"
         "Source/ghResourceManager.cpp"
         "Source/ghResourceWrapper.cpp"
-        "Source/ghSceneObject.cpp"
-        "Source/ghSkybox.cpp"
         "Source/ghStringId.cpp"
         "Source/ghStackAllocator.cpp"
         "Source/graphics/ghFrustum.cpp"
@@ -80,7 +75,12 @@ set(EngineSources
         "Source/graphics/ghModel.cpp"
         "Source/graphics/ghTexture.cpp"
         "Source/graphics/ghShaderProgram.cpp"
-        "Source/graphics/ghShader.cpp")
+        "Source/graphics/ghShader.cpp"
+        "Source/ghIStream.cpp"
+        "Source/ghRTTI.cpp"
+        "Source/ecs/ghComponent.cpp"
+        "Source/ecs/ghComponents.cpp"
+        "Source/ecs/ghActor.cpp")
 
 SET_SOURCE_FILES_PROPERTIES( ${EngineSources} PROPERTIES LANGUAGE CXX )
 

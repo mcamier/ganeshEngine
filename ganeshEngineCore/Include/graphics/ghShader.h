@@ -19,16 +19,13 @@ class Shader : public Resource {
     friend class ShaderProgram;
 
 private:
-    /** This id comes from opengl once the shader was created on GC
-     */
+    /** This id comes from opengl once the shader was created on GC */
     GLuint mInternalId;
 
-    /** The shader's type
-     */
+    /** The shader's type */
     ShaderType mType;
 
-    /** The source code of the shader
-     */
+    /** The source code of the shader */
     string mSource;
 
 public:

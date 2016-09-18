@@ -24,15 +24,11 @@ private:
     GLuint mVBO;
 
 public:
-    Mesh() : Resource(true) {
-        mDrawMode = DrawMode::TRIANGLES;
-    }
-
+    Mesh() : Resource(true), mDrawMode(DrawMode::TRIANGLES), mVBO(-1) {}
     ~Mesh() {}
 
 protected:
     bool sendToGc() override;
-
     bool freeFromGc() override;
 };
 

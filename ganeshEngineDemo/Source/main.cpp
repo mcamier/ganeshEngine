@@ -1,4 +1,6 @@
 #include <iostream>
+#include <utility>
+#include <ecs/ghBoxColliderComponent.h>
 
 #include "ghCore.h"
 #include "ghApplication.h"
@@ -8,6 +10,15 @@
 #include "ghResourceLoaders.h"
 #include "ghResourceManager.h"
 #include "ghResourceHandler.h"
+
+#include "ghGameObject.h"
+#include "ghFactory.h"
+
+
+#include "ghBasicStream.h"
+#include "ecs/ghModelComponent.h"
+#include "ecs/ghActor.h"
+
 
 using namespace std;
 using namespace glm;
@@ -29,11 +40,8 @@ static stringId demoResourceShaderF = gInternString("defaultFragmentShader");
 class MainScene : public Scene {
 private:
     Model *model{nullptr};
-    Actor *obj{nullptr};
 
-    ResourceHandler<Texture> resTexture;
-    ResourceHandler<Mesh> resMesh;
-    ResourceHandler<ShaderProgram> resShaderProgram;
+    ModelComponent *modelComponent;
 
 public:
     MainScene() : Scene() {}
@@ -52,44 +60,45 @@ public:
 
         model->sendToGC();
 
-        Skybox *root = new Skybox();
 
-        obj = new Actor();
-        obj->setModel(model);
+        modelComponent = new ModelComponent(gGetNextId());
+        modelComponent->setMesh(gResource().getResource<Mesh>(demoResourceMesh));
+        modelComponent->setShader(gResource().getResource<ShaderProgram>(demoResourceShaderP));
+        modelComponent->setTexture(gResource().getResource<Texture>(demoResourceTexture));
 
-        Camera *cam = new Camera(4.0f / 3.0f, 80, 1, 100);
-        root->appendChild(cam);
-        root->appendChild(obj);
-        this->setRoot(root);
+        modelComponent->setPosX(1.);
+        modelComponent->setPosY(1.);
+        modelComponent->setPosZ(1.);
+
+        BoxColliderComponent *collider = new BoxColliderComponent(gGetNextId());
+        collider->setPosX(4.);
+        collider->setPosY(5.);
+        collider->setPosZ(6.);
+        modelComponent->addSubComponent(collider);
+
+        Actor* a = new Actor(gGetNextId());
+        a->setRootComponent(modelComponent);
+        addActor(a);
+
     }
 
-    void update(float deltaTime) override {}
-
-    void goUp(RawInput ri, float deltaTime) {
-        float move = deltaTime * 1.0f;
-        obj->addY(-move);
+    void vUpdate(const Clock &clock) override {
+        Scene::vUpdate(clock);
+        //modelComponent->setLocationX(modelComponent->getLocation().x + 1);
     }
 
-    void goDown(RawInput ri, float deltaTime) {
-        float move = deltaTime * 1.0f;
-        obj->addY(move);
-    }
 
-    void goRight(RawInput ri, float deltaTime) {
-        float move = deltaTime * 1.0f;
-        obj->addX(move);
-    }
+    void goUp(RawInput ri, float deltaTime) {}
 
-    void goLeft(RawInput ri, float deltaTime) {
-        float move = deltaTime * 1.0f;
-        obj->addX(-move);
-    }
+    void goDown(RawInput ri, float deltaTime) {}
 
-    void reset(RawInput ri, float deltaTime) {
-        obj->setX(0.0f);
-        obj->setY(0.0f);
-    }
-};
+    void goRight(RawInput ri, float deltaTime) {}
+
+    void goLeft(RawInput ri, float deltaTime) {}
+
+    void reset(RawInput ri, float deltaTime) {}
+
+    };
 
 int main() {
     Configuration conf;

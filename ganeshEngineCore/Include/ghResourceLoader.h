@@ -22,6 +22,7 @@ public:
      * @return Unique pointer pointing to loaded resource
      */
     virtual unique_ptr<Resource> load(const ResourceInfos &infos) const = 0;
+
 };
 
 }

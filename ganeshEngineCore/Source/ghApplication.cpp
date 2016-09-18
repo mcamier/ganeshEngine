@@ -10,7 +10,6 @@
 #include "ghResourceManager.h"
 #include "ghResourceConfiguration.h"
 #include "ghGLRendererManager.h"
-#include "ghSkybox.h"
 
 using namespace std::chrono;
 
@@ -45,7 +44,7 @@ void Application::run() {
 		while (accumulator >= dt) {
 			mMainClock.update(dt);
 			PROFILE("input", gInput().vUpdate(mMainClock));
-			PROFILE("scene", mMainScene->update(mMainClock.getLastFrameElapsedTimeAsSecond()));
+			PROFILE("scene", mMainScene->vUpdate(mMainClock));
 			PROFILE("event", gEvent().vUpdate(mMainClock));
 
 			accumulator -= dt;
