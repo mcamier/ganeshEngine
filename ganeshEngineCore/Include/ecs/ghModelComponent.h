@@ -3,7 +3,7 @@
 
 
 #include "ecs/ghActor.h"
-#include "ecs/ghIComponent.h"
+#include "ecs/ghComponent.h"
 #include "ghSerializable.h"
 #include "ghIStream.h"
 #include "ghRTTI.h"

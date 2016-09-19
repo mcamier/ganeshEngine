@@ -9,10 +9,11 @@ class IStream {
 public:
     virtual ~IStream() {}
 
-    virtual void reset() = 0;
+    virtual bool open() = 0;
     virtual int read(int size, void* buffer) = 0;
     virtual int write(int size, void* buffer) = 0;
-    virtual void close() = 0;
+    virtual bool close() = 0;
+    virtual void reset() = 0;
 };
 
 template<typename T> bool readFromStream(IStream& stream, T& obj);

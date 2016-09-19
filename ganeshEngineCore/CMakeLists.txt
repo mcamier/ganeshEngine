@@ -78,8 +78,9 @@ set(EngineSources
         "Source/graphics/ghShader.cpp"
         "Source/ghIStream.cpp"
         "Source/ghRTTI.cpp"
+        "Source/ghRTTIs.cpp"
         "Source/ecs/ghComponent.cpp"
-        "Source/ecs/ghComponents.cpp"
+        "Source/ecs/ghSceneComponent.cpp"
         "Source/ecs/ghActor.cpp")
 
 SET_SOURCE_FILES_PROPERTIES( ${EngineSources} PROPERTIES LANGUAGE CXX )

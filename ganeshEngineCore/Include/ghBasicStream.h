@@ -13,32 +13,23 @@ using namespace std;
 class BasicStream : public IStream {
 
 private:
-    FILE *mpFile;
     std::string mFilename;
+    FILE *mpFile;
+    bool mbOpened;
     bool mbReadAccess;
 
 public:
-    BasicStream(std::string &filename) {
-        mpFile = fopen(filename.c_str(), "rb");
-        mbReadAccess = true;
-        if(mpFile == nullptr) {
-            mpFile = fopen(filename.c_str(), "ab");
-            mbReadAccess = false;
-        }
-        mFilename = filename;
-    }
+    BasicStream(std::string &filename) :
+        mFilename(filename),
+        mpFile(nullptr),
+        mbOpened(false),
+        mbReadAccess(true) {}
 
-    BasicStream(const char *filename) {
-        mpFile = fopen(filename, "rb");
-        mbReadAccess = true;
-        if(mpFile == nullptr) {
-            mpFile = fopen(filename, "ab");
-            mbReadAccess = false;
-        }
-        mFilename = string(filename);
-    }
-
-    void reset() {}
+    BasicStream(const char *filename) :
+        mFilename(string(filename)),
+        mpFile(nullptr),
+        mbOpened(false),
+        mbReadAccess(true) {}
 
     int read(int size, void* buffer) override {
         if(mpFile == nullptr) {
@@ -69,12 +60,30 @@ public:
         return fwrite(buffer, 1, size, mpFile);
     }
 
-    void close() {
-        if(mpFile != nullptr) {
-            fclose(mpFile);
+    bool open() {
+        mpFile = fopen(filename.c_str(), "rb");
+        if(mpFile == nullptr) {
+            mpFile = fopen(filename.c_str(), "ab");
+            mbReadAccess = false;
         }
 
+        if(mpFile == nullptr) {
+            mbOpened = true;
+            return false;
+        }
+        return true;
     }
+
+    bool close() {
+        if(mpFile != nullptr) {
+            fclose(mpFile);
+            mbOpened = false;
+            return true;
+        }
+        return false;
+    }
+
+    void reset() {}
 };
 
 }

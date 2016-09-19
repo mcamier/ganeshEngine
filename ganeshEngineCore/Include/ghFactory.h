@@ -13,7 +13,8 @@
         className* create(U32 id) const {\
             return new className(id);\
         }\
-    };
+    };\
+    gRegisterComponentFactory(#className, new ICreator<>(className));
 #endif //REGISTER_CREATOR
 
 
@@ -28,55 +29,22 @@ public:
     virtual T* create(U32 id) const = 0;
 };
 
+map<stringId, ICreator*> gComponentFactories = map<stringId, ICreator*>();
 
-template<typename T>
-class Factory {
-    typedef map<stringId, unique_ptr<ICreator<T>>> creatorMap_t;
-
-private:
-    creatorMap_t mCreatorMap;
-
-public:
-    Factory() :
-            mCreatorMap(creatorMap_t()) {}
-
-    /**
-     * @note you can only register a creator with a give name once, call the method twice with the same stringId will
-     * do nothing
-     *
-     * @param typeName
-     * @param creator
-     */
-    void registerCreator(stringId typeName, unique_ptr<ICreator<T>> creator) {
-        if(mCreatorMap.find(typeName) != mCreatorMap.end()) {
-            mCreatorMap.insert(make_pair(typeName, creator));
-        }
+Component* gCreateInstance(const char* className) {
+    auto itr = gComponentFactories.find(typeName);
+    if(itr != gComponentFactories.end()) {
+        return itr->second->create();
     }
+    return nullptr;
+}
 
-    /**
-     *
-     * @param typeName
-     */
-    void unregisterCreator(stringId typeName) {
-        auto itr = mCreatorMap.find(typeName);
-        if(itr != mCreatorMap.end()) {
-            mCreatorMap.erase(itr);
-        }
-    }
 
-    /**
-     *
-     * @param typeName
-     * @return
-     */
-    unique_ptr<T> create(stringId typeName) {
-        auto itr = mCreatorMap.find(typeName);
-        if(itr != mCreatorMap.end()) {
-            return unique_ptr<T>(itr->second->create());
-        }
-        return nullptr;
+Component* gRegisterComponentFactory(const char* typeName, ICreator* creator) {
+    if(gComponentFactories.find(typeName) != gComponentFactories.end()) {
+        gComponentFactories.insert(make_pair(typeName, creator));
     }
-};
+}
 
 }
 

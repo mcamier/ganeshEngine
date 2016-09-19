@@ -9,7 +9,6 @@ namespace ganeshEngine {
 
 using namespace std;
 
-
 class Scene {
 
 protected:
@@ -27,6 +26,10 @@ public:
     virtual void vUpdate(const Clock &clock);
 
     virtual void vInitialize() = 0;
+
+	void save(string filename);
+	void load(string filename);
+
 };
 
 }

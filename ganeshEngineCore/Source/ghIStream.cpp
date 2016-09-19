@@ -11,6 +11,13 @@ template<> bool writeToStream<int>(IStream& stream, const int& object) {
     return true;
 }
 
+template<> bool writeToStream<string>(IStream& stream, const string &object) {
+    int length = strlen(object.c_str());
+    stream.write(sizeof(int), &length);
+    stream.write(length * sizeof(char), (void*)object.c_str());
+    return true;
+}
+
 template<> bool writeToStream<float>(IStream& stream, const float& object) {
     stream.write(sizeof(float), (void*)&object);
     return true;
@@ -40,6 +47,17 @@ template<> bool writeToStream<std::vector<Serializable*>>(IStream& stream, const
 
 template<> bool readFromStream<int>(IStream& stream, int &obj) {
     return (stream.read(sizeof(int), &obj) == sizeof(int));
+}
+
+
+template<> bool readFromStream<string>(IStream& stream, string &object) {
+    int length = 0;
+    stream.read(sizeof(int), &length);
+    char* buffer = (char*)malloc(length);
+    int byteRead = stream.read(length * sizeof(char), buffer);
+    object = string(buffer);
+
+    return true;
 }
 
 template<> bool readFromStream<float>(IStream& stream, float &obj) {
