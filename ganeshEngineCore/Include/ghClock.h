@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHCLOCK_H
 #define GANESHENGINE_GHCLOCK_H
 
-#include "ghCore.h"
+#include "ghTypes.h"
 
 namespace ganeshEngine {
 

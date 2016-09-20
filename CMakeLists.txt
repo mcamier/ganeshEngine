@@ -61,7 +61,6 @@ set(GLM_URL "https://github.com/g-truc/glm.git")
 set(GLM_TAG "0.9.7")
 set(GLM_DIR "${LIB_DIR}/glm")
 
-
 set(GTEST_URL "https://github.com/google/googletest.git")
 set(GTEST_TAG "release-1.8.0")
 set(GTEST_DIR "${LIB_DIR}/gtest")
@@ -117,6 +116,36 @@ endif(NOT EXISTS "${GLEW_DIR}/src/glew.c")
 
 add_subdirectory(libs)
 
+add_subdirectory(ganeshEngineUtility)
 add_subdirectory(ganeshEngineCore)
-add_subdirectory(ganeshEngineDemo)
-add_subdirectory(ganeshEngineTest)
+add_subdirectory(ganeshEngineEngine)
+
+add_subdirectory(demo)
+#add_subdirectory(test)
+
+
+
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_INPUT ../doxygen.cfg)
+    set(DOXYGEN_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doc)
+
+    add_custom_command(
+            OUTPUT ${DOXYGEN_OUTPUT}
+            COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT}
+            COMMAND ${CMAKE_COMMAND} -E echo "Done."
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            DEPENDS ${DOXYGEN_INPUT}
+    )
+
+    add_custom_target(apidoc ALL DEPENDS ${DOXYGEN_OUTPUT})
+
+    add_custom_target(apidoc_forced
+            COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT}
+            COMMAND ${CMAKE_COMMAND} -E echo "Done."
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            )
+endif(DOXYGEN_FOUND)

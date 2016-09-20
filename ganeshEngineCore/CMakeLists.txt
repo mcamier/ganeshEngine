@@ -1,128 +1,21 @@
 project(ganeshEngineCore)
 set(LibName "ganeshEngineCore")
-set(EngineInclude
-    "Include")
-include_directories(${EngineInclude})
 
-find_package(OpenGL REQUIRED)
+include_directories("Include")
 
-set(EngineIncludes
-        "Include/ghApplication.h"
-        "Include/ghCamera.h"
-        "Include/ghClock.h"
-        "Include/ghConsoleLogger.h"
-        "Include/ghCore.h"
-        "Include/ghDoubleBufferedStackAllocator.h"
-        "Include/ghFileLogger.h"
-        "Include/ghGLRendererManager.h"
-        "Include/ghHeaders.h"
-        "Include/ghICollider.h"
-        "Include/ghILogger.h"
-        "Include/ghInputManager.h"
-        "Include/ghInputContext.h"
-        "Include/ghInputConfiguration.h"
-        "Include/ghInputUtils.h"
-        "Include/ghLoggerManager.h"
-        "Include/ghPlane.h"
-        "Include/ghEvent.h"
-        "Include/ghPlatform.h"
-        "Include/ghPoolAllocator.h"
-        "Include/ghProfiler.h"
-        "Include/ghProfilerManager.h"
-        "Include/ghScene.h"
-        "Include/ghMath.h"
-        "Include/ghResource.h"
-        "Include/ghResourceWrapper.h"
-        "Include/ghResourceHandler.h"
-        "Include/ghResourceManager.h"
-        "Include/ghResourceLoader.h"
-        "Include/ghSceneObject.h"
-        "Include/ghSkybox.h"
-        "Include/ghStringId.h"
-        "Include/ghStackAllocator.h"
-        "Include/graphics/ghFrustum.h"
-        "Include/graphics/ghShaderProgram.h"
-        "Include/graphics/ghModel.h"
-        "Include/graphics/ghShader.h")
-
-set(EngineSources
-        "Source/ghApplication.cpp"
+set(EngineCoreSources
         "Source/ghClock.cpp"
-        "Source/ghConsoleLogger.cpp"
-        "Source/ghCore.cpp"
-        "Source/ghDoubleBufferedStackAllocator.cpp"
-        "Source/ghFileLogger.cpp"
-        "Source/ghInputManager.cpp"
-        "Source/ghInputContext.cpp"
-        "Source/ghInputConfiguration.cpp"
-        "Source/ghInputUtils.cpp"
-        "Source/ghGLRendererManager.cpp"
-        "Source/ghLoggerManager.cpp"
-        "Source/ghPlane.cpp"
-	    "Source/ghMath.cpp"
-        "Source/ghPlatform.cpp"
-        "Source/ghPoolAllocator.cpp"
-        "Source/ghProfiler.cpp"
-        "Source/ghProfilerManager.cpp"
-        "Source/ghScene.cpp"
-        "Source/ghEvent.cpp"
-        "Source/ghResourceManager.cpp"
-        "Source/ghResourceWrapper.cpp"
-        "Source/ghStringId.cpp"
-        "Source/ghStackAllocator.cpp"
-        "Source/graphics/ghFrustum.cpp"
-        "Source/graphics/ghMesh.cpp"
-        "Source/graphics/ghModel.cpp"
-        "Source/graphics/ghTexture.cpp"
-        "Source/graphics/ghShaderProgram.cpp"
-        "Source/graphics/ghShader.cpp"
-        "Source/ghIStream.cpp"
-        "Source/ghRTTI.cpp"
-        "Source/ghRTTIs.cpp"
-        "Source/ecs/ghComponent.cpp"
-        "Source/ecs/ghSceneComponent.cpp"
-        "Source/ecs/ghActor.cpp")
-
-SET_SOURCE_FILES_PROPERTIES( ${EngineSources} PROPERTIES LANGUAGE CXX )
+        "Source/ghGameObject.cpp"
+        "Source/ghILogger.cpp"
+        "Source/ghSystem.cpp")
 
 include_directories(
-        ../ganeshEngineCore/Include
-        ../libs/glm
-        ../libs/glew/include
-        ../libs/glfw/include
+        Include/
+        ../ganeshEngineUtility/Include
         ../libs/rapidjson/include
-        )
+)
 
-set(GL_LIBS
-        ${OPENGL_LIBRARY}
-        glfw
-        GLEW_1130
-        png)
+SET_SOURCE_FILES_PROPERTIES( ${EngineCoreSources} PROPERTIES LANGUAGE CXX )
 
-add_library(${LibName} ${EngineSources})
-target_link_libraries(${LibName} ${GL_LIBS})
-
-find_package(Doxygen)
-
-if(DOXYGEN_FOUND)
-    set(DOXYGEN_INPUT doxygen.cfg)
-    set(DOXYGEN_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doc)
-
-    add_custom_command(
-            OUTPUT ${DOXYGEN_OUTPUT}
-            COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
-            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT}
-            COMMAND ${CMAKE_COMMAND} -E echo "Done."
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            DEPENDS ${DOXYGEN_INPUT}
-    )
-
-    add_custom_target(apidoc ALL DEPENDS ${DOXYGEN_OUTPUT})
-
-    add_custom_target(apidoc_forced
-            COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
-            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT}
-            COMMAND ${CMAKE_COMMAND} -E echo "Done."
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            )
-endif(DOXYGEN_FOUND)
+add_library(${LibName} ${EngineCoreSources})
+target_link_libraries(${LibName} ganeshEngineUtility)

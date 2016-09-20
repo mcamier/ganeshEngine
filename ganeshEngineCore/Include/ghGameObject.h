@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHGAMEOBJECT_H
 #define GANESHENGINE_GHGAMEOBJECT_H
 
-#include "ghHeaders.h"
+#include "ghTypes.h"
 #include "ghSerializable.h"
 #include "ghRTTI.h"
 

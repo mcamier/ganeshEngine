@@ -1,8 +1,8 @@
 #ifndef GANESHENGINE_GHILOGGER_H
 #define GANESHENGINE_GHILOGGER_H
 
-#include "ghHeaders.h"
 #include <type_traits>
+#include <string>
 
 namespace ganeshEngine {
 
@@ -27,6 +27,17 @@ enum class LOG_CHANNEL : int {
 	RESOURCE 	= 0x32
 };
 
+/**
+ * Log criticity level name
+ *
+ * @note indexes are related to the LOG_LEVEL enum values
+ */
+const std::string LOG_LEVELS[] = {
+	std::string("DEBUG"),
+	std::string("WARNING"),
+	std::string("ERROR")
+};
+
 using _LC = std::underlying_type<LOG_CHANNEL>::type;
 
 inline LOG_CHANNEL operator|(LOG_CHANNEL lhs, LOG_CHANNEL rhs) {
@@ -46,17 +57,6 @@ inline LOG_CHANNEL &operator&=(LOG_CHANNEL &lhs, LOG_CHANNEL rhs) {
 	lhs = (LOG_CHANNEL) (static_cast<_LC>(lhs) & static_cast<_LC>(rhs));
 	return lhs;
 }
-
-/**
- * Log criticity level name
- *
- * @note indexes are related to the LOG_LEVEL enum values
- */
-const std::string LOG_LEVELS[] = {
-	std::string("DEBUG"),
-	std::string("WARNING"),
-	std::string("ERROR")
-};
 
 
 /**

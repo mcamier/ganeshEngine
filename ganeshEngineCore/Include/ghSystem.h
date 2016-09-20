@@ -1,8 +1,11 @@
 #ifndef GANESHENGINE_GHSYSTEM_H
 #define GANESHENGINE_GHSYSTEM_H
 
-#include "ghHeaders.h"
+#include <type_traits>
+#include <utility>
+
 #include "ghClock.h"
+#include "ghTypes.h"
 
 namespace ganeshEngine {
 
