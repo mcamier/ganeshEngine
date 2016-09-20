@@ -13,17 +13,16 @@ set(EngineTestSources
 enable_testing()
 
 find_package(GLM REQUIRED)
-if (GLM_FOUND)
-    include_directories(${GLM_INCLUDE_DIR})
-endif()
+include_directories(${GLM_INCLUDE_DIR})
 
 include_directories(
-        ../ganeshEngineCore/Include
+        ../ghCore/Include
+        ../ghEngine/Include
         ../libs/gtest/googletest/include
         ../libs/glm
         ../libs/glew/include
         ../libs/glfw/include)
 
 add_executable(${LibName} ${EngineTestSources})
-target_link_libraries(${LibName} ${GTEST_LIBRARIES} pthread ganeshEngineCore)
+target_link_libraries(${LibName} ${GTEST_LIBRARIES} pthread ghCore ghEngine)
 add_test(${LibName} ${LibName})

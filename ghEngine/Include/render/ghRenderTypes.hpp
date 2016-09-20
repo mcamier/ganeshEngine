@@ -1,0 +1,14 @@
+#ifndef GANESHENGINE_GHRENDERTYPES_H
+#define GANESHENGINE_GHRENDERTYPES_H
+
+namespace ganeshEngine {
+
+enum class RenderType {
+	LIGHT,
+	SKYBOX,
+	GEOMETRY
+};
+
+}
+
+#endif //GANESHENGINE_GHRENDERTYPES_H

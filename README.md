@@ -1,5 +1,7 @@
 # GaneshEngine
 
+![travis_status_master](https://travis-ci.org/mcamier/ganeshEngine.svg?branch=master)
+
 GaneshEngine is an early lightweight game engine, with entity-component system, openGL 4 rendering and Lua scripting sytem.
 
 It is still in development, i'm working on it by myself on my spare time. It's my third attempt/iteration to build a

@@ -3,7 +3,7 @@
     {
       "name": "defaultFragmentShader",
       "loaderName": "__SHADER_LOADER",
-      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/fDefault.glsl",
+      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/fDefault.glsl",
       "eagerLoading": false,
       "metadatas": {
         "stage": "fragment"
@@ -12,7 +12,7 @@
     {
       "name": "defaultVertexShader",
       "loaderName": "__SHADER_LOADER",
-      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/vDefault.glsl",
+      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/vDefault.glsl",
       "eagerLoading": false,
       "metadatas": {
         "stage": "vertex"
@@ -32,13 +32,13 @@
     {
       "name": "foobar",
       "loaderName": "__MESH_OBJ_LOADER",
-      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/foobar.obj",
+      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/foobar.obj",
       "eagerLoading": false
     },
     {
       "name": "dirty",
       "loaderName": "__TEXTURE_PNG_LOADER",
-      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/dirty.png",
+      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/dirty.png",
       "eagerLoading": false
     }
   ]

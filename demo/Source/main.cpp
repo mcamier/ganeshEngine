@@ -3,6 +3,7 @@
 
 #include "ghApplication.h"
 #include "ghFileLogger.h"
+#include "ghILogger.h"
 #include "ghConsoleLogger.h"
 #include "ghInputManager.h"
 #include "ghResourceLoaders.h"
@@ -53,7 +54,7 @@ public:
         modelComponent->setMesh(gResource().getResource<Mesh>(demoResourceMesh));
         modelComponent->setShader(gResource().getResource<ShaderProgram>(demoResourceShaderP));
         modelComponent->setTexture(gResource().getResource<Texture>(demoResourceTexture));
-
+/*
         modelComponent->setPosX(1.);
         modelComponent->setPosY(1.);
         modelComponent->setPosZ(1.);
@@ -62,10 +63,10 @@ public:
         collider->setPosX(4.);
         collider->setPosY(5.);
         collider->setPosZ(6.);
-        modelComponent->addSubComponent(collider);
-
+        //modelComponent->addSubComponent(collider);
+*/
         Actor* a = new Actor(gGetNextId());
-        a->setRootComponent(modelComponent);
+        //a->setRootComponent(modelComponent);
         addActor(a);
 
     }
@@ -92,13 +93,12 @@ int main() {
     Configuration conf;
     LOG_CHANNEL channels = LOG_CHANNEL::DEFAULT | LOG_CHANNEL::RESOURCE;
 
-    conf.inputConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/inputConfiguration.json";
+    conf.inputConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/inputConfiguration.json";
 
-    conf.resourceConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/resourceConfiguration.json";
+    conf.resourceConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/resourceConfiguration.json";
 
     conf.loggers.push_back(new ConsoleLogger(LOG_LEVEL::DEBUG, channels));
-    conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels,
-                                          "C:/Users/mcamier/ClionProjects/ganeshEngine/ganeshEngineDemo/Resources/log"));
+    conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/log"));
 
     conf.startScene = new MainScene();
 

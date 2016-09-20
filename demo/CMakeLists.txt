@@ -1,29 +1,18 @@
-project(demo)
 set(ExeName Demo)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 include_directories (
     Include
-    ../ganeshEngineCore/Include
-    ../ganeshEngineUtility/Include
-    ../ganeshEngineEngine/Include
+    ../ghCore/Include
+    ../ghEngine/Include
     ../libs/glm/
-    ../libs/glew/include
-    ../libs/glfw/include
     ../libs/rapidjson/include
 )
 
-find_package(OpenGL REQUIRED)
+set(demo_SRC "Source/main.cpp")
 
-set(GL_LIBS
-        ${OPENGL_LIBRARY}
-        glfw
-        GLEW_1130)
+set_source_files_properties( ${demo_SRC} PROPERTIES LANGUAGE CXX )
 
-set(SOURCE_FILES
-   "Source/main.cpp")
+add_executable(${ExeName} ${demo_SRC})
+target_link_libraries(${ExeName} ghCore ghEngine)
 
-SET_SOURCE_FILES_PROPERTIES( ${SOURCE_FILES} PROPERTIES LANGUAGE CXX )
-add_executable(${ExeName} ${SOURCE_FILES})
-
-target_link_libraries(${ExeName} ${GL_LIBS} ganeshEngineUtility ganeshEngineCore ganeshEngineEngine )
+set_property(TARGET ${ExeName} PROPERTY FOLDER "Others")

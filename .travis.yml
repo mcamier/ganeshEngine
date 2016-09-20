@@ -1,0 +1,26 @@
+sudo: required
+dist: precise
+language: cpp
+
+branches:
+  only:
+  - master
+  - /^feature.*$/
+
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ['ubuntu-toolchain-r-test', 'george-edison55-precise-backports']
+          packages:
+            - ['g++-5', 'cmake', 'cmake-data']
+      env: COMPILER=g++-5
+
+before_install:
+  - sudo apt-get update -qq
+script:
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
