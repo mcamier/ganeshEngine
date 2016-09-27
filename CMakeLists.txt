@@ -8,6 +8,7 @@ option(WITH_RENDER_API_VULKAN "Include Vulkan Rendering API" OFF)
 
 #activate folder's creation for visual studio project generation
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
