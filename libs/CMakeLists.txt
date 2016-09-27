@@ -6,6 +6,17 @@ include_directories(glm)
 add_subdirectory (rapidjson)
 include_directories(rapidjson/include)
 
+
+include (TestBigEndian)
+TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
+if(IS_BIG_ENDIAN)
+	message(STATUS "BIG_ENDIAN")
+	set(RAPIDJSON_ENDIAN RAPIDJSON_BIGENDIAN)
+else()
+	message(STATUS "LITTLE_ENDIAN")
+	set(RAPIDJSON_ENDIAN RAPIDJSON_LITTLEENDIAN)
+endif()
+
 set(RAPIDJSON_BUILD_DOC OFF)
 set(RAPIDJSON_BUILD_EXAMPLES OFF)
 set(RAPIDJSON_BUILD_TESTS OFF)

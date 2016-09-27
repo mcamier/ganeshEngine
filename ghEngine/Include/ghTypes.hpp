@@ -27,7 +27,7 @@
         else { \
             const char *msgPart = " doesn't match flag : "; \
             int sizeMsg = strlen(#expr_flag) + strlen(#has_to_flag) + strlen(msgPart) + 1; \
-            char msg[sizeMsg]; \
+			char* msg = new char[sizeMsg];\
             strcpy(msg, #expr_flag); \
             strcat(msg, msgPart); \
             strcat(msg, #has_to_flag); \

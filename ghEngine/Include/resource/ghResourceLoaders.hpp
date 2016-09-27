@@ -205,7 +205,7 @@ public:
 
                 if (matches != 9) {
                     printf("File can't be read by our simple parser : ( Try exporting with other options\n");
-                    return false;
+                    return nullptr;
                 }
                 vertexIndices.push_back(vertexIndex[0]);
                 vertexIndices.push_back(vertexIndex[1]);
