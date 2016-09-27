@@ -1,8 +1,8 @@
 #ifndef GHEVENT_H
 #define GHEVENT_H
 
-#include "../util/ghStringId.hpp"
-#include "../ghSystem.hpp"
+#include <util/ghStringId.hpp>
+#include <ghSystem.hpp>
 
 namespace ganeshEngine {
 

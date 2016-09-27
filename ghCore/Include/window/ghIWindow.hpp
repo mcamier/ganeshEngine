@@ -2,6 +2,7 @@
 #define GANESHENGINE_GHIWINDOW_H
 
 #include <cassert>
+#include <string>
 
 class IWindow {
 private:
@@ -28,6 +29,14 @@ public:
     virtual void vInitialize() = 0;
 
     virtual void vDestroy() = 0;
+
+    virtual void setName(const std::string& newName) = 0;
+
+    virtual std::string getName() = 0;
+
+    virtual bool isFullscreen() = 0;
+
+    virtual void setFullscreen(bool isFullscreen) = 0;
 };
 
 #endif //GANESHENGINE_GHIWINDOW_H

@@ -2,7 +2,7 @@
 #define GANESHENGINE_GHCONFIGURATION_H
 
 #include "ghHeaders.hpp"
-#include "ghILogger.hpp"
+#include <util/ghILogger.hpp>
 #include "ghScene.hpp"
 #include "../resource/ghResourceLoader.hpp"
 

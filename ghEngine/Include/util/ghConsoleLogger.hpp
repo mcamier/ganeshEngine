@@ -2,7 +2,7 @@
 #define GANESHENGINE_GHCONSOLELOGGER_H
 
 #include "ghHeaders.hpp"
-#include "ghILogger.hpp"
+#include <util/ghILogger.hpp>
 
 namespace ganeshEngine {
 

@@ -7,7 +7,7 @@
 #include "ghInputContext.hpp"
 #include "ghInputConfiguration.hpp"
 #include "../event/ghEventManager.hpp"
-#include "../util/ghClock.hpp"
+#include <util/ghClock.hpp>
 
 namespace ganeshEngine {
 

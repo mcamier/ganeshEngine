@@ -1,9 +1,10 @@
 #ifndef GANESHENGINE_GHLOGGERMANAGER_H
 #define GANESHENGINE_GHLOGGERMANAGER_H
 
-#include "ghHeaders.hpp"
 #include "ghSystem.hpp"
 #include "ghILogger.hpp"
+
+#include <vector>
 
 namespace ganeshEngine {
 

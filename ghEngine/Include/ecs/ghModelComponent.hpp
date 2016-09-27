@@ -4,11 +4,11 @@
 #include "ghActor.hpp"
 #include "ghSceneComponent.hpp"
 #include "../ghHeaders.hpp"
-#include "../util/ghSerializable.hpp"
-#include "../util/ghIStream.hpp"
-#include "../util/ghRTTI.hpp"
-#include "../util/ghILogger.hpp"
-#include "../util/ghClock.hpp"
+#include <util/ghSerializable.hpp>
+#include <util/ghIStream.hpp>
+#include <util/ghRTTI.hpp>
+#include <util/ghILogger.hpp>
+#include <util/ghClock.hpp>
 
 #include "../resource/ghResourceHandler.hpp"
 #include "../resource/ghResourceManager.hpp"

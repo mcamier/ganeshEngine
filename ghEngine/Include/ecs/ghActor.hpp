@@ -3,13 +3,12 @@
 
 #include <vector>
 
-#include "ghGameObject.hpp"
-#include "ghGameObject.hpp"
+#include <ecs/ghGameObject.hpp>
 #include "ghComponent.hpp"
-#include "../ghTypes.hpp"
-#include "../util/ghClock.hpp"
-#include "../util/ghRTTI.hpp"
-#include "../util/ghIStream.hpp"
+#include <ghTypes.hpp>
+#include <util/ghClock.hpp>
+#include <util/ghRTTI.hpp>
+#include <util/ghIStream.hpp>
 
 namespace ganeshEngine {
 

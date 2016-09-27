@@ -3,11 +3,11 @@
 
 #include "ghActor.hpp"
 #include "ghSceneComponent.hpp"
-#include "../util/ghSerializable.hpp"
-#include "../util/ghIStream.hpp"
-#include "../util/ghRTTI.hpp"
+#include <util/ghSerializable.hpp>
+#include <util/ghIStream.hpp>
+#include <util/ghRTTI.hpp>
 
-#include "../util/ghClock.hpp"
+#include <util/ghClock.hpp>
 
 namespace ganeshEngine {
 

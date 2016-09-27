@@ -2,6 +2,7 @@
 #define GANESHENGINE_GRAPHICS_GHHEADERS_H
 
 #include "ghHeaders.hpp"
+#include <ghTypes.hpp>
 #include <glm/glm.hpp>
 
 namespace ganeshEngine {

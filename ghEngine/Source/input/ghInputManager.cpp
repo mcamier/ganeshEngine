@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <util/ghILogger.hpp>
-#include <ghCore.hpp>
 
 namespace ganeshEngine {
 

@@ -27,6 +27,8 @@ matrix:
 
 before_install:
   - sudo apt-get update -qq
+  - sudo apt-get install -y libxxf86vm-dev
+  - sudo apt-get install -y libglfw-dev
 script:
   - mkdir build
   - cd build

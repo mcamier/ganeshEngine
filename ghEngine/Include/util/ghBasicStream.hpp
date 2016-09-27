@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <string>
 
-#include "ghIStream.hpp"
+#include <util/ghIStream.hpp>
 
 namespace ganeshEngine {
 

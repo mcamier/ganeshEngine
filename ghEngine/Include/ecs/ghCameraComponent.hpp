@@ -2,9 +2,9 @@
 #define GANESHENGINE_GHCAMERACOMPONENT_H
 
 #include "ghSceneComponent.hpp"
-#include "../ghTypes.hpp"
-#include "../util/ghRTTI.hpp"
-#include "../util/ghClock.hpp"
+#include <ghTypes.hpp>
+#include <util/ghRTTI.hpp>
+#include <util/ghClock.hpp>
 
 namespace ganeshEngine {
 

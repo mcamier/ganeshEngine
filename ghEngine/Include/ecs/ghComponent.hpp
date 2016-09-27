@@ -1,11 +1,11 @@
 #ifndef GANESHENGINE_GHICOMPONENT_H
 #define GANESHENGINE_GHICOMPONENT_H
 
-#include "ghGameObject.hpp"
-#include "../util/ghClock.hpp"
+#include <ecs/ghGameObject.hpp>
+#include <util/ghClock.hpp>
 #include "../ghWorld.hpp"
-#include "../ghTypes.hpp"
-#include "../util/ghRTTI.hpp"
+#include <ghTypes.hpp>
+#include <util/ghRTTI.hpp>
 
 
 namespace ganeshEngine {

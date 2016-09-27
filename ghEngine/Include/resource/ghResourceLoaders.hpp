@@ -5,7 +5,7 @@
 
 #include "ghResourceManager.hpp"
 
-#include "../util/ghStringId.hpp"
+#include <util/ghStringId.hpp>
 #include "../render/ghTexture.hpp"
 #include "../render/ghMesh.hpp"
 #include "../render/ghShaderProgram.hpp"
@@ -22,6 +22,7 @@
 #include <fstream>
 
 #include <glm/glm.hpp>
+#include <util/ghILogger.hpp>
 
 namespace ganeshEngine {
 

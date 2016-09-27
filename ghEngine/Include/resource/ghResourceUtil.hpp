@@ -2,7 +2,8 @@
 #define GANESHENGINE_GHRESOURCEUTIL_H
 
 #include "ghHeaders.hpp"
-#include "../util/ghStringId.hpp"
+#include <ghTypes.hpp>
+#include <util/ghStringId.hpp>
 
 #include <map>
 

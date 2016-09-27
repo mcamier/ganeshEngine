@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2.3)
 project(ganeshEngine C CXX)
 
-option(BUILD_DOC "Build ganeshEngine documentation" ON)
+option(BUILD_DOC "Build ganeshEngine documentation" OFF)
 option(WITH_GLFW "Include GLFW as window wrapper" ON)
 option(WITH_RENDER_API_GL "Include OpenGL Rendering API" ON)
 option(WITH_RENDER_API_VULKAN "Include Vulkan Rendering API" OFF)

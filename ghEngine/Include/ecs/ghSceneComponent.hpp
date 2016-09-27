@@ -3,8 +3,8 @@
 
 #include "ghComponent.hpp"
 #include "ghActor.hpp"
-#include "ghGameObject.hpp"
-#include "../util/ghClock.hpp"
+#include <ecs/ghGameObject.hpp>
+#include <util/ghClock.hpp>
 #include "../ghTransform.hpp"
 
 #include <vector>

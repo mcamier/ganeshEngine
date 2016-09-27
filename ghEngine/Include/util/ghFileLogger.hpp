@@ -2,7 +2,7 @@
 #define GANESHENGINE_GHFILELOGGER_H
 
 #include "ghHeaders.hpp"
-#include "ghILogger.hpp"
+#include <util/ghILogger.hpp>
 #include "../memory/ghDoubleBufferedStackAllocator.hpp"
 
 namespace ganeshEngine {

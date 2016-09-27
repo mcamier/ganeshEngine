@@ -1,8 +1,8 @@
 #ifndef GANESHENGINE_GHINPUTUTILS_H
 #define GANESHENGINE_GHINPUTUTILS_H
 
-#include "../ghTypes.hpp"
-#include "../util/ghStringId.hpp"
+#include <ghTypes.hpp>
+#include <util/ghStringId.hpp>
 
 #include <vector>
 #include <cstring>

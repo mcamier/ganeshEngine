@@ -3,8 +3,8 @@
 
 #include "ghEvent.hpp"
 #include "../ghHeaders.hpp"
-#include "../ghSystem.hpp"
-#include "../util/ghClock.hpp"
+#include <ghSystem.hpp>
+#include <util/ghClock.hpp>
 
 namespace ganeshEngine {
 

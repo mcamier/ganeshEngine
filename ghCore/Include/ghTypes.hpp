@@ -1,6 +1,8 @@
 #ifndef GANESHENGINE_GHTYPES_H
 #define GANESHENGINE_GHTYPES_H
 
+#include "util/ghLog.hpp"
+
 #include <cstdint>
 
 #ifdef DEBUG_ASSERTION_ENABLED
@@ -82,6 +84,18 @@ U32 gRandr(unsigned int min, unsigned int max);
  * @return
  */
 U32 gGetNextId();
+
+
+/**
+ *
+ *
+ * @param logLevel
+ * @param file
+ * @param line
+ * @param string
+ */
+void gLog(LOG_LEVEL logLevel, LOG_CHANNEL channels, const char *file, int line, std::string &string);
+
 
 }
 

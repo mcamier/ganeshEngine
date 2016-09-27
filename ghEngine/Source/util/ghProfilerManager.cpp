@@ -1,3 +1,4 @@
+#include <util/ghILogger.hpp>
 #include "util/ghProfilerManager.hpp"
 
 namespace ganeshEngine {

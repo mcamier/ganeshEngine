@@ -8,6 +8,7 @@
 #include "rapidjson/filereadstream.h"
 #include <cstdio>
 #include <cstring>
+#include <util/ghILogger.hpp>
 
 namespace ganeshEngine {
 

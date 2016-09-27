@@ -2,7 +2,7 @@
 #define GANESHENGINE_GHRESOURCEHANDLER_H
 
 #include "ghResourceWrapper.hpp"
-#include "../util/ghSerializable.hpp"
+#include <util/ghSerializable.hpp>
 
 namespace ganeshEngine {
 
