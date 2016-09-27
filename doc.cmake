@@ -21,4 +21,8 @@ if(DOXYGEN_FOUND)
             COMMAND ${CMAKE_COMMAND} -E echo "Done."
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             )
+
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
+            DESTINATION ${DOC_INSTALL_DIR}
+            COMPONENT doc)
 endif(DOXYGEN_FOUND)

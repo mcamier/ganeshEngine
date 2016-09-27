@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.2.3)
 project(ganeshEngine C CXX)
 
+option(BUILD_DOC "Build ganeshEngine documentation" ON)
 option(WITH_GLFW "Include GLFW as window wrapper" ON)
 option(WITH_RENDER_API_GL "Include OpenGL Rendering API" ON)
 option(WITH_RENDER_API_VULKAN "Include Vulkan Rendering API" OFF)
@@ -28,7 +29,11 @@ add_definitions(
 
 #find_package(OpenGL REQUIRED)
 include(libs.cmake)
-include(doc.cmake)
+
+if(BUILD_DOC)
+    set(DOC_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}" CACHE PATH "Path to the documentation")
+    include(doc.cmake)
+endif()
 
 add_subdirectory(ghCore)
 add_subdirectory(ghGlfwAPI)
