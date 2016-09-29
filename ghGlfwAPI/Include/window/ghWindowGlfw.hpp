@@ -12,14 +12,22 @@ class WindowGlfw : public IWindow {
 private:
     GLFWwindow *mpWindow;
 
+	GLFWmonitor *mpMonitor;
+
     std::string mName;
 
     int mWidth;
 
     int mHeight;
 
+	bool mbFullscreen;
+
+	int mRefreshRate;
+
 public:
     WindowGlfw();
+
+	WindowGlfw(int width, int height, const std::string& name, bool isFullscreen);
 
     ~WindowGlfw();
 
