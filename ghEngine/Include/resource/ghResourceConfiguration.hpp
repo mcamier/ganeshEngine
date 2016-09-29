@@ -27,7 +27,7 @@ private:
 public:
     virtual ~ResourceConfiguration();
 
-    static unique_ptr<ResourceConfiguration> loadFromFile(string configFilename);
+    static ResourceConfiguration* loadFromFile(string configFilename);
 
     vector<resourceEntry> &getResourceEntries();
 

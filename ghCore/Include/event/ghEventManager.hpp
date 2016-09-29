@@ -2,9 +2,9 @@
 #define GHEVENT_MANAGER_H
 
 #include "ghEvent.hpp"
-#include "../ghHeaders.hpp"
 #include <ghSystem.hpp>
 #include <util/ghClock.hpp>
+#include <vector>
 
 namespace ganeshEngine {
 

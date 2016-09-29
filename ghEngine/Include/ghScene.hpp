@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHSCENE_H
 #define GANESHENGINE_GHSCENE_H
 
-#include "ghHeaders.hpp"
+
 #include "util/ghClock.hpp"
 #include "ecs/ghActor.hpp"
 

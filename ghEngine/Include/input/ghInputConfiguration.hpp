@@ -3,8 +3,8 @@
 
 #include <cstdio>
 
-#include "ghInputUtils.hpp"
-#include "ghInputContext.hpp"
+#include "input/ghInputUtils.hpp"
+#include "input/ghInputContext.hpp"
 
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"

@@ -10,6 +10,10 @@ void RenderManager::vInitialize() {
 	mpRenderAPI->vInitialize();
 }
 
-void RenderManager::vDestroy() {}
+void RenderManager::vDestroy() {
 	mpRenderAPI->vDestroy();
+}
+
+RenderManager &(*gRender)() = &RenderManager::get;
+
 }

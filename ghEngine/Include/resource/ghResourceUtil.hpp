@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHRESOURCEUTIL_H
 #define GANESHENGINE_GHRESOURCEUTIL_H
 
-#include "ghHeaders.hpp"
+
 #include <ghTypes.hpp>
 #include <util/ghStringId.hpp>
 

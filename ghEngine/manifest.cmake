@@ -15,7 +15,7 @@ source_group("Header Files\\ecs" FILES ${ecs_header_files})
 # Event
 #
 FILE(GLOB event_source_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Include/event/*.hpp")
+        "../ghCore/Include/event/*.hpp")
 
 FILE(GLOB event_header_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/event/*.cpp")

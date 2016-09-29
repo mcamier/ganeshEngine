@@ -12,7 +12,6 @@
 #include <glm/glm.hpp>
 
 using namespace std;
-using namespace glm;
 using namespace ganeshEngine;
 
 static stringId GH_DEMO_ACTION_MOVE_UP = gInternString("demoMatchMoveUp");
@@ -93,7 +92,7 @@ public:
 
 int main() {
     Configuration conf;
-    LOG_CHANNEL channels = LOG_CHANNEL::DEFAULT | LOG_CHANNEL::RESOURCE;
+    LOG_CHANNEL channels = LOG_CHANNEL::DEFAULT | LOG_CHANNEL::RESOURCE | LOG_CHANNEL::INPUT;
 
     conf.inputConfigurationFilename = "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/inputConfiguration.json";
 

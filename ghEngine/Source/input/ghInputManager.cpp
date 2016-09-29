@@ -1,31 +1,31 @@
 #include <input/ghInputManager.hpp>
 
-#include <algorithm>
+#include <input/ghInputConfiguration.hpp>
 #include <util/ghILogger.hpp>
+
+#include <algorithm>
 
 namespace ganeshEngine {
 
 static stringId GH_INPUT_CONTEXT_SYSTEM = gInternString("__GH_INPUT_CONTEXT_SYSTEM");
 static stringId GH_INPUT_EXIT_GAME = gInternString("__GH_INPUT_EXIT_GAME");
 
+InputManager::InputManager() {
+	mPostponedRawInputs = vector<RawInput>();
+	mFrameRawInputs = queue<RawInput>();
+	mInputContexts = map<stringId, unique_ptr<InputContext>>();
+	mInputCallbacks = map<stringId, InputCallbackType>();
+	mJoysticks = array<Joystick, GH_MAX_JOYSTICK+1>();
+	mHeldButtonRawInputs = map<InputCode, RawInput>();
+}
+
 void InputManager::vInitialize() {
 	initCallbacks();
-	initDefaultInputContext();
-
-	/** Read and configuration from conf object */
-	_DEBUG("############################", LOG_CHANNEL::INPUT);
-	mInputConfig.dump();
-	vector<InputContext *> &ictxs = mInputConfig.getInputContexts();
-	for (U32 i = 0; i < ictxs.size(); i++) {
-		InputContext *ptr = ictxs[i];
-		int id = ptr->getId();
-		mInputContexts.insert(pair<stringId, unique_ptr<InputContext>>(id, unique_ptr<InputContext>(ptr)));
-		activeContext(id, true);
-	}
 
     for (int i = 0 ; i <= GH_MAX_JOYSTICK ; i++) {
         mJoysticks[i].initialize(i);
     }
+
 
 	gEvent().addListener<InputManager>(GH_EVENT_JOYSTICK_STATE_CHANGE, this, &InputManager::onJoystickStateChange);
 	_DEBUG("InputManager initialized", LOG_CHANNEL::INPUT);
@@ -67,8 +67,6 @@ void InputManager::registerInput(RawInput rawInput) {
 
 void InputManager::vUpdate(const Clock &clock) {
 	float secondElapsedSinceLastFrame = clock.getLastFrameElapsedTimeAsSecond();
-
-	//glfwPollEvents();
 
 	for(auto device : mJoysticks) {
 		device.update();
@@ -223,6 +221,19 @@ void InputManager::triggerPlainInputAction(RawInput ri, float deltaTime) {
 	}
 }
 
+void InputManager::loadConfiguration(InputManagerConfiguration* conf) {
+    /** Read and configuration from conf object */
+    _DEBUG("############################", LOG_CHANNEL::INPUT);
+    conf->dump();
+    vector<InputContext *> &ictxs = conf->getInputContexts();
+    for (U32 i = 0; i < ictxs.size(); i++) {
+        InputContext *ptr = ictxs[i];
+        int id = ptr->getId();
+        mInputContexts.insert(pair<stringId, unique_ptr<InputContext>>(id, unique_ptr<InputContext>(ptr)));
+        activeContext(id, true);
+    }
+}
+
 void InputManager::onJoystickStateChange(Event *event) {
 	/*JoystickStateChangeEvent *jsce = static_cast<JoystickStateChangeEvent *>(event);
 	int i = jsce->getJoystickIndex();
@@ -294,24 +305,6 @@ void InputManager::initCallbacks() {
 
 		mgr->registerInput(input);
 	});*/
-}
-
-void InputManager::initDefaultInputContext() {
-	unique_ptr<InputContext> inputContext = make_unique<InputContext>(GH_INPUT_CONTEXT_SYSTEM);
-	int id = inputContext->getId();
-	InputMatch *inputMatch = new InputMatch(
-		InputSource::KEYBOARD,
-		InputType::BUTTON_PRESS,
-		InputCode::KEYBOARD_ESCAPE,
-		GH_INPUT_EXIT_GAME);
-	inputContext->registerMatch(*inputMatch);
-
-	this->registerInputCallback(GH_INPUT_EXIT_GAME, [](RawInput ri, float deltaTime) {
-		gEvent().fireEvent(new Event(GH_EVENT_EXIT_GAME));
-	});
-
-	this->registerInputContext(move(inputContext));
-	this->activeContext(id, true);
 }
 
 InputManager &(*gInput)() = &InputManager::get;

@@ -7,10 +7,12 @@
 #include <util/ghILogger.hpp>
 #include <sstream>
 #include <tuple>
+#include <vector>
 
 namespace ganeshEngine {
 
-/*
+using namespace std;
+
 vector<tuple<GLenum, string>> gGLContextParams = {
 		make_tuple<GLenum, string>(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS"),
 		make_tuple<GLenum, string>(GL_MAX_CUBE_MAP_TEXTURE_SIZE, "GL_MAX_CUBE_MAP_TEXTURE_SIZE"),
@@ -23,7 +25,6 @@ vector<tuple<GLenum, string>> gGLContextParams = {
 		make_tuple<GLenum, string>(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, "GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS"),
 		make_tuple<GLenum, string>(GL_MAX_VERTEX_UNIFORM_COMPONENTS, "GL_MAX_VERTEX_UNIFORM_COMPONENTS")
 };
- */
 
 void RenderOpenglAPI::vInitialize() {
 	GLuint err = glewInit();

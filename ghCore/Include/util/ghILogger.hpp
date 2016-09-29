@@ -5,6 +5,7 @@
 #include "util/ghLog.hpp"
 
 #include <string>
+#include <sstream>
 
 #ifdef LOGGING_ENABLED
 #define _LOG(LOG_LEVEL, MESSAGE, CHANNELS) {\

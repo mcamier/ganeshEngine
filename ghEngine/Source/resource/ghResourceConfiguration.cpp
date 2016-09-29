@@ -1,13 +1,7 @@
 #include "resource/ghResourceConfiguration.hpp"
 
-#include "ghHeaders.hpp"
-#include "resource/ghResourceUtil.hpp"
 
-#include "rapidjson/rapidjson.h"
-#include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
-#include <cstdio>
-#include <cstring>
 #include <util/ghILogger.hpp>
 
 namespace ganeshEngine {
@@ -18,7 +12,7 @@ using namespace rapidjson;
 ResourceConfiguration::ResourceConfiguration() {}
 ResourceConfiguration::~ResourceConfiguration() {}
 
-unique_ptr<ResourceConfiguration> ResourceConfiguration::loadFromFile(string configFilename) {
+ResourceConfiguration* ResourceConfiguration::loadFromFile(string configFilename) {
     _DEBUG("Load Resource Configuration : " << configFilename, LOG_CHANNEL::INPUT);
     ResourceConfiguration *conf = new ResourceConfiguration();
     Document jsonConfig;
@@ -38,7 +32,7 @@ unique_ptr<ResourceConfiguration> ResourceConfiguration::loadFromFile(string con
         readResources(a["resources"], conf);
     }
 
-    return unique_ptr<ResourceConfiguration>(conf);
+    return conf;
 }
 
 vector<resourceEntry>& ResourceConfiguration::getResourceEntries() {

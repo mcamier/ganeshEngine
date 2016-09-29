@@ -27,8 +27,8 @@ matrix:
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y libxxf86vm-dev
-  - sudo apt-get install -y libglfw-dev
+  - sudo apt-get install -y libXmu-dev libXi-dev libgl-dev libxxf86vm-dev libvulkan-dev libglfw3-dev libglfw3 libglew-dev libglew1.13 libglm-dev
+
 script:
   - mkdir build
   - cd build

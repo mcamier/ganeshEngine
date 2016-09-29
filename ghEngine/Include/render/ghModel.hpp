@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHGLMODEL_H
 #define GANESHENGINE_GHGLMODEL_H
 
-#include "ghHeaders.hpp"
+
 #include "ghShaderProgram.hpp"
 #include "ghMesh.hpp"
 #include "ghTexture.hpp"

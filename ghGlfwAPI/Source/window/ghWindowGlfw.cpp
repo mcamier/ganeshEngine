@@ -1,8 +1,8 @@
 #include "window/ghWindowGlfw.hpp"
 
-#include <GLFW/glfw3.h>
 #include <util/ghILogger.hpp>
 #include <sstream>
+#include <event/ghEventManager.hpp>
 
 namespace ganeshEngine {
 
@@ -52,6 +52,15 @@ void WindowGlfw::vInitialize() {
         } else {
             _ERROR("ERROR ON WINDOW CREATION", LOG_CHANNEL::DEFAULT);
         }
+
+        glfwSetWindowCloseCallback(mpWindow, [](GLFWwindow* window) {
+            gEvent().fireEvent(new Event(GH_EVENT_EXIT_GAME));
+        });
+
+        glfwSetJoystickCallback([](int joyIndex, int joyEvent) {
+            gEvent().fireEvent(new JoystickStateChangeEvent(joyIndex, joyEvent));
+        });
+
         _DEBUG("Platform initialized", LOG_CHANNEL::DEFAULT);
     }
     else {
@@ -61,6 +70,15 @@ void WindowGlfw::vInitialize() {
 
 void WindowGlfw::vDestroy() {
     glfwDestroyWindow(mpWindow);
+}
+
+
+void WindowGlfw::swapBuffer() {
+    glfwSwapBuffers(mpWindow);
+}
+
+void WindowGlfw::pollEvents() {
+    glfwPollEvents();
 }
 
 void WindowGlfw::setName(const std::string& newName) {

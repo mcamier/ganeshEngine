@@ -3,7 +3,6 @@
 
 #include "ghActor.hpp"
 #include "ghSceneComponent.hpp"
-#include "../ghHeaders.hpp"
 #include <util/ghSerializable.hpp>
 #include <util/ghIStream.hpp>
 #include <util/ghRTTI.hpp>

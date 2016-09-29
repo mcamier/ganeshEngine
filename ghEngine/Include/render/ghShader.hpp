@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHSHADER_H
 #define GANESHENGINE_GHSHADER_H
 
-#include "ghHeaders.hpp"
+
 #include "ghGheaders.hpp"
 #include "resource/ghResource.hpp"
 

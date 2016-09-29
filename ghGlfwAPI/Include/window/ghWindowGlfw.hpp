@@ -2,6 +2,8 @@
 #define GANESHENGINE_WINDOWGLFW_H
 
 #include <window/ghIWindow.hpp>
+#include <util/ghClock.hpp>
+
 #include <GLFW/glfw3.h>
 #include <string>
 
@@ -31,17 +33,33 @@ public:
 
     ~WindowGlfw();
 
-    void vInitialize();
+    void vInitialize() override;
 
-    void vDestroy();
+    void vDestroy() override;
 
-    void setName(const std::string& newName);
+    void swapBuffer() override;
 
-    std::string getName();
+    void pollEvents() override;
 
-    bool isFullscreen();
+    /**
+     * @copydoc IWindow::setName(const std::string& newName)
+     */
+    void setName(const std::string& newName) override;
 
-    void setFullscreen(bool isFullscreen);
+    /**
+     * @copydoc IWindow::getName()
+     */
+    std::string getName() override;
+
+    /**
+     * @copydoc IWindow::isFullscreen()
+     */
+    bool isFullscreen() override;
+
+    /**
+     * @copydoc IWindow::setFullscreen(bool isFullscreen)
+     */
+    void setFullscreen(bool isFullscreen) override;
 };
 
 }

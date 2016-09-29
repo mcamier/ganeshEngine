@@ -1,8 +1,6 @@
 #ifndef GANESHENGINE_GHRESOURCE_H
 #define GANESHENGINE_GHRESOURCE_H
 
-#include "../ghHeaders.hpp"
-
 namespace ganeshEngine {
 
 /**

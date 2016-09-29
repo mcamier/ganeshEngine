@@ -4,8 +4,7 @@ include_directories (
     Include
     ../ghCore/Include
     ../ghEngine/Include
-    ../libs/rapidjson/include
-    ../libs/glm)
+    ../libs/rapidjson/include)
 
 set(demo_SRC "Source/main.cpp")
 

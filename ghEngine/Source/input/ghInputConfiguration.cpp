@@ -1,5 +1,4 @@
 #include <input/ghInputConfiguration.hpp>
-#include <ghHeaders.hpp>
 #include <util/ghILogger.hpp>
 
 #include "rapidjson/rapidjson.h"

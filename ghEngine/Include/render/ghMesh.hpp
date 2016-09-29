@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHGLMESH_H
 #define GANESHENGINE_GHGLMESH_H
 
-#include "ghHeaders.hpp"
+
 #include "ghGheaders.hpp"
 
 #include "resource/ghResource.hpp"

@@ -1,27 +1,29 @@
 #ifndef GANESHENGINE_GHINPUTMANAGER_H
 #define GANESHENGINE_GHINPUTMANAGER_H
 
-#include "ghHeaders.hpp"
+
 #include "ghSystem.hpp"
-#include "ghInputUtils.hpp"
 #include "ghInputContext.hpp"
-#include "ghInputConfiguration.hpp"
-#include "../event/ghEventManager.hpp"
+#include "ghJoystick.hpp"
+#include <event/ghEventManager.hpp>
 #include <util/ghClock.hpp>
+
+#include <queue>
+#include <memory>
+
 
 namespace ganeshEngine {
 
 using namespace std;
 
+//forward declaration
+class InputManagerConfiguration;
+
+
 class InputManager : public System<InputManager> {
 	friend class System<InputManager>;
 
 private:
-	/** Configuration object used during the initialization step of the object
-	 * Contains the game's inputContext filled with input chord and/or input matches
-	 */
-	InputManagerConfiguration mInputConfig;
-
 	/** List of the registered input contexts in the manager
 	 * Multiple inputContext could be active at the same time
 	 */
@@ -49,20 +51,16 @@ private:
 	array<Joystick, GH_MAX_JOYSTICK+1> mJoysticks;
 
 protected:
+	InputManager();
+
 	void vInitialize() override;
 	void vDestroy() override;
 
 public:
-	InputManager(InputManagerConfiguration config) : mInputConfig(config) {
-		mPostponedRawInputs = vector<RawInput>();
-		mFrameRawInputs = queue<RawInput>();
-		mInputContexts = map<stringId, unique_ptr<InputContext>>();
-		mInputCallbacks = map<stringId, InputCallbackType>();
-		mJoysticks = array<Joystick, GH_MAX_JOYSTICK+1>();
-		mHeldButtonRawInputs = map<InputCode, RawInput>();
-	}
 	InputManager(const InputManager &) = delete;
 	InputManager &operator=(const InputManager &) = delete;
+
+    void loadConfiguration(InputManagerConfiguration* conf);
 
 	void activeContext(stringId id, bool active);
 
@@ -86,8 +84,6 @@ private:
 	void onJoystickStateChange(Event* event);
 
 	void initCallbacks();
-
-	void initDefaultInputContext();
 };
 
 /**

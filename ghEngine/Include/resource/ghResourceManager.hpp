@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHRESOURCEMANAGER_H
 #define GANESHENGINE_GHRESOURCEMANAGER_H
 
-#include "ghHeaders.hpp"
+
 #include "ghSystem.hpp"
 #include "ghResourceLoader.hpp"
 #include "ghResourceWrapper.hpp"
@@ -32,8 +32,7 @@ private:
     /** Resource registry */
     map<stringId, shared_ptr<ResourceWrapper>> m_resources;
 
-    ResourceManager(unique_ptr<ResourceConfiguration> conf, map<U32, ResourceLoader*> loaders) :
-            m_configuration(move(conf)) {
+    ResourceManager(map<U32, ResourceLoader*> loaders) {
         /** Register customs resource's loaders */
         for(auto itr = loaders.begin() ; itr != loaders.end(); ++itr) {
             m_loaders.insert(make_pair(itr->first, shared_ptr<ResourceLoader>(itr->second)));
@@ -86,6 +85,8 @@ public:
     void loadResource(stringId resourceId);
 
     bool isLoaded(stringId resourceId);
+
+    void loadConfiguration(ResourceConfiguration*);
 
 protected:
     void vInitialize();

@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHGLTEXTURE_H
 #define GANESHENGINE_GHGLTEXTURE_H
 
-#include "ghHeaders.hpp"
+
 #include "ghGheaders.hpp"
 
 #include "resource/ghResource.hpp"

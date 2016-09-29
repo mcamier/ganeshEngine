@@ -9,9 +9,11 @@ void ResourceManager::vInitialize() {
     m_loaders.insert(make_pair(ghObjLoaderName, make_shared<ObjModelLoader>()));
     m_loaders.insert(make_pair(ghShaderLoaderName, make_shared<ShaderLoader>()));
     m_loaders.insert(make_pair(ghShaderProgramLoaderName, make_shared<ShaderProgramLoader>()));
+}
 
-    if (m_configuration != nullptr) {
-        for (auto &entry : m_configuration->getResourceEntries()) {
+void ResourceManager::loadConfiguration(ResourceConfiguration* configuration) {
+    if (configuration != nullptr) {
+        for (auto &entry : configuration->getResourceEntries()) {
 
             auto loadersItr = m_loaders.find(gInternString(entry.loaderName.c_str()));
             if (loadersItr != m_loaders.end()) {
@@ -23,8 +25,6 @@ void ResourceManager::vInitialize() {
                 _ERROR("Resource doesn't have valid loader present", LOG_CHANNEL::RESOURCE);
             }
         }
-
-        //m_configuration.release();
     }
 }
 

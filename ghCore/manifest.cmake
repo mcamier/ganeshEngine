@@ -12,6 +12,20 @@ source_group("Header Files\\util" FILES ${util_header_files})
 
 
 #
+# input
+#
+FILE(GLOB input_source_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Include/input/*.hpp")
+
+FILE(GLOB input_header_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/input/*.cpp")
+
+source_group("Source Files\\input" FILES ${input_source_files})
+source_group("Header Files\\input" FILES ${input_header_files})
+
+
+
+#
 # ECS
 #
 FILE(GLOB ecs_source_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -65,6 +79,8 @@ source_group("Header Files" FILES ${other_header_files})
 set(CORE_SOURCES
         ${render_source_files}
         ${render_header_files}
+        ${input_source_files}
+        ${input_header_files}
         ${util_source_files}
         ${util_header_files}
         ${ecs_source_files}

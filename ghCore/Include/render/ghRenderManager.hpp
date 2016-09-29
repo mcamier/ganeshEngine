@@ -2,6 +2,7 @@
 #define GANESHENGINE_GHRENDERMANAGER_H
 
 #include "ghIRenderAPI.hpp"
+#include <ghSystem.hpp>
 
 namespace ganeshEngine {
 
@@ -27,7 +28,10 @@ public:
 protected:
 	void vInitialize() override;
 	void vDestroy() override;
+
 };
+
+extern RenderManager &(*gRender)();
 
 }
 

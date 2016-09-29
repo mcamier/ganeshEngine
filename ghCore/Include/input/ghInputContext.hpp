@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHINPUTCONTEXT_H
 #define GANESHENGINE_GHINPUTCONTEXT_H
 
-#include "ghInputUtils.hpp"
+#include "input/ghInputUtils.hpp"
 
 #include <vector>
 #include <map>
@@ -33,8 +33,6 @@ namespace ganeshEngine {
          */
         vector<InputMatch> m_inputMatches;
 
-        /**
-         */
         vector<Chord> m_chords;
 
     public:
@@ -42,44 +40,17 @@ namespace ganeshEngine {
 
         virtual ~InputContext();
 
-        /**
-         *
-         * @param RawInput
-         * @param callback
-         * @return
-         */
         bool getInputMatch(const RawInput &RawInput, stringId *callback) const;
 
-        /**
-         *
-         * @param inputMatch
-         */
         void registerMatch(InputMatch inputMatch);
 
-        /**
-         *
-         * @param inputMatch
-         */
         void registerChord(Chord chord);
 
-
-        /**
-         *
-         * @return
-         */
         int getId() const;
 
-        /**
-         *
-         * @return
-         */
         bool isActive() const;
 
     private:
-        /**
-         *
-         * @param active
-         */
         void setActive(bool active);
     };
 
