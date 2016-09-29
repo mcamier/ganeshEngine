@@ -15,6 +15,12 @@
 #include <window/ghWindowGlfw.hpp>
 #endif
 
+#ifdef USE_RENDER_API_GL
+#include <render/RenderOpenglAPI.hpp>
+#elif USE_RENDER_API_VULKAN
+#include <render/RenderVulkanAPI.hpp>
+#endif
+
 using namespace std::chrono;
 
 namespace ganeshEngine {
@@ -63,10 +69,15 @@ void Application::run() {
 }
 
 void Application::vInitialize() {
+	mMainClock = Clock(0, 1.0f, false);
+
 	LoggerManager::Initialize();
 	for (U32 i = 0; i < m_configuration.loggers.size(); i++) {
 		gLogger().addLogger(m_configuration.loggers[i]);
 	};
+
+	auto rc = ResourceConfiguration::loadFromFile(m_configuration.resourceConfigurationFilename);
+	auto ic = InputManagerConfiguration::loadFromFile(m_configuration.inputConfigurationFilename);
 
 #ifdef USE_GLFW_API
     mpWindow = new WindowGlfw();
@@ -75,42 +86,38 @@ void Application::vInitialize() {
     _ERROR("Error during window creation", LOG_CHANNEL::DEFAULT);
     gLogger().flush();
 #endif
-
-	mMainClock = Clock(0, 1.0f, false);
-
 	EventManager::Initialize();
-
 	Platform::Initialize();
-
-	auto rc = ResourceConfiguration::loadFromFile(m_configuration.resourceConfigurationFilename);
 	ResourceManager::Initialize(move(rc), m_configuration.customResourceLoaders);
 	//gResource().doEagerLoading();
-
 	ProfilerManager::Initialize();
-
-	auto ic = InputManagerConfiguration::loadFromFile(m_configuration.inputConfigurationFilename);
 	InputManager::Initialize(ic);
-
-	//RenderManager::Initialize();
 
 	mMainScene = unique_ptr<Scene>(m_configuration.startScene);
 	mMainScene->vInitialize();
-
 	gEvent().addListener<Application>(GH_EVENT_EXIT_GAME, this, &Application::onShutdown);
+
+#ifdef USE_RENDER_API_GL
+	RenderManager::Initialize(new RenderOpenglAPI());
+#elif USE_RENDER_API_VULKAN
+	RenderManager::Initialize(new RenderVulkanAPI());
+#endif
 }
 
 void Application::vDestroy() {
-	//RenderManager::Destroy();
+#ifdef USE_RENDER_API_GL
+	RenderManager::Destroy();
+#elif USE_RENDER_API_VULKAN
+	RenderManager::Destroy();
+#endif
 	InputManager::Destroy();
 	ProfilerManager::Destroy();
 	ResourceManager::Destroy();
 	Platform::Destroy();
 	EventManager::Destroy();
-
 #ifdef USE_GLFW_API
     mpWindow->vDestroy();
 #endif
-
 	LoggerManager::Destroy();
 }
 

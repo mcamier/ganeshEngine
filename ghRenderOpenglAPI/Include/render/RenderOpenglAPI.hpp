@@ -7,7 +7,8 @@ namespace ganeshEngine {
 
 class RenderOpenglAPI : public IRenderAPI {
 public:
-	void lowLevelCall();
+	void vInitialize() override;
+	void vDestroy() override;
 };
 
 }

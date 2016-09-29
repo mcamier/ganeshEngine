@@ -43,35 +43,35 @@ set(GTEST_DIR "${LIB_DIR}/gtest")
 get_lib_from_github(${RAPIDJSON_DIR} ${RAPIDJSON_URL} ${RAPIDJSON_TAG})
 #get_lib_from_github(${GLFW_DIR} ${GLFW_URL} ${GLFW_TAG})
 get_lib_from_github(${GLM_DIR} ${GLM_URL} ${GLM_TAG})
-#get_lib_from_github(${GLEW_DIR} ${GLEW_URL} ${GLEW_TAG})
+get_lib_from_github(${GLEW_DIR} ${GLEW_URL} ${GLEW_TAG})
 #get_lib_from_github(${GTEST_DIR} ${GTEST_URL} ${GTEST_TAG})
 
-#if(NOT EXISTS "${GLEW_DIR}/src/glew.c")
-#    set(GEN_CMD "C:/MinGW/msys/1.0/bin/bash.exe")
-#    message(WARNING "generate glew.c")
-#    message(WARNING "${GEN_CMD} -l -c 'cd ${GLEW_DIR}/auto && make'")
-#
-#    execute_process(
-#            COMMAND ${GEN_CMD} -l -c "cd ${GLEW_DIR}/auto && make"
-#            WORKING_DIRECTORY ${GLEW_DIR}
-#            OUTPUT_FILE ${LIB_DIR}/log.txt
-#            RESULT_VARIABLE MAKE_GLEW_RES
-#            OUTPUT_VARIABLE MAKE_GLEW_OUTPUT
-#    )
-#
-#    # Cause compile failure on my platform if not removed before src generation
-#    file(REMOVE ${GLEW_DIR}/auto/extensions/gl/GL_NV_draw_vulkan_image)
-#
-#    execute_process(
-#            COMMAND ${GEN_CMD} -l -c "cd ${GLEW_DIR} && make install"
-#            WORKING_DIRECTORY ${GLEW_DIR}
-#            OUTPUT_FILE ${LIB_DIR}/log.txt
-#            RESULT_VARIABLE MAKE_GLEW_RES
-#            OUTPUT_VARIABLE MAKE_GLEW_OUTPUT
-#    )
-#
-#    message(WARNING "MAKE_GLEW_RES : ${MAKE_GLEW_RES}")
-#    message(WARNING "MAKE_GLEW_OUTPUT : ${MAKE_GLEW_OUTPUT}")
-#endif(NOT EXISTS "${GLEW_DIR}/src/glew.c")
+if(NOT EXISTS "${GLEW_DIR}/src/glew.c")
+    set(GEN_CMD "C:/MinGW/msys/1.0/bin/bash.exe")
+    message(WARNING "generate glew.c")
+    message(WARNING "${GEN_CMD} -l -c 'cd ${GLEW_DIR}/auto && make'")
+
+    execute_process(
+            COMMAND ${GEN_CMD} -l -c "cd ${GLEW_DIR}/auto && make"
+            WORKING_DIRECTORY ${GLEW_DIR}
+            OUTPUT_FILE ${LIB_DIR}/log.txt
+            RESULT_VARIABLE MAKE_GLEW_RES
+            OUTPUT_VARIABLE MAKE_GLEW_OUTPUT
+    )
+
+    # Cause compile failure on my platform if not removed before src generation
+    file(REMOVE ${GLEW_DIR}/auto/extensions/gl/GL_NV_draw_vulkan_image)
+
+    execute_process(
+            COMMAND ${GEN_CMD} -l -c "cd ${GLEW_DIR} && make install"
+            WORKING_DIRECTORY ${GLEW_DIR}
+            OUTPUT_FILE ${LIB_DIR}/log.txt
+            RESULT_VARIABLE MAKE_GLEW_RES
+            OUTPUT_VARIABLE MAKE_GLEW_OUTPUT
+    )
+
+    message(WARNING "MAKE_GLEW_RES : ${MAKE_GLEW_RES}")
+    message(WARNING "MAKE_GLEW_OUTPUT : ${MAKE_GLEW_OUTPUT}")
+endif(NOT EXISTS "${GLEW_DIR}/src/glew.c")
 
 add_subdirectory(libs)

@@ -7,7 +7,8 @@ namespace ganeshEngine {
 
 class RenderVulkanAPI : public IRenderAPI {
 public:
-	void lowLevelCall();
+	void vInitialize() override;
+	void vDestroy() override;
 };
 
 }

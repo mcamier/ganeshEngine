@@ -5,7 +5,8 @@ namespace ganeshEngine {
 
 class IRenderAPI {
 public:
-	virtual void lowLevelCall() = 0;
+	virtual void vInitialize() = 0;
+	virtual void vDestroy() = 0;
 };
 
 }

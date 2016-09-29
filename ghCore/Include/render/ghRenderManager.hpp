@@ -10,14 +10,23 @@ namespace ganeshEngine {
  * It holds an instance of RenderAPICore, the stateless layer of communication with the underlying graphical programming
  * interface
  */
-class RenderManager {
+class RenderManager : public System<RenderManager> {
+	friend class System<RenderManager>;
+
 protected:
 	IRenderAPI *mpRenderAPI;
 
-public:
-	RenderManager(IRenderAPI *renderAPI) : mpRenderAPI(renderAPI) {}
+private:
+	RenderManager(IRenderAPI *renderAPI);
 
-	virtual void doAwesomeStuff() = 0;
+public:
+	~RenderManager();
+	RenderManager(const RenderManager &) = delete;
+	RenderManager &operator=(const RenderManager &) = delete;
+
+protected:
+	void vInitialize() override;
+	void vDestroy() override;
 };
 
 }
