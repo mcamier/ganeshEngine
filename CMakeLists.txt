@@ -42,5 +42,5 @@ add_subdirectory(ghRenderOpenglAPI)
 add_subdirectory(ghRenderVulkanAPI)
 add_subdirectory(ghEngine)
 
-#add_subdirectory(demo)
+add_subdirectory(demo)
 #add_subdirectory(test)

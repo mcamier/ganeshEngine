@@ -68,6 +68,11 @@ namespace ganeshEngine {
         void vLog(LOG_LEVEL lvl, const char *file, int line, std::string &message) override;
 
         /**
+         *
+         */
+        void vFlush() override;
+
+        /**
          * Initialize the fileLogging by erasing the content of the logging file if
          * it already exists
          */

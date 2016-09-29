@@ -52,6 +52,11 @@ namespace ganeshEngine {
          */
         void log(LOG_LEVEL lvl, LOG_CHANNEL logChannel, const char *file, int line, std::string &message);
 
+        /**
+         *
+         */
+        void flush();
+
     protected:
         /**
          * @note Supposed to initialize default loggers, but there is no default ones

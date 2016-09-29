@@ -55,7 +55,7 @@ protected:
 	LOG_CHANNEL mLogChannels;
 
 public:
-	ILogger(LOG_LEVEL logLevel, LOG_CHANNEL logChannel);
+	ILogger(LOG_LEVEL logLevel, LOG_CHANNEL logChannel) : mLogLevel(logLevel), mLogChannels(logChannel) {}
 
 	virtual void vLog(LOG_LEVEL lvl, const char *file, int line, std::string &message) = 0;
 
@@ -64,21 +64,28 @@ public:
 	 * @param channels
 	 * @return
 	 */
-	bool isChannelAllowed(LOG_CHANNEL channels);
+    bool isChannelAllowed(LOG_CHANNEL channels) {
+        return ((mLogChannels & channels) == channels);
+    }
+
+    /**
+     *
+     */
+    virtual void vFlush() {}
 
 	/**
 	 * Initialize logger
 	 *
 	 * @note Supposed to be called by LoggerManager
 	 */
-	virtual void vInitialize(void);
+	virtual void vInitialize(void) {}
 
 	/**
 	 * Destroy logger
 	 *
 	 * @note Supposed to be called by LoggerManager
 	 */
-	virtual void vDestroy(void);
+	virtual void vDestroy(void) {}
 };
 
 }

@@ -11,6 +11,10 @@
 #include "resource/ghResourceConfiguration.hpp"
 #include "render/ghRenderManager.hpp"
 
+#ifdef USE_GLFW_API
+#include <window/ghWindowGlfw.hpp>
+#endif
+
 using namespace std::chrono;
 
 namespace ganeshEngine {
@@ -59,12 +63,20 @@ void Application::run() {
 }
 
 void Application::vInitialize() {
-	mMainClock = Clock(0, 1.0f, false);
-
 	LoggerManager::Initialize();
 	for (U32 i = 0; i < m_configuration.loggers.size(); i++) {
 		gLogger().addLogger(m_configuration.loggers[i]);
-	}
+	};
+
+#ifdef USE_GLFW_API
+    mpWindow = new WindowGlfw();
+	mpWindow->vInitialize();
+#else
+    _ERROR("Error during window creation", LOG_CHANNEL::DEFAULT);
+    gLogger().flush();
+#endif
+
+	mMainClock = Clock(0, 1.0f, false);
 
 	EventManager::Initialize();
 
@@ -94,6 +106,11 @@ void Application::vDestroy() {
 	ResourceManager::Destroy();
 	Platform::Destroy();
 	EventManager::Destroy();
+
+#ifdef USE_GLFW_API
+    mpWindow->vDestroy();
+#endif
+
 	LoggerManager::Destroy();
 }
 

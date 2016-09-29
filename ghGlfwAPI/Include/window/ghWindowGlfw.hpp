@@ -7,15 +7,21 @@
 
 namespace ganeshEngine {
 
-class ghWindowGlfw : public IWindow {
+class WindowGlfw : public IWindow {
 
 private:
-    GLFWwindow *mpWindow{nullptr};
+    GLFWwindow *mpWindow;
+
+    std::string mName;
+
+    int mWidth;
+
+    int mHeight;
 
 public:
-    ghWindowGlfw();
+    WindowGlfw();
 
-    ~ghWindowGlfw();
+    ~WindowGlfw();
 
     void vInitialize();
 

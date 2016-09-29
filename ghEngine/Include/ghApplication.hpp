@@ -1,6 +1,7 @@
 #ifndef GANESHENGINE_GHAPPLICATION_H
 #define GANESHENGINE_GHAPPLICATION_H
 
+#include <window/ghIWindow.hpp>
 #include "ghSystem.hpp"
 #include "ghScene.hpp"
 #include "util/ghClock.hpp"
@@ -47,6 +48,11 @@ private:
 	 * cause to extinction of the game
 	 */
 	bool mIsExiting = false;
+
+	/**
+	 * Pointer to the unique instance of window managed by the application
+	 */
+	IWindow* mpWindow;
 
 	Application(Configuration conf) : m_configuration(conf) {}
 

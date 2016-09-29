@@ -1,13 +1,15 @@
 #include <iostream>
-#include <ghBoxColliderComponent.h>
+#include <ecs/ghBoxColliderComponent.hpp>
 
-#include "ghApplication.h"
-#include "ghFileLogger.h"
-#include "ghILogger.h"
-#include "ghConsoleLogger.h"
-#include "ghInputManager.h"
-#include "ghResourceLoaders.h"
-#include "ghModelComponent.h"
+#include <ghApplication.hpp>
+#include <util/ghFileLogger.hpp>
+#include <util/ghILogger.hpp>
+#include <util/ghConsoleLogger.hpp>
+#include <input/ghInputManager.hpp>
+#include <resource/ghResourceLoaders.hpp>
+#include <ecs/ghModelComponent.hpp>
+
+#include <glm/glm.hpp>
 
 using namespace std;
 using namespace glm;

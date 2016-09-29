@@ -6,11 +6,16 @@
 
 namespace ganeshEngine {
 
-ghWindowGlfw::ghWindowGlfw() : IWindow(0) { }
+WindowGlfw::WindowGlfw() :
+        IWindow(0),
+        mpWindow{nullptr},
+        mName(std::string("GaneshEngine Window")),
+        mWidth(640),
+        mHeight(480) { }
 
-ghWindowGlfw::~ghWindowGlfw() {}
+WindowGlfw::~WindowGlfw() {}
 
-void ghWindowGlfw::vInitialize() {
+void WindowGlfw::vInitialize() {
     if (glfwInit()) {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
@@ -18,7 +23,7 @@ void ghWindowGlfw::vInitialize() {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-        mpWindow = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
+        mpWindow = glfwCreateWindow(mWidth, mHeight, mName.c_str(), NULL, NULL);
         if (mpWindow) {
             glfwSetErrorCallback([](int error, const char *message) {
                 _ERROR("GLFW ERROR : code " << error << " message : " << message, LOG_CHANNEL::DEFAULT);
@@ -34,27 +39,26 @@ void ghWindowGlfw::vInitialize() {
     }
 }
 
-
-void ghWindowGlfw::setName(const std::string& newName) {
-    //TODO implement
-}
-
-void ghWindowGlfw::vDestroy() {
+void WindowGlfw::vDestroy() {
 
 }
 
-std::string ghWindowGlfw::getName() {
-    //TODO implement
-    return "Awesome window";
+void WindowGlfw::setName(const std::string& newName) {
+    mName = newName;
+    glfwSetWindowTitle(mpWindow, mName.c_str());
 }
 
-bool ghWindowGlfw::isFullscreen() {
+std::string WindowGlfw::getName() {
+    return mName;
+}
+
+bool WindowGlfw::isFullscreen() {
     //TODO implement
     return false;
 
 }
 
-void ghWindowGlfw::setFullscreen(bool isFullscreen) {
+void WindowGlfw::setFullscreen(bool isFullscreen) {
     //TODO implement
 }
 
