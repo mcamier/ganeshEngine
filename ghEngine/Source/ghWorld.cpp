@@ -51,4 +51,10 @@ void World::_unregisterComponent(U32 componentId) {
 	//gEvent().queueEvent(new UnregisterComponentEvent(component));
 }
 
+void World::vInitialize() {}
+
+void World::vDestroy() {}
+
+void World::vUpdate(const Clock &clock) {}
+
 }

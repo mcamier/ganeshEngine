@@ -44,4 +44,9 @@ add_subdirectory(ghRenderVulkanAPI)
 add_subdirectory(ghEngine)
 
 add_subdirectory(demo)
-#add_subdirectory(test)
+
+find_package(GTEST)
+if(GTEST_FOUND)
+    enable_testing()
+    add_subdirectory(ghTest)
+endif()

@@ -3,10 +3,10 @@
 
 #include <window/ghIWindow.hpp>
 #include "ghSystem.hpp"
-#include "ghScene.hpp"
 #include "util/ghClock.hpp"
 #include "event/ghEventManager.hpp"
 #include "util/ghConfiguration.hpp"
+#include "ghWorld.hpp"
 
 #include "render/ghShaderProgram.hpp"
 #include "render/ghTexture.hpp"
@@ -30,14 +30,6 @@ private:
 	Configuration m_configuration;
 
 	/**
-	 * By the time the scene is unique and stored directly within the
-	 * Application class
-	 * Later, game could handle several scenes and they should be
-	 * managed by a SceneManager class
-	 */
-	unique_ptr<Scene> mMainScene;
-
-	/**
 	 * The main game clock, will be incremented even if the gameplay
 	 * or other sub systems are paused
 	 */
@@ -48,6 +40,11 @@ private:
 	 * cause to extinction of the game
 	 */
 	bool mIsExiting = false;
+
+	/**
+	 *
+	 */
+	World* mpWorld;
 
 	/**
 	 * Pointer to the unique instance of window managed by the application

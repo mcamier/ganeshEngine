@@ -1,5 +1,6 @@
 #include "ghFrustum.h"
-//#include <gtest/gtest.h>
+
+#include <gtest/gtest.h>
 #include <glm/glm.hpp>
 
 using namespace ganeshEngine;

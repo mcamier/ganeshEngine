@@ -27,16 +27,7 @@ static stringId demoResourceShaderV = gInternString("defaultVertexShader");
 static stringId demoResourceShaderF = gInternString("defaultFragmentShader");
 
 
-class MainScene : public Scene {
-private:
-    Model *model{nullptr};
-
-    ModelComponent *modelComponent;
-
-public:
-    MainScene() : Scene() {}
-
-    void vInitialize() override {
+/*
         gInput().registerInputCallback<MainScene>(GH_DEMO_ACTION_MOVE_UP, this, &MainScene::goUp);
         gInput().registerInputCallback<MainScene>(GH_DEMO_ACTION_MOVE_DOWN, this, &MainScene::goDown);
         gInput().registerInputCallback<MainScene>(GH_DEMO_ACTION_MOVE_LEFT, this, &MainScene::goLeft);
@@ -55,7 +46,6 @@ public:
         modelComponent->setMesh(gResource().getResource<Mesh>(demoResourceMesh));
         modelComponent->setShader(gResource().getResource<ShaderProgram>(demoResourceShaderP));
         modelComponent->setTexture(gResource().getResource<Texture>(demoResourceTexture));
-/*
         modelComponent->setPosX(1.);
         modelComponent->setPosY(1.);
         modelComponent->setPosZ(1.);
@@ -65,30 +55,11 @@ public:
         collider->setPosY(5.);
         collider->setPosZ(6.);
         //modelComponent->addSubComponent(collider);
-*/
-        Actor* a = new Actor(gGetNextId());
+
+        Actor* a = new Actor();
         //a->setRootComponent(modelComponent);
         addActor(a);
-
-    }
-
-    void vUpdate(const Clock &clock) override {
-        Scene::vUpdate(clock);
-        //modelComponent->setLocationX(modelComponent->getLocation().x + 1);
-    }
-
-
-    void goUp(RawInput ri, float deltaTime) {}
-
-    void goDown(RawInput ri, float deltaTime) {}
-
-    void goRight(RawInput ri, float deltaTime) {}
-
-    void goLeft(RawInput ri, float deltaTime) {}
-
-    void reset(RawInput ri, float deltaTime) {}
-
-    };
+*/
 
 int main() {
     Configuration conf;
@@ -100,8 +71,6 @@ int main() {
 
     conf.loggers.push_back(new ConsoleLogger(LOG_LEVEL::DEBUG, channels));
     conf.loggers.push_back(new FileLogger(LOG_LEVEL::DEBUG, channels, "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/log"));
-
-    conf.startScene = new MainScene();
 
     Application::Initialize(conf);
     /** After application initialization all singletons used by the engine

@@ -5,6 +5,7 @@
 #include "util/ghLoggerManager.hpp"
 #include "resource/ghResourceManager.hpp"
 #include <render/ghRenderManager.hpp>
+#include "ghWorld.hpp"
 
 #ifdef USE_GLFW_WRAPPER_API
 #include <window/ghWindowGlfw.hpp>
@@ -13,6 +14,7 @@
 #ifdef USE_RENDER_API_GL
 #include <render/RenderOpenglAPI.hpp>
 #include <input/ghInputConfiguration.hpp>
+#include <ghSystem.hpp>
 
 #elif USE_RENDER_API_VULKAN
 #include <render/RenderVulkanAPI.hpp>
@@ -52,8 +54,8 @@ void Application::run() {
 			mMainClock.update(dt);
         	mpWindow->pollEvents();
 			PROFILE("input", gInput().vUpdate(mMainClock));
-			PROFILE("scene", mMainScene->vUpdate(mMainClock));
 			PROFILE("event", gEvent().vUpdate(mMainClock));
+			mpWorld->vUpdate(mMainClock);
 
 			accumulator -= dt;
 			totalTime += dt;
@@ -92,8 +94,6 @@ void Application::vInitialize() {
 	InputManager::Initialize();
     gInput().loadConfiguration(&ic);
 
-	mMainScene = unique_ptr<Scene>(m_configuration.startScene);
-	mMainScene->vInitialize();
 	gEvent().addListener<Application>(GH_EVENT_EXIT_GAME, this, &Application::onShutdown);
 
 #ifdef USE_RENDER_API_GL
@@ -101,9 +101,11 @@ void Application::vInitialize() {
 #elif USE_RENDER_API_VULKAN
 	RenderManager::Initialize(new RenderVulkanAPI());
 #endif
+	World::Initialize();
 }
 
 void Application::vDestroy() {
+	World::Destroy();
 #ifdef USE_RENDER_API_GL
 	RenderManager::Destroy();
 #elif USE_RENDER_API_VULKAN

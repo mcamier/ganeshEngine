@@ -3,7 +3,6 @@
 
 
 #include <util/ghILogger.hpp>
-#include "ghScene.hpp"
 #include "../resource/ghResourceLoader.hpp"
 
 namespace ganeshEngine {
@@ -16,7 +15,6 @@ public:
 	string resourceConfigurationFilename;
 	map<U32, ResourceLoader*> customResourceLoaders;
 	vector<ILogger*> loggers;
-	Scene* startScene;
 };
 
 }

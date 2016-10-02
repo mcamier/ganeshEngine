@@ -13,6 +13,7 @@ class World : public System<World> {
 	friend class System<World>;
 	friend class Actor;
 	friend class SceneComponent;
+	friend class Application;
 
 private:
 	map<U32, Actor*> mActors;
@@ -60,6 +61,13 @@ private:
 	 * @param component component to register
 	 */
 	void _unregisterComponent(U32 componentId);
+
+protected:
+	void vInitialize();
+
+	void vDestroy();
+
+	void vUpdate(const Clock &clock);
 };
 
 }
