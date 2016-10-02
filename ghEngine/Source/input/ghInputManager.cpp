@@ -15,19 +15,10 @@ InputManager::InputManager() {
 	mFrameRawInputs = queue<RawInput>();
 	mInputContexts = map<stringId, unique_ptr<InputContext>>();
 	mInputCallbacks = map<stringId, InputCallbackType>();
-	mJoysticks = array<Joystick, GH_MAX_JOYSTICK+1>();
 	mHeldButtonRawInputs = map<InputCode, RawInput>();
 }
 
 void InputManager::vInitialize() {
-	initCallbacks();
-
-    for (int i = 0 ; i <= GH_MAX_JOYSTICK ; i++) {
-        mJoysticks[i].initialize(i);
-    }
-
-
-	gEvent().addListener<InputManager>(GH_EVENT_JOYSTICK_STATE_CHANGE, this, &InputManager::onJoystickStateChange);
 	_DEBUG("InputManager initialized", LOG_CHANNEL::INPUT);
 }
 
@@ -67,10 +58,6 @@ void InputManager::registerInput(RawInput rawInput) {
 
 void InputManager::vUpdate(const Clock &clock) {
 	float secondElapsedSinceLastFrame = clock.getLastFrameElapsedTimeAsSecond();
-
-	for(auto device : mJoysticks) {
-		device.update();
-	}
 
 	/* loop over list of held button and submit input accordingly */
 	for(auto itr : mHeldButtonRawInputs) {
@@ -232,79 +219,6 @@ void InputManager::loadConfiguration(InputManagerConfiguration* conf) {
         mInputContexts.insert(pair<stringId, unique_ptr<InputContext>>(id, unique_ptr<InputContext>(ptr)));
         activeContext(id, true);
     }
-}
-
-void InputManager::onJoystickStateChange(Event *event) {
-	/*JoystickStateChangeEvent *jsce = static_cast<JoystickStateChangeEvent *>(event);
-	int i = jsce->getJoystickIndex();
-	if (i >= 0 || i <= GH_MAX_JOYSTICK) {
-		if (jsce->getJoystickState() == GLFW_CONNECTED) {
-			mJoysticks[i]->initialize(i);
-			_DEBUG("Joystick [" << i << "] connected", LOG_CHANNEL::INPUT);
-		} else if (jsce->getJoystickState() == GLFW_DISCONNECTED) {
-			mJoysticks[i]->release();
-			_DEBUG("Joystick [" << i << "] disconnected", LOG_CHANNEL::INPUT);
-		}
-	} else {
-		_DEBUG("onJoystickStateChange with invalid index [" << i << "]", LOG_CHANNEL::INPUT);
-	}*/
-}
-
-void InputManager::initCallbacks() {
-	/*glfwSetWindowUserPointer(gPlatform().getWindow(), this);
-	glfwSetKeyCallback(gPlatform().getWindow(), [](GLFWwindow *window, int key, int scancde, int action, int mods) {
-		if (action != GLFW_REPEAT) {
-			InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
-			RawInput input;
-			input.idx = 0;
-			input.source = InputSource::KEYBOARD;
-			input.code = inputDetails::sysInputKeyboardCode2GHCode(key);
-			if (action == GLFW_PRESS) input.type = InputType::BUTTON_PRESS;
-			else if (action == GLFW_RELEASE) input.type = InputType::BUTTON_RELEASE;
-
-			mgr->registerInput(input);
-		}
-	});
-
-	glfwSetCursorPosCallback(gPlatform().getWindow(), [](GLFWwindow *window, double xpos, double ypos) {
-		InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
-		RawInput input;
-		input.idx = 0;
-		input.source = InputSource::MOUSE;
-		input.type = InputType::AXIS;
-		input.data.axis.x = (F32)xpos;
-		input.data.axis.y = (F32)ypos;
-		input.data.axis.z = 0.0f;
-
-		mgr->registerInput(input);
-	});
-
-	glfwSetMouseButtonCallback(gPlatform().getWindow(), [](GLFWwindow *window, int button, int action, int mods) {
-		if (action != GLFW_REPEAT) {
-			InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
-			RawInput input;
-			input.idx = 0;
-			input.source = InputSource::MOUSE;
-			input.code = inputDetails::sysInputMouseCode2GHCode(button);
-			if (action == GLFW_PRESS) input.type = InputType::BUTTON_PRESS;
-			else if (action == GLFW_RELEASE) input.type = InputType::BUTTON_RELEASE;
-
-			mgr->registerInput(input);
-		}
-	});
-
-	glfwSetScrollCallback(gPlatform().getWindow(), [](GLFWwindow *window, double offsetX, double offsetY) {
-		InputManager *mgr = static_cast<InputManager *>(glfwGetWindowUserPointer(gPlatform().getWindow()));
-		RawInput input;
-		input.idx = 0;
-		input.source = InputSource::MOUSE;
-		input.type = InputType::AXIS;
-		input.data.axis.x = (F32)offsetX;
-		input.data.axis.y = (F32)offsetY;
-		input.data.axis.z = 0.0f;
-
-		mgr->registerInput(input);
-	});*/
 }
 
 InputManager &(*gInput)() = &InputManager::get;

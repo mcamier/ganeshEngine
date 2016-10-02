@@ -1,4 +1,7 @@
-#include "input/ghJoystick.hpp"
+#include "window/ghJoystick.hpp"
+
+#include <input/ghInputManager.hpp>
+#include <GLFW/glfw3.h>
 
 namespace ganeshEngine {
 
@@ -12,7 +15,7 @@ Joystick::~Joystick() {
 
 
 void Joystick::initialize(int index) {
-    /*if (glfwJoystickPresent(index)) {
+    if (glfwJoystickPresent(index)) {
         mIndex = index;
         mConnected = true;
         mInitialized = true;
@@ -38,7 +41,7 @@ void Joystick::initialize(int index) {
         mPreviousAxeStates = nullptr;
         mButtonStates = nullptr;
         mPreviousButtonStates = nullptr;
-    }*/
+    }
 }
 
 void Joystick::release() {
@@ -56,7 +59,7 @@ void Joystick::release() {
 }
 
 void Joystick::update() {
-    /*if (mConnected && mInitialized) {
+    if (mConnected && mInitialized) {
         // update joystick state
         mAxeStates = glfwGetJoystickAxes(mIndex, &mAxesCount);
         mButtonStates = glfwGetJoystickButtons(mIndex, &mButtonsCount);
@@ -115,7 +118,7 @@ void Joystick::update() {
 
         std::memcpy(mPreviousAxeStates, mAxeStates, mAxesCount * sizeof(float));
         std::memcpy(mPreviousButtonStates, mButtonStates, mButtonsCount * sizeof(unsigned char));
-    }*/
+    }
 }
 
 InputCode Joystick::mapButtonIdxToInputCode(int idx) {

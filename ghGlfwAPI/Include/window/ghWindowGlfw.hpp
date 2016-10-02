@@ -6,6 +6,8 @@
 
 #include <GLFW/glfw3.h>
 #include <string>
+#include <event/ghEvent.hpp>
+#include "ghJoystick.hpp"
 
 namespace ganeshEngine {
 
@@ -25,6 +27,12 @@ private:
 	bool mbFullscreen;
 
 	int mRefreshRate;
+
+    /**
+     * Maybe not the better place to put the joystick management but the window is still in charge of emitting events
+     * and joystick event are no exception
+     */
+    array<Joystick, GLFW_JOYSTICK_LAST> mJoysticks;
 
 public:
     WindowGlfw();
@@ -60,6 +68,12 @@ public:
      * @copydoc IWindow::setFullscreen(bool isFullscreen)
      */
     void setFullscreen(bool isFullscreen) override;
+
+    /**
+     * Called when joystick get plugged or unplugged
+     * @param event
+     */
+    void onJoystickStateChange(Event *event);
 };
 
 }

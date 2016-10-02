@@ -73,6 +73,7 @@ void Application::vInitialize() {
 		gLogger().addLogger(m_configuration.loggers[i]);
 	};
 	ProfilerManager::Initialize();
+	EventManager::Initialize();
 
 	auto rc = ResourceConfiguration::loadFromFile(m_configuration.resourceConfigurationFilename);
 	auto ic = InputManagerConfiguration::loadFromFile(m_configuration.inputConfigurationFilename);
@@ -84,7 +85,6 @@ void Application::vInitialize() {
     _ERROR("No window wrapper bound", LOG_CHANNEL::DEFAULT);
     gLogger().flush();
 #endif
-	EventManager::Initialize();
 	ResourceManager::Initialize(m_configuration.customResourceLoaders);
     gResource().loadConfiguration(rc);
 	gResource().doEagerLoading();
@@ -111,10 +111,10 @@ void Application::vDestroy() {
 #endif
 	InputManager::Destroy();
 	ResourceManager::Destroy();
-	EventManager::Destroy();
 #ifdef USE_GLFW_API
     mpWindow->vDestroy();
 #endif
+	EventManager::Destroy();
 	ProfilerManager::Destroy();
 	LoggerManager::Destroy();
 }

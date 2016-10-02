@@ -4,7 +4,6 @@
 
 #include "ghSystem.hpp"
 #include "ghInputContext.hpp"
-#include "ghJoystick.hpp"
 #include <event/ghEventManager.hpp>
 #include <util/ghClock.hpp>
 
@@ -35,32 +34,32 @@ private:
 	 */
 	map<stringId, InputCallbackType> mInputCallbacks;
 
-    /** Contains all inputs read from the system during the current frame
+	/** Contains all inputs read from the system during the current frame
      * this vector is cleared at thje end of each frames
      */
-    queue<RawInput> mFrameRawInputs;
+	queue<RawInput> mFrameRawInputs;
 
-    /** Contains postponed input that belongs to a chord
+	/** Contains postponed input that belongs to a chord
      * This list contains input for maybe several frame, the time needed to detecte a valid chord
      * or when input chord detection lifetime is over
-	 */
-    vector<RawInput> mPostponedRawInputs;
+     */
+	vector<RawInput> mPostponedRawInputs;
 
 	map<InputCode, RawInput> mHeldButtonRawInputs;
-
-	array<Joystick, GH_MAX_JOYSTICK+1> mJoysticks;
 
 protected:
 	InputManager();
 
 	void vInitialize() override;
+
 	void vDestroy() override;
 
 public:
 	InputManager(const InputManager &) = delete;
+
 	InputManager &operator=(const InputManager &) = delete;
 
-    void loadConfiguration(InputManagerConfiguration* conf);
+	void loadConfiguration(InputManagerConfiguration *conf);
 
 	void activeContext(stringId id, bool active);
 
@@ -76,14 +75,10 @@ public:
 		mInputCallbacks.insert(make_pair(callbackHash, f));
 	}
 
-	void vUpdate(const Clock& frameDuration);
+	void vUpdate(const Clock &frameDuration);
 
 private:
 	void triggerPlainInputAction(RawInput ri, float deltaTime);
-
-	void onJoystickStateChange(Event* event);
-
-	void initCallbacks();
 };
 
 /**

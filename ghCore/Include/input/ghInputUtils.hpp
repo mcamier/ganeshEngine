@@ -11,7 +11,6 @@
 #define GH_DETECTION_DURATION_SECOND 0.02f
 #define GH_KEYBOARD_KEY_COUNT       120
 #define GH_MOUSE_KEY_COUNT          8
-#define GH_MAX_JOYSTICK             16
 
 namespace ganeshEngine {
 
@@ -402,10 +401,6 @@ bool isKeyboardCode(const InputCode code);
 bool isMouseCode(const InputCode code);
 
 bool isDeviceCode(const InputCode code);
-
-extern InputCode sysInputKeyboardCode2GHCode(int sysInputCode);
-
-extern InputCode sysInputMouseCode2GHCode(int sysInputCode);
 
 }
 
