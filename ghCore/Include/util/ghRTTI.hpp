@@ -60,35 +60,57 @@ class GameObject;
 class RTTI {
 private:
     /** Name of the class */
-    const std::string value;
+    std::string value;
 
     /** RTTI object pointer of the base class */
     const RTTI *mParent;
 
 public:
+    explicit RTTI(std::string& name);
+    explicit RTTI(std::string& name, const RTTI *parent);
     explicit RTTI(const char* name);
-    explicit RTTI(std::string &name);
     explicit RTTI(const char* name, const RTTI *parent);
-    explicit RTTI(std::string &name, const RTTI *parent);
 
     /**
-     * @param other
+     * Returns true if the correspondant class is derived from the class correspondant of the passed
+     *
+     * @param other rtti to compare with
      * @return true if other is amoung base class of the current one
      */
     bool isDerivedFrom(const RTTI& other) const;
 
     /**
-     * @param other
+     * Return true if the correspondant class is exactly the same as the class correspondant of the passed
+     * @param other rtti to compare with
      * @return true if other rtti and current rtti informations are from the same class
      */
     bool isSame(const RTTI& other) const;
+
+    /**
+     * Return the name of the correspondant class
+     * @return the of the correspondant class
+     */
+    std::string getClassName() const;
 };
 
 
 struct RTTIFactory {
+    static GameObject* create(const RTTI& rtti, U32 id) {
+        return create(rtti.getClassName(), id);
+    }
+
+    static GameObject* create(const RTTI& rtti) {
+        return create(rtti.getClassName());
+    }
+
     static GameObject* create(const std::string& name, U32 id) {
         const Creators_t::const_iterator iter = static_creators().find(name);
         return iter == static_creators().end() ? nullptr : (*iter->second)(id);
+    }
+
+    static GameObject* create(const std::string& name) {
+        const Creators_t::const_iterator iter = static_creators().find(name);
+        return iter == static_creators().end() ? nullptr : (*iter->second)(gGetNextId());
     }
 
 private:

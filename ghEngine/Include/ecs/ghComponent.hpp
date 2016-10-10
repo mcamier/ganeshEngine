@@ -3,7 +3,7 @@
 
 #include <ecs/ghGameObject.hpp>
 #include <util/ghClock.hpp>
-#include "../ghWorld.hpp"
+#include "ghWorld.hpp"
 #include <ghTypes.hpp>
 #include <util/ghRTTI.hpp>
 
@@ -25,13 +25,7 @@ class Component : public GameObject {
 
 RTTI_DECL()
 
-private:
-    /**
-     * Pointer of the world where this component is registered
-     * Is nullptr if the component is not bound to any game world, otherwise we can expect the component to be well bound
-     */
-    World* mOwnerWorld;
-
+protected:
     /**
      * pointer of the actor owning the component
      * Is nullptr if the component doesn't belongs to any actor, otherwise we can expect the actor to be well bound
@@ -40,14 +34,12 @@ private:
      */
     Actor* mOwnerActor;
 
-protected:
     /**
      * Any component can be attached to a SceneComponent, in that case this pointer leads to the parent component,
      * otherwise it stay null
      */
     SceneComponent *mParentComponent;
 
-protected:
     /**
      * Switch update call activation
      * */

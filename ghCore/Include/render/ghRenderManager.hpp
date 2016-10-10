@@ -3,6 +3,7 @@
 
 #include "ghIRenderAPI.hpp"
 #include <ghSystem.hpp>
+#include <event/ghEvent.hpp>
 
 namespace ganeshEngine {
 
@@ -25,9 +26,16 @@ public:
 	RenderManager(const RenderManager &) = delete;
 	RenderManager &operator=(const RenderManager &) = delete;
 
+	void vUpdate(const Clock& clock) override;
+
 protected:
 	void vInitialize() override;
 	void vDestroy() override;
+
+private:
+	void onComponentRegistered(Event*);
+
+	void onComponentUnregistered(Event*);
 
 };
 

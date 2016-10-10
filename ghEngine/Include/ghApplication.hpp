@@ -42,11 +42,6 @@ private:
 	bool mIsExiting = false;
 
 	/**
-	 *
-	 */
-	World* mpWorld;
-
-	/**
 	 * Pointer to the unique instance of window managed by the application
 	 */
 	IWindow* mpWindow;

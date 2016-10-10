@@ -16,6 +16,7 @@ class BoxColliderComponent : public SceneComponent {
 RTTI_DECL()
 
 public:
+    explicit BoxColliderComponent() : SceneComponent() {}
     explicit BoxColliderComponent(U32 id) : SceneComponent(id, true) {}
 
     void vUpdate(const Clock& clock) override {}

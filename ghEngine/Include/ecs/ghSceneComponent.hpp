@@ -35,6 +35,8 @@ protected:
 	std::vector<Component *> mSubComponents;
 
 public:
+	explicit SceneComponent();
+	explicit SceneComponent(bool updateEnabled);
 	explicit SceneComponent(U32 id);
 	explicit SceneComponent(U32 id, bool updateEnabled);
 

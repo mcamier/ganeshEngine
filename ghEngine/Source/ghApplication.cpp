@@ -55,14 +55,15 @@ void Application::run() {
         	mpWindow->pollEvents();
 			PROFILE("input", gInput().vUpdate(mMainClock));
 			PROFILE("event", gEvent().vUpdate(mMainClock));
-			mpWorld->vUpdate(mMainClock);
+			PROFILE("simulation", gWorld().vUpdate(mMainClock));
 
 			accumulator -= dt;
 			totalTime += dt;
 		}
 		//TODO use accumulator to lerp the rendering state
-		//TODO Rendering goes here
+		PROFILE("render", gRender().vUpdate(mMainClock));
 		mpWindow->swapBuffer();
+
 		gProfiler().update();
 	}
 }

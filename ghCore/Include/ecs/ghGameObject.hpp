@@ -5,6 +5,7 @@
 #include "../util/ghSerializable.hpp"
 #include "../util/ghIStream.hpp"
 #include "../util/ghRTTI.hpp"
+#include "../ghWorld.hpp"
 
 namespace ganeshEngine {
 
@@ -20,6 +21,14 @@ RTTI_DECL()
 private:
     /** unique id, its unique-ness is not enforce by this class */
     U32 mUID;
+
+
+protected:
+    /**
+     * Pointer of the world where this actor is registered
+     * Is nullptr if the actor is not bound to any game world, otherwise we can expect the actor to be well bound
+     */
+    World* mOwnerWorld;
 
 public:
     explicit GameObject(U32 uid);

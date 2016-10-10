@@ -1,60 +1,46 @@
 #include "ghWorld.hpp"
 #include "ecs/ghActor.hpp"
+#include "util/ghRTTI.hpp"
 #include "event/ghEventManager.hpp"
 
 namespace ganeshEngine {
 
 World::World() :
-	mActors(map<U32, Actor*>()),
-	mComponents(map<U32, Component*>()) {}
+	mActors(map<U32, Actor*>()) {}
 
 World::~World() {}
 
-void World::spawnActor(RTTI* classRTTI) {
-	if(!classRTTI->isDerivedFrom(Actor::rtti)) return;
-}
-
-void World::registerActor(Actor* actor) {
-	/* invalid parameter */
-	if(actor == nullptr) return;
-
-	/* actor already to a world, try to spawn a new one with the given actor as prototype in order to duplicate it into
-	 * this world
-	 */
-	if(actor->mOwnerWorld != nullptr) return;
-	actor->mOwnerWorld = this;
-
-	for(Component* component : actor->mOwnedComponents) {
-		_registerComponent(component);
-	}
-}
-
-
-
-void World::_registerComponent(Component* component) {
-	if( component->mOwnerActor != nullptr &&
-		component->mOwnerWorld == nullptr) {
-
-		mComponents.insert(make_pair(component->getUID(), component));
-		component->mOwnerWorld = this;
-
-		//gEvent().queueEvent(new RegisterComponentEvent(component));
-	}
-}
-
-void World::_unregisterComponent(U32 componentId) {
-	auto itr = mComponents.find(componentId);
-	Component* component = itr->second;
-	mComponents.erase(itr);
-	component->mOwnerWorld = nullptr;
-
-	//gEvent().queueEvent(new UnregisterComponentEvent(component));
+void World::spawnActor(const RTTI classRTTI) {
+	if(!classRTTI.isDerivedFrom(Actor::rtti)) return;
+	Actor* actor = static_cast<Actor*>(RTTIFactory::create(classRTTI));
+	mActorsToInsert.push_back(actor);
 }
 
 void World::vInitialize() {}
-
 void World::vDestroy() {}
 
-void World::vUpdate(const Clock &clock) {}
+void World::vUpdate(const Clock &clock) {
+	for(auto itrInsert = mActorsToInsert.begin() ; itrInsert != mActorsToInsert.end() ; ++itrInsert) {
+		Actor* actor = *itrInsert;
+
+		if(actor->vInitialize()) {
+			mActors.insert(make_pair(actor->getUID(), actor));
+
+			for(auto compItr = actor->mOwnedComponents.begin(); compItr != actor->mOwnedComponents.end() ; ++compItr) {
+				gEvent().queueEvent(new ComponentRegisteredEvent(compItr->second));
+			}
+			gEvent().queueEvent(new ActorRegisteredEvent());
+		}
+	}
+	mActorsToInsert.clear();
+
+	// finally update all actors
+	for(auto itr = mActors.begin() ; itr != mActors.end() ; ++itr) {
+		itr->second->update(clock);
+	}
+}
+
+
+World& (*gWorld)() = &World::get;
 
 }

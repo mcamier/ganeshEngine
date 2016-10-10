@@ -1,7 +1,7 @@
 #ifndef GANESHENGINE_GHACTOR_H
 #define GANESHENGINE_GHACTOR_H
 
-#include <vector>
+#include <map>
 
 #include <ecs/ghGameObject.hpp>
 #include "ghComponent.hpp"
@@ -23,12 +23,6 @@ RTTI_DECL()
 
 private:
 	/**
-     * Pointer of the world where this actor is registered
-     * Is nullptr if the actor is not bound to any game world, otherwise we can expect the actor to be well bound
-     */
-	World* mOwnerWorld;
-
-	/**
 	 * Root component of the actor.
 	 * If root component is an instance of SceneComponent the actor owner will be located within the game world,
 	 * otherwise it will still belongs to the game world, but without any "physical" location
@@ -38,12 +32,13 @@ private:
 	/**
 	 * List of all components owned by the actor
 	 */
-	std::vector<Component*> mOwnedComponents;
+	std::map<U32, Component*> mOwnedComponents;
 
 	/**
 	 * Defines if the actor must be ignored during a saving of the game world
 	 */
 	bool mbIgnoredOnSave;
+
 
 public:
     explicit Actor();
@@ -58,19 +53,6 @@ public:
     void update(const Clock &clock);
 
 	/**
-	 *
-	 * @param component
-	 */
-	void registerComponent(Component* component);
-
-	/**
-	 *
-	 * @param parentComponentId
-	 * @param component
-	 */
-	void registerSubComponent(U32 parentComponentId, Component* component);
-
-	/**
 	 * Getter of mbIgnored on saving
 	 * @param newValue true if actor must ignored on saving
 	 */
@@ -82,6 +64,28 @@ public:
 	 */
 	void setIgnoredOnSave(bool newValue);
 
+protected:
+	/**
+	 * Bind a component to the actor
+	 * If componentParentId equals -1, the given component will be placed as root component of the object
+	 * <p>
+	 * If mRootComponent of the actor is nullptr, the given component will automatically be placed as root component
+	 * <p>
+	 * There is several cases where this method could return false :
+	 *  - the actor doesn't contains a component with the given id
+	 *  - you tried to bind a component to a non-SceneComponent
+	 *  - the componentParentId is less or equals 0
+	 *  - the componentParentId is equals the given component's id
+	 *
+	 * @param component
+	 * @param componentParendId
+	 * @return True if the component was placed in the actor, false otherwise
+	 */
+	bool addComponent(Component* component, U32 componentParendId);
+
+	virtual bool vInitialize();
+
+public:
 	bool write(IStream& stream) const override;
 
 	bool read(IStream& stream) override;

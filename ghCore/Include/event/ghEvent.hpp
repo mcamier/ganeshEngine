@@ -6,10 +6,16 @@
 
 namespace ganeshEngine {
 
+class Component;
+
 using namespace std;
 
 extern stringId GH_EVENT_JOYSTICK_STATE_CHANGE;
 extern stringId GH_EVENT_EXIT_GAME;
+extern stringId GH_EVENT_ACTOR_REGISTERED;
+extern stringId GH_EVENT_ACTOR_UNREGISTERED;
+extern stringId GH_EVENT_COMPONENT_REGISTERED;
+extern stringId GH_EVENT_COMPONENT_UNREGISTERED;
 
 /**
  * Basic Event class that all other event have to extends in order to be used by the
@@ -50,6 +56,39 @@ public:
 	int getJoystickIndex() const;
 
 	int getJoystickState() const;
+};
+
+class ActorRegisteredEvent : public Event {
+public:
+	ActorRegisteredEvent() :
+			Event(GH_EVENT_ACTOR_REGISTERED) {}
+};
+
+
+class ActorUnregisteredEvent : public Event {
+public:
+	ActorUnregisteredEvent() :
+			Event(GH_EVENT_ACTOR_UNREGISTERED) {}
+};
+
+
+class ComponentRegisteredEvent : public Event {
+private:
+	Component* mpComponent;
+
+public:
+	ComponentRegisteredEvent(Component*) :
+			Event(GH_EVENT_COMPONENT_REGISTERED),
+			mpComponent(nullptr) {}
+
+	Component* getRegisteredComponent();
+};
+
+
+class ComponentUnregisteredEvent : public Event {
+public:
+	ComponentUnregisteredEvent() :
+			Event(GH_EVENT_COMPONENT_UNREGISTERED) {}
 };
 
 }

@@ -6,7 +6,9 @@ include_directories (
     ../ghEngine/Include
     ../libs/rapidjson/include)
 
-set(demo_SRC "Source/main.cpp")
+set(demo_SRC
+        "Source/main.cpp"
+        "Source/TeapotActor.cpp")
 
 set_source_files_properties( ${demo_SRC} PROPERTIES LANGUAGE CXX )
 

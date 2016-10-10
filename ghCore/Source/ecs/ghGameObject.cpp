@@ -4,7 +4,9 @@ namespace ganeshEngine {
 
 RTTI_IMPL_BASE(GameObject)
 
-GameObject::GameObject(U32 uid) : mUID(uid) {}
+GameObject::GameObject(U32 uid) :
+		mUID(uid),
+		mOwnerWorld(nullptr) {}
 
 GameObject::~GameObject() {}
 

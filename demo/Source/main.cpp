@@ -10,6 +10,7 @@
 #include <ecs/ghModelComponent.hpp>
 
 #include <glm/glm.hpp>
+#include "TeapotActor.hpp"
 
 using namespace std;
 using namespace ganeshEngine;
@@ -77,6 +78,9 @@ int main() {
      *  are created and initialized, so all engine's customization, plugins
      *  addition should take place here, before the start of the main loop
      */
+
+    gWorld().spawnActor(TeapotActor::rtti);
+
     Application::RunLoop();
     Application::Destroy();
     return 0;

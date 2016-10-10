@@ -28,6 +28,7 @@ private:
     ResourceHandler<Mesh> mMesh;
 
 public:
+    explicit ModelComponent() : SceneComponent(gGetNextId()) {}
     explicit ModelComponent(U32 id) : SceneComponent(id) {}
 
 
