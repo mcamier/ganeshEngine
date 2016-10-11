@@ -60,7 +60,7 @@ private:
 
 public:
     ShaderProgram(ResourceHandler<Shader> vertex, ResourceHandler<Shader> fragment) :
-            Resource(true),
+            Resource(),
             mVertex(vertex),
             mFragment(fragment),
             mInternalId(-1) {}
@@ -72,10 +72,6 @@ public:
     bool inUse() const;
 
     void stopUsing() const;
-
-    bool sendToGc() override;
-
-    bool freeFromGc() override;
 
     void logProgramInfo();
     /*

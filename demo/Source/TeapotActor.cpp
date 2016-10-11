@@ -1,5 +1,5 @@
 #include "TeapotActor.hpp"
-
+#include "defs.hpp"
 #include <ecs/ghModelComponent.hpp>
 #include <ecs/ghBoxColliderComponent.hpp>
 
@@ -16,9 +16,7 @@ bool TeapotActor::vInitialize() {
     Actor::vInitialize();
 
     ModelComponent* cmodel = new ModelComponent();
-    // cmodel->setMesh();
-    // cmodel->setShader();
-    // cmodel->setTexture();
+    cmodel->setMeshStringId(teapotMeshStringId);
 
     if (!addComponent(cmodel, 0)) return false;
     return addComponent(new BoxColliderComponent(), cmodel->getUID());

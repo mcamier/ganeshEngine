@@ -17,19 +17,25 @@ void World::spawnActor(const RTTI classRTTI) {
 }
 
 void World::vInitialize() {}
+
 void World::vDestroy() {}
 
 void World::vUpdate(const Clock &clock) {
+    // loop over each queued actors in order to add them properly in the world
 	for(auto itrInsert = mActorsToInsert.begin() ; itrInsert != mActorsToInsert.end() ; ++itrInsert) {
-		Actor* actor = *itrInsert;
+		bool bActorContainsComponent = false;
+        Actor* actor = *itrInsert;
 
 		if(actor->vInitialize()) {
-			mActors.insert(make_pair(actor->getUID(), actor));
-
 			for(auto compItr = actor->mOwnedComponents.begin(); compItr != actor->mOwnedComponents.end() ; ++compItr) {
+		        bActorContainsComponent = true;
 				gEvent().queueEvent(new ComponentRegisteredEvent(compItr->second));
 			}
-			gEvent().queueEvent(new ActorRegisteredEvent());
+
+            if(bActorContainsComponent) {
+			    mActors.insert(make_pair(actor->getUID(), actor));
+			    gEvent().queueEvent(new ActorRegisteredEvent());
+            }
 		}
 	}
 	mActorsToInsert.clear();

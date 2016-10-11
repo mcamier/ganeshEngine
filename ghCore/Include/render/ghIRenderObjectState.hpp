@@ -1,0 +1,11 @@
+#ifndef GANESHENGINE_GHRENDEROBJECTSTATE_HPP
+#define GANESHENGINE_GHRENDEROBJECTSTATE_HPP
+
+namespace ganeshEngine {
+
+class IRenderObjectState {
+};
+
+}
+
+#endif //GANESHENGINE_GHRENDEROBJECTSTATE_HPP

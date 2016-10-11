@@ -31,28 +31,13 @@ bool ResourceWrapper::isLoaded() const {
             return false;
         }
     }
-    /* check if resource is well loaded, as well as loaded in GC memory if needed*/
-    if (data != nullptr) {
-        if (data->needGcLoad() && !mIsGccLoaded) {
-            return false;
-        }
-        return true;
-    }
-    return false;
+    return data != nullptr;
 }
 
 bool ResourceWrapper::load() {
     if(!isLoaded()) {
-
         setData(mLoader->load(mInfos));
-
-        if(getData() == nullptr) {
-            return false;
-        }
-
-        if(data->needGcLoad() && !mIsGccLoaded) {
-            return data->sendToGc();
-        }
+        return getData() != nullptr;
     }
     return true;
 }

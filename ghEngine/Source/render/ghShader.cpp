@@ -6,7 +6,6 @@
 
 namespace ganeshEngine {
 
-bool Shader::sendToGc() {
     /*
     GLuint shaderId = glCreateShader((GLenum) mType);
     const char *content = mSource.c_str();
@@ -31,12 +30,7 @@ bool Shader::sendToGc() {
 
     mInternalId = shaderId;
 */
-    return Resource::sendToGc();
-}
 
-bool Shader::freeFromGc() {
-    return Resource::freeFromGc();
-}
 
 const ShaderType Shader::getType() const {
     return mType;

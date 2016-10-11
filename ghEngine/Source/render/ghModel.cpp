@@ -3,7 +3,8 @@
 namespace ganeshEngine {
 
     void Model::sendToGC() {
-        /*glGenVertexArrays(1, &mVAO);
+        /*
+        glGenVertexArrays(1, &mVAO);
         glBindVertexArray(mVAO);
         glBindBuffer(GL_ARRAY_BUFFER, mpMesh->mVBO);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, x));
@@ -14,7 +15,8 @@ namespace ganeshEngine {
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
         glEnableVertexAttribArray(3);
-        glBindVertexArray(0);*/
+        glBindVertexArray(0);
+         */
     }
 
     ResourceHandler<ShaderProgram> Model::getProgram() {

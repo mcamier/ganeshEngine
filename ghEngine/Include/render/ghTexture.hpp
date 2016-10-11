@@ -25,7 +25,7 @@ private:
     int mTextureId = -1;
 
 public:
-    Texture() : Resource(true) {}
+    Texture() : Resource() {}
 
     U32 getWidth() const {
         return mWidth;
@@ -44,20 +44,13 @@ public:
     }
 
 protected:
-    bool sendToGc() override {
-        Resource::sendToGc();
         /*glGenTextures(1, &mTextureId);
         glBindTexture(GL_TEXTURE_2D, mTextureId);
         glTexImage2D(GL_TEXTURE_2D,0, GL_RGBA, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*) mImageData);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         */
-        return true;
-    }
 
-    bool freeFromGc() override {
-        Resource::freeFromGc();
         /*glDeleteTextures(1,&mTextureId);*/
-        return true; }
 };
 
 }

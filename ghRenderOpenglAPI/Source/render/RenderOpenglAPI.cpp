@@ -7,7 +7,9 @@
 #include <util/ghILogger.hpp>
 #include <sstream>
 #include <tuple>
-#include <vector>
+#include "render/RenderOpenglObjectState.hpp"
+
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 namespace ganeshEngine {
 
@@ -53,6 +55,38 @@ void RenderOpenglAPI::vInitialize() {
 }
 
 void RenderOpenglAPI::vDestroy() {
+}
+
+IRenderObjectState* RenderOpenglAPI::loadPrimitive(std::vector<float>* vertexBuffer) {
+
+	GLuint mVBO;
+	GLuint mVAO;
+
+	glGenBuffers(1, &mVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+	glBufferData(GL_ARRAY_BUFFER, vertexBuffer->size() * sizeof(float), &(vertexBuffer->front()), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenVertexArrays(1, &mVAO);
+	glBindVertexArray(mVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float), BUFFER_OFFSET(0));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float), BUFFER_OFFSET(12));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
+
+	auto state = new RenderOpenglObjectState();
+	state->mVAO = mVAO;
+	state->mVBO = mVBO;
+
+    return state;
+}
+
+void RenderOpenglAPI::drawState(IRenderObjectState* state) {
+	RenderOpenglObjectState *glObjectState = static_cast<RenderOpenglObjectState*>(state);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glObjectState->mVAO);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, BUFFER_OFFSET(0));
 }
 
 }

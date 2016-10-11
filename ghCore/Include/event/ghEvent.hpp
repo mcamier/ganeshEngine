@@ -77,9 +77,9 @@ private:
 	Component* mpComponent;
 
 public:
-	ComponentRegisteredEvent(Component*) :
+	ComponentRegisteredEvent(Component* component) :
 			Event(GH_EVENT_COMPONENT_REGISTERED),
-			mpComponent(nullptr) {}
+			mpComponent(component) {}
 
 	Component* getRegisteredComponent();
 };

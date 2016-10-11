@@ -18,6 +18,8 @@ class RenderManager : public System<RenderManager> {
 protected:
 	IRenderAPI *mpRenderAPI;
 
+	vector<IRenderObjectState*> mObjectStates;
+
 private:
 	RenderManager(IRenderAPI *renderAPI);
 
@@ -28,9 +30,13 @@ public:
 
 	void vUpdate(const Clock& clock) override;
 
+
+
 protected:
 	void vInitialize() override;
 	void vDestroy() override;
+
+	void draw();
 
 private:
 	void onComponentRegistered(Event*);

@@ -30,16 +30,10 @@
       }
     },
     {
-      "name": "foobar",
+      "name": "teapot",
       "loaderName": "__MESH_OBJ_LOADER",
-      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/foobar.obj",
-      "eagerLoading": false
-    },
-    {
-      "name": "dirty",
-      "loaderName": "__TEXTURE_PNG_LOADER",
-      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/dirty.png",
-      "eagerLoading": false
+      "filename": "C:/Users/mcamier/ClionProjects/ganeshEngine/demo/Resources/teapot.obj",
+      "eagerLoading": true
     }
   ]
 }

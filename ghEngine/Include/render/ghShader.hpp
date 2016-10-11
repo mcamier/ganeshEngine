@@ -28,7 +28,7 @@ private:
     string mSource;
 
 public:
-    Shader() : Resource(true),
+    Shader() : Resource(),
                mInternalId(-1),
                mSource("") {}
     ~Shader() {}
@@ -39,10 +39,6 @@ public:
      */
     const ShaderType getType() const;
 
-protected:
-    bool sendToGc() override;
-
-    bool freeFromGc() override;
 };
 
 

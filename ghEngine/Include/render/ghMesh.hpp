@@ -19,18 +19,20 @@ friend class Model;
 friend class ObjModelLoader;
 
 private:
-    vector<Vertex> mVertices;
+    vector<float> mBuffer;
     DrawMode mDrawMode;
-    //GLuint mVBO;
-    int mVBO;
 
 public:
-    Mesh() : Resource(true), mDrawMode(DrawMode::TRIANGLES), mVBO(-1) {}
+    Mesh() :
+            Resource(),
+            mBuffer(vector<float>()),
+            mDrawMode(DrawMode::TRIANGLES) {}
     ~Mesh() {}
 
-protected:
-    bool sendToGc() override;
-    bool freeFromGc() override;
+    vector<float>* getBuffer() {
+        return &mBuffer;
+    }
+
 };
 
 }

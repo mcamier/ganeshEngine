@@ -50,7 +50,7 @@ public:
      * @note internal use only
      * @return pointer to const resource
      */
-    const T *get() {
+    T * const get() {
         return (dynamic_pointer_cast<T>(m_wrapper->getData())).get();
     }
 

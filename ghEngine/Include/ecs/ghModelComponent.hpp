@@ -8,6 +8,7 @@
 #include <util/ghRTTI.hpp>
 #include <util/ghILogger.hpp>
 #include <util/ghClock.hpp>
+#include <util/ghStringId.hpp>
 
 #include "../resource/ghResourceHandler.hpp"
 #include "../resource/ghResourceManager.hpp"
@@ -23,25 +24,18 @@ class ModelComponent : public SceneComponent {
 RTTI_DECL()
 
 private:
-    ResourceHandler<Texture> mTexture;
-    ResourceHandler<ShaderProgram> mShader;
-    ResourceHandler<Mesh> mMesh;
+    stringId mMeshStringId;
 
 public:
     explicit ModelComponent() : SceneComponent(gGetNextId()) {}
     explicit ModelComponent(U32 id) : SceneComponent(id) {}
 
-
-    void setTexture(ResourceHandler<Texture> texture) {
-        mTexture = texture;
+    void setMeshStringId(stringId mesh) {
+        mMeshStringId = mesh;
     }
 
-    void setMesh(ResourceHandler<Mesh> mesh) {
-        mMesh = mesh;
-    }
-
-    void setShader(ResourceHandler<ShaderProgram> shader) {
-        mShader = shader;
+    stringId getMeshStringId() {
+        return mMeshStringId;
     }
 
     void vUpdate(const Clock& clock) override {

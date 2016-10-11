@@ -23,8 +23,6 @@ void ShaderProgram::stopUsing() const {
         glUseProgram(0);
     }*/
 }
-
-bool ShaderProgram::sendToGc() {
     /*mInternalId = glCreateProgram();
     glAttachShader(mInternalId, mVertex->mInternalId);
     glAttachShader(mInternalId, mFragment->mInternalId);
@@ -61,14 +59,6 @@ bool ShaderProgram::sendToGc() {
         return false;
     }
 */
-    return Resource::sendToGc();
-}
-
-bool ShaderProgram::freeFromGc() {
-    Resource::freeFromGc();
-    return true;
-}
-
 
 void ShaderProgram::logProgramInfo() {
     /*

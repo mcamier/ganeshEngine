@@ -89,6 +89,13 @@ public:
             u(0.0f), v(0.0f),
             nx(normal.x), ny(normal.y), nz(normal.z) {
     }
+
+    explicit Vertex(vec3 point, vec3 normal) :
+            x(point.x), y(point.y), z(point.z),
+            r(0.0f), g(0.0f), b(0.0f),
+            u(0.0f), v(0.0f),
+            nx(normal.x), ny(normal.y), nz(normal.z) {
+    }
 };
 
 /**

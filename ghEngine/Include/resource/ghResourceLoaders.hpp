@@ -171,6 +171,8 @@ public:
         std::vector< glm::vec2 > temp_uvs;
         std::vector< glm::vec3 > temp_normals;
 
+        vector<float> buffer;
+
         FILE * file = fopen(infos.getFilename().c_str(), "r");
         if( file == NULL ){
             printf("Impossible to open the file !\n");
@@ -182,9 +184,9 @@ public:
             char lineHeader[128];
             // read the first word of the line
             int res = fscanf(file, "%s", lineHeader);
-            if (res == EOF)
+            if (res == EOF) {
                 break; // EOF = End Of File. Quit the loop.
-
+            }
             if ( strcmp( lineHeader, "v" ) == 0 ){
                 glm::vec3 vertex;
                 fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
@@ -198,38 +200,24 @@ public:
                 fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
                 temp_normals.push_back(normal);
             }else if ( strcmp( lineHeader, "f" ) == 0 ) {
-                std::string vertex1, vertex2, vertex3;
-                unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
-                int matches = fscanf(file, "%u/%u/%u %u/%u/%u %u/%u/%u\n", &vertexIndex[0], &uvIndex[0],
-                                     &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2],
-                                     &uvIndex[2], &normalIndex[2]);
+                unsigned int vertexIndex[3], normalIndex[3];
+                fscanf(file, "%u//%u %u//%u %u//%u\n",
+                       &vertexIndex[0], &normalIndex[0],
+                       &vertexIndex[1], &normalIndex[1],
+                       &vertexIndex[2], &normalIndex[2]);
 
-                if (matches != 9) {
-                    printf("File can't be read by our simple parser : ( Try exporting with other options\n");
-                    return nullptr;
+                for(int i = 0 ; i < 3 ; i++) {
+                    m->mBuffer.push_back(temp_vertices[vertexIndex[i]].x);
+                    m->mBuffer.push_back(temp_vertices[vertexIndex[i]].y);
+                    m->mBuffer.push_back(temp_vertices[vertexIndex[i]].z);
+                    m->mBuffer.push_back(temp_normals[normalIndex[i]].x);
+                    m->mBuffer.push_back(temp_normals[normalIndex[i]].y);
+                    m->mBuffer.push_back(temp_normals[normalIndex[i]].z);
                 }
-                vertexIndices.push_back(vertexIndex[0]);
-                vertexIndices.push_back(vertexIndex[1]);
-                vertexIndices.push_back(vertexIndex[2]);
-                uvIndices.push_back(uvIndex[0]);
-                uvIndices.push_back(uvIndex[1]);
-                uvIndices.push_back(uvIndex[2]);
-                normalIndices.push_back(normalIndex[0]);
-                normalIndices.push_back(normalIndex[1]);
-                normalIndices.push_back(normalIndex[2]);
             }
         }
 
-        vec3 point(0.0f, 0.5f, 0.0f);
-        vec3 point2(0.5f, -0.5f, 0.0f);
-        vec3 point3(-0.5f, -0.5f, 0.0f);
-        vec3 color(0.0f, 0.0f, 0.0f);
-        vec3 normal(0.0f, 0.0f, 1.0f);
-
-        m->mVertices.push_back(Vertex(point, color, normal));
-        m->mVertices.push_back(Vertex(point2, color, normal));
-        m->mVertices.push_back(Vertex(point3, color, normal));
-
+        _DEBUG("load mesh buffer with " << buffer.size() << " entries", LOG_CHANNEL::DEFAULT);
         m->mDrawMode = DrawMode::TRIANGLES;
         return unique_ptr<Resource>(m);
     }
