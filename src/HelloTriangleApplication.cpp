@@ -56,6 +56,7 @@ void HelloTriangleApplication::initVulkan()
     this->pickPhysicalDevice();
     this->createLogicalDevice();
     this->createCommandPool();
+    // swapchain and pipeline
     this->createSwapChain();
     this->createImageViews();
     this->createRenderPass();
@@ -63,15 +64,19 @@ void HelloTriangleApplication::initVulkan()
     this->createGraphicPipeline();
     this->createDepthResources();
     this->createFramebuffers();
+    // image
     this->createTextureImage();
     this->createTextureImageView();
     this->createTextureSampler();
+    // geometry setup
     this->createVertexBuffer();
     this->createIndexBuffer();
     this->createUboBuffer();
     this->createDescriptorpool();
     this->createDescriptorSet();
+    // draw command
     this->createCommandBuffers();
+    // other
     this->createOrchestratorObjects();
 }
 

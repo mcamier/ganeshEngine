@@ -26,23 +26,49 @@ class RenderManager :
     friend Manager<RenderManager, RenderManagerInitializeArgs_t>;
 
 private:
+    /**
+     * instance and device related members
+     */
     VkInstance vulkanInstance;
     VkDebugReportCallbackEXT debugReportCallback;
     VkSurfaceKHR surface;
     VkPhysicalDevice physicalDevice;
     VkDevice device;
+
     VkQueue graphicQueue;
     VkQueue presentQueue;
     VkCommandPool commandPool;
+    std::vector<VkCommandBuffer> commandBuffers;
 
     /**
-     *  swapchain related properties
+     *  swapchain related member
      */
-     VkSwapchainKHR swapchain;
-     VkExtent2D swapchainExtent;
-     VkFormat swapchainImageFormat;
+    VkSwapchainKHR swapchain;
+    VkExtent2D swapchainExtent;
+    VkFormat swapchainImageFormat;
     std::vector<VkImage> swapchainImages;
+    std::vector<VkImageView> swapchainImageViews;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
 
+    /**
+     * graphic chain related members
+     */
+    VkRenderPass renderPass;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline pipeline;
+    VkDescriptorSetLayout descriptorSetLayout;
+    VkDescriptorPool descriptorPool;
+    VkDescriptorSet descriptorSet;
+
+    /**
+     * depth test related members
+     */
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
+    VkShaderModule vertShaderModule;
+    VkShaderModule fragShaderModule;
 
 protected:
     RenderManager() = default;
@@ -58,6 +84,12 @@ protected:
     void updateSwapchain();
 
     void createSwapchain();
+
+    void createGraphicPipeline();
+
+    void createFramebuffers();
+
+    void createCommandBuffers();
 
     void destroySwapchain();
 

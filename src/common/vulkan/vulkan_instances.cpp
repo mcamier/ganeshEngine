@@ -1,7 +1,9 @@
 #define GLFW_INCLUDE_VULKAN
+
 #include <GLFW/glfw3.h>
 
 #include <set>
+#include <array>
 #include <algorithm>
 
 #include "vulkan_helpers.hpp"
@@ -70,7 +72,7 @@ void createSurface(VkInstance &vulkanInstance,
                    VkSurfaceKHR *surface)
 {
     VkResult result = glfwCreateWindowSurface(vulkanInstance, window, nullptr, surface);
-    if ( result != VK_SUCCESS)
+    if (result != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create window surface!");
     }
@@ -150,18 +152,22 @@ bool checkDeviceExtensionSupport(VkPhysicalDevice device,
     std::vector<VkExtensionProperties> availableExtensions(extensionsCount);
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionsCount, availableExtensions.data());
 
-    for (int i = 0 ; i < requiredExtensionCount ; i++) {
-        const char * requiredExt = ppRequiredExtensions[i];
+    for (int i = 0; i < requiredExtensionCount; i++)
+    {
+        const char *requiredExt = ppRequiredExtensions[i];
         bool extFound = false;
 
-        for (const VkExtensionProperties& extension : availableExtensions) {
-            if (strcmp(requiredExt, extension.extensionName) == 0) {
+        for (const VkExtensionProperties &extension : availableExtensions)
+        {
+            if (strcmp(requiredExt, extension.extensionName) == 0)
+            {
                 extFound = true;
                 break;
             }
         }
 
-        if (!extFound) {
+        if (!extFound)
+        {
             return false;
         }
     }
@@ -211,20 +217,18 @@ SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device,
                                               VkSurfaceKHR surface)
 {
     SwapChainSupportDetails details;
-    uint32_t formatCount = 0;
-    uint32_t presentModeCount = 0;
-
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
 
+    uint32_t formatCount = 0;
     vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
-
     if (formatCount > 0)
     {
         details.formats.resize(formatCount);
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
     }
 
+    uint32_t presentModeCount = 0;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
     if (presentModeCount > 0)
     {
         details.presentModes.resize(presentModeCount);
@@ -237,9 +241,9 @@ SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device,
 void createLogicalDevice(VkPhysicalDevice physicalDevice,
                          QueueFamilyIndices indices,
                          uint32_t validationLayerCount,
-                         const char** validationLayers,
+                         const char **validationLayers,
                          uint32_t deviceExtensionCount,
-                         const char** deviceExtensions,
+                         const char **deviceExtensions,
                          VkDevice *device)
 {
     VkPhysicalDeviceFeatures deviceFeatures = {};
@@ -310,7 +314,8 @@ VkFormat findSupportedFormat(VkPhysicalDevice physicalDevice,
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
         {
             return candidate;
-        } else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+        }
+        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
         {
             return candidate;
         }
@@ -390,7 +395,6 @@ void createBuffer(VkDevice device,
 }
 
 
-
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats)
 {
     if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
@@ -431,10 +435,16 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
                             uint32_t defaultWidth,
                             uint32_t defaultHeight)
 {
+    /*
+     * Vulkan tells us to match the resolution of the window by setting the width and height in the currentExtent
+     * member. However, some window managers do allow us to differ here and this is indicated by setting the width
+     * and height in currentExtent to a special value: the maximum value of uint32_t
+     */
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
     {
         return capabilities.currentExtent;
-    } else
+    }
+    else
     {
         VkExtent2D actualExtent = {defaultWidth, defaultHeight};
 
@@ -447,6 +457,112 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
     }
 }
 
+
+VkImageView createImageView(VkDevice device,
+                            VkImage image,
+                            VkFormat format,
+                            VkImageAspectFlags aspectFlags)
+{
+    VkImageViewCreateInfo createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    createInfo.image = image;
+    createInfo.format = format;
+    createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    createInfo.subresourceRange.aspectMask = aspectFlags;
+    createInfo.subresourceRange.baseMipLevel = 0;
+    createInfo.subresourceRange.levelCount = 1;
+    createInfo.subresourceRange.baseArrayLayer = 0;
+    createInfo.subresourceRange.layerCount = 1;
+
+    VkImageView imageView;
+    if (VK_SUCCESS != vkCreateImageView(device, &createInfo, nullptr, &imageView))
+    {
+        throw std::runtime_error("failed to create texture image view");
+    }
+
+    return imageView;
+}
+
+
+void createRenderPass(VkPhysicalDevice physicalDevice,
+                      VkDevice device,
+                      VkFormat swapchainImageFormat,
+                      VkRenderPass *renderPass)
+{
+    VkAttachmentDescription depthAttachment = {};
+    depthAttachment.format = findDepthFormat(physicalDevice);
+    depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+    VkAttachmentDescription colorAttachment = {};
+    colorAttachment.format = swapchainImageFormat;
+    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+    VkAttachmentReference colorAttachmentRef = {};
+    colorAttachmentRef.attachment = 0;
+    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkAttachmentReference depthAttachmentRef = {};
+    depthAttachmentRef.attachment = 1;
+    depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+    VkSubpassDescription subpass = {};
+    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorAttachmentRef;
+    subpass.pDepthStencilAttachment = &depthAttachmentRef;
+
+    VkSubpassDependency dependency = {};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+    std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
+
+    VkRenderPassCreateInfo renderPassInfo = {};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+    renderPassInfo.pAttachments = attachments.data();
+    renderPassInfo.subpassCount = 1;
+    renderPassInfo.pSubpasses = &subpass;
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
+
+    if (vkCreateRenderPass(device, &renderPassInfo, nullptr, renderPass) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create render pass!");
+    }
+}
+
+
+void createShaderModule(VkDevice device,
+                        const std::vector<char> &code,
+                        VkShaderModule *shaderModule)
+{
+    VkShaderModuleCreateInfo createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = code.size();
+    createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
+
+    if (VK_SUCCESS != vkCreateShaderModule(device, &createInfo, nullptr, shaderModule))
+    {
+        throw std::runtime_error("failed to create shader module");
+    }
+}
 
 
 VkResult createDebugReportCallbackEXT(VkInstance instance,

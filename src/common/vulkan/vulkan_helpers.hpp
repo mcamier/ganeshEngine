@@ -34,7 +34,7 @@ std::vector<const char *> getRequiredExtensions();
 
 
 bool isValidationLayerSupported(uint16_t validationLayerCount,
-                                const char ** ppValidationLayers);
+                                const char **ppValidationLayers);
 
 
 void createSurface(VkInstance &vulkanInstance,
@@ -52,12 +52,12 @@ void pickPhysicalDevice(VkInstance const &vulkanInstance,
 bool isPhysicalDeviceSuitable(VkPhysicalDevice device,
                               VkSurfaceKHR surface,
                               uint16_t countRequiredExtension,
-                              const char** ppDeviceExtensions);
+                              const char **ppDeviceExtensions);
 
 
 bool checkDeviceExtensionSupport(VkPhysicalDevice device,
                                  uint16_t requiredExtensionCount,
-                                 const char** ppRequiredExtensions);
+                                 const char **ppRequiredExtensions);
 
 
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device,
@@ -70,9 +70,9 @@ SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device,
 void createLogicalDevice(VkPhysicalDevice physicalDevice,
                          QueueFamilyIndices indices,
                          uint32_t validationLayerCount,
-                         const char** validationLayers,
+                         const char **validationLayers,
                          uint32_t deviceExtensionCount,
-                         const char** deviceExtensions,
+                         const char **deviceExtensions,
                          VkDevice *device);
 
 
@@ -116,6 +116,23 @@ VkPresentModeKHR chooseSwapPresentationMode(const std::vector<VkPresentModeKHR> 
 VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
                             uint32_t defaultWidth,
                             uint32_t defaultHeight);
+
+
+VkImageView createImageView(VkDevice device,
+                            VkImage image,
+                            VkFormat format,
+                            VkImageAspectFlags aspectFlags);
+
+
+void createRenderPass(VkPhysicalDevice physicalDevice,
+                      VkDevice device,
+                      VkFormat swapchainImageFormat,
+                      VkRenderPass *renderPass);
+
+
+void createShaderModule(VkDevice device,
+                        const std::vector<char> &code,
+                        VkShaderModule *shaderModule);
 
 
 /*
