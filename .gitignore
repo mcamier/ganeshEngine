@@ -1,9 +1,6 @@
 .idea
 bin
-libs/glfw
-libs/glew
-libs/rapidjson
-libs/glm
+libs
 lib
 doc
 logs
@@ -14,3 +11,4 @@ Makefile
 cmake_install.cmake
 compile_commands.json
 VS2013
+cmake-build-debug
