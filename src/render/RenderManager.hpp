@@ -35,6 +35,15 @@ private:
     VkQueue presentQueue;
     VkCommandPool commandPool;
 
+    /**
+     *  swapchain related properties
+     */
+     VkSwapchainKHR swapchain;
+     VkExtent2D swapchainExtent;
+     VkFormat swapchainImageFormat;
+    std::vector<VkImage> swapchainImages;
+
+
 protected:
     RenderManager() = default;
 
@@ -45,6 +54,12 @@ protected:
     void vInit(RenderManagerInitializeArgs_t args) override;
 
     void vDestroy() override;
+
+    void updateSwapchain();
+
+    void createSwapchain();
+
+    void destroySwapchain();
 
 public:
     void vUpdate() override;

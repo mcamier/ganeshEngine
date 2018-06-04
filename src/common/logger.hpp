@@ -62,7 +62,8 @@ struct LoggerManagerInitializeArgs_t
     LOG_CHANNEL logChannel;
     bool consoleLogEnabled;
     bool fileLogEnabled;
-    const char * fileLogFilename;
+    const char * fileLogFolder;
+    const char * fileLogBaseName;
 };
 
 
@@ -146,40 +147,44 @@ class FileLogger : public ILogger {
 
 private:
     /** Max amount of LogEntry stored in memory before being written in the log file */
-    int mMaxBulkEntry;
+    int maxBulkEntry;
 
     /** Current amount of LogEntry stored in memory before being written in the log file */
-    int mCurrentAmount;
+    int currentAmount;
 
-    /** Target logging filename */
-    const char *mFilename;
+    /** Target logging folder */
+    const char *folder;
+
+    const char *baseName;
 
     /** Storage for LogEntry s
      * DoubleBufferedStackAllocator is used to separate LogEntry to write at a time and those that will wait until
      * next file writing
      */
-    DoubleBufferedStackAllocator *mDBSAllocator;
+    DoubleBufferedStackAllocator *pDBSAllocator;
 
     /** List of LogEntry s that are written or has been written */
-    std::list<logEntry_t *> mCurrentEntries;
+    std::list<logEntry_t *> currentEntries;
 
     /** List of LogEntry s that will be written later */
-    std::list<logEntry_t *> mPendingEntries;
+    std::list<logEntry_t *> pendingEntries;
 
 public:
     FileLogger(LOG_LEVEL logLvl,
                LOG_CHANNEL logChannel,
-               const char *filename,
+               const char *folder,
+               const char *baseName,
                int maxBulkEntry = 5000) :
             ILogger(logLvl, logChannel),
-            mMaxBulkEntry(maxBulkEntry),
-            mCurrentAmount(0),
-            mFilename(filename) {
+            maxBulkEntry(maxBulkEntry),
+            currentAmount(0),
+            folder(folder),
+            baseName(baseName) {
 
-        mDBSAllocator = new DoubleBufferedStackAllocator(mMaxBulkEntry * sizeof(logEntry_t));
-        mDBSAllocator->initialize();
-        mCurrentEntries = std::list<logEntry_t *>();
-        mPendingEntries = std::list<logEntry_t *>();
+        pDBSAllocator = new DoubleBufferedStackAllocator(maxBulkEntry * sizeof(logEntry_t));
+        pDBSAllocator->initialize();
+        currentEntries = std::list<logEntry_t *>();
+        pendingEntries = std::list<logEntry_t *>();
     }
 
     FileLogger(const FileLogger &) = delete;
@@ -234,6 +239,10 @@ private:
      * @param message message to log
      */
     void appendLogEntry(LOG_LEVEL lvl, const char *file, int line, std::string &message);
+
+    FILE * getLogFile();
+
+    std::string getDateTimeNow();
 };
 
 
@@ -243,8 +252,8 @@ class LoggerManager :
     friend Manager<LoggerManager, LoggerManagerInitializeArgs_t>;
 
 private:
-    ConsoleLogger *consoleLogger;
-    FileLogger *fileLogger;
+    ConsoleLogger *pConsoleLogger;
+    FileLogger *pFileLogger;
 
 protected:
     LoggerManager() = default;

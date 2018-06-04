@@ -4,6 +4,7 @@
 #include <map>
 #include <chrono>
 #include <string>
+#include <iostream>
 
 #include "managers.hpp"
 
@@ -67,14 +68,12 @@ struct ProfilerGlobalEntry
 {
     float minDurationMs;
     float maxDurationMs;
-    float averageDurationMs;
     uint32_t samplesAmount;
     double totalDurationMs;
 
     ProfilerGlobalEntry() :
             minDurationMs(.0f),
             maxDurationMs(.0f),
-            averageDurationMs(.0f),
             totalDurationMs(.0f),
             samplesAmount(0)
     {}
@@ -99,7 +98,6 @@ struct ProfilerManagerInitializeArgs_t
 class ProfilerManager :
         public Manager<ProfilerManager, ProfilerManagerInitializeArgs_t>
 {
-
     friend Manager<ProfilerManager, ProfilerManagerInitializeArgs_t>;
 
 private:

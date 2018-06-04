@@ -45,7 +45,8 @@ void Application::init()
 
     LoggerManagerInitializeArgs_t loggerManagerInitArgs = {};
     loggerManagerInitArgs.fileLogEnabled = true;
-    loggerManagerInitArgs.fileLogFilename = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/cmake-build-debug/log.txt";
+    loggerManagerInitArgs.fileLogBaseName = "log";
+    loggerManagerInitArgs.fileLogFolder = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/cmake-build-debug";
     loggerManagerInitArgs.consoleLogEnabled = true;
     loggerManagerInitArgs.logLevel = LOG_LEVEL::DEBUG;
     loggerManagerInitArgs.logChannel = LOG_CHANNEL::DEFAULT | LOG_CHANNEL::RENDER;

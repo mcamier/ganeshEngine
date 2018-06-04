@@ -106,6 +106,18 @@ void createBuffer(VkDevice device,
                   VkBuffer &buffer,
                   VkDeviceMemory &bufferMemory);
 
+
+VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
+
+
+VkPresentModeKHR chooseSwapPresentationMode(const std::vector<VkPresentModeKHR> &availableModes);
+
+
+VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
+                            uint32_t defaultWidth,
+                            uint32_t defaultHeight);
+
+
 /*
  * Debug callback report utils
  */

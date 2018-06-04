@@ -33,10 +33,10 @@ void ProfilerManager::vUpdate()
         if (globalEntry == globalSamplesMap.end())
         {
             ProfilerGlobalEntry newGlobalSample;
+            newGlobalSample.samplesAmount++;
+            newGlobalSample.totalDurationMs = entry.second.durationMs;
             newGlobalSample.minDurationMs = entry.second.durationMs;
             newGlobalSample.maxDurationMs = entry.second.durationMs;
-            newGlobalSample.averageDurationMs = entry.second.durationMs;
-            newGlobalSample.samplesAmount++;
             globalSamplesMap.insert(std::make_pair(entry.first, newGlobalSample));
         }
         else

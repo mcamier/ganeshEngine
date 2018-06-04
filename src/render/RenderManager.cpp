@@ -95,6 +95,103 @@ void RenderManager::vInit(RenderManagerInitializeArgs_t args)
 }
 
 
+void RenderManager::createSwapchain()
+{
+    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(this->physicalDevice, this->surface);
+
+    this->swapchainExtent = chooseSwapExtent(swapChainSupport.capabilities, 800, 600);
+    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    this->swapchainImageFormat = surfaceFormat.format;
+    VkPresentModeKHR presentMode = chooseSwapPresentationMode(swapChainSupport.presentModes);
+
+    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+    if (swapChainSupport.capabilities.maxImageCount > 0 &&
+        imageCount > swapChainSupport.capabilities.maxImageCount)
+    {
+        imageCount = swapChainSupport.capabilities.maxImageCount;
+    }
+
+    VkSwapchainCreateInfoKHR createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    createInfo.surface = this->surface;
+    createInfo.minImageCount = imageCount;
+    createInfo.imageFormat = this->swapchainImageFormat;
+    createInfo.imageExtent = this->swapchainExtent;
+    createInfo.imageArrayLayers = 1;
+    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+    QueueFamilyIndices indices = findQueueFamilies(this->physicalDevice, this->surface);
+    uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
+    if (indices.graphicsFamily != indices.presentFamily)
+    {
+        createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+        createInfo.queueFamilyIndexCount = 2;
+        createInfo.pQueueFamilyIndices = queueFamilyIndices;
+    } else
+    {
+        createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        createInfo.queueFamilyIndexCount = 0;
+        createInfo.pQueueFamilyIndices = nullptr;
+    }
+
+    createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    createInfo.presentMode = presentMode;
+    createInfo.clipped = VK_TRUE;
+    createInfo.oldSwapchain = VK_NULL_HANDLE;
+
+    if (VK_SUCCESS != vkCreateSwapchainKHR(this->device, &createInfo, nullptr, &this->swapchain))
+    {
+        throw std::runtime_error("swapchain creation failed");
+    }
+
+    vkGetSwapchainImagesKHR(this->device, this->swapchain, &imageCount, nullptr);
+    this->swapchainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(this->device, this->swapchain, &imageCount, this->swapchainImages.data());
+}
+
+
+void RenderManager::updateSwapchain()
+{
+    vkDeviceWaitIdle(this->device);
+
+    this->destroySwapchain();
+
+    this->createSwapchain();
+    //this->createImageViews();
+    //this->createRenderPass();
+    //this->createGraphicPipeline();
+    //this->createDepthResources();
+    //this->createFramebuffers();
+    //this->createCommandBuffers();
+}
+
+
+void RenderManager::destroySwapchain()
+{
+    /*vkDestroyImageView(device, this->depthImageView, nullptr);
+    vkDestroyImage(device, this->depthImage, nullptr);
+    vkFreeMemory(device, this->depthImageMemory, nullptr);
+
+    for (auto framebuffer : this->swapChainFramebuffers)
+    {
+        vkDestroyFramebuffer(device, framebuffer, nullptr);
+    }
+    vkFreeCommandBuffers(this->device, this->commandPool, static_cast<uint32_t>(commandBuffers.size()),
+                         commandBuffers.data());
+
+    vkDestroyPipeline(this->device, this->pipeline, nullptr);
+    vkDestroyPipelineLayout(this->device, this->pipelineLayout, nullptr);
+    vkDestroyRenderPass(this->device, this->renderPass, nullptr);
+    for (auto imageView : this->swapchainImageViews)
+    {
+        vkDestroyImageView(this->device, imageView, nullptr);
+    }
+    vkDestroySwapchainKHR(this->device, this->swapchain, nullptr);
+     */
+}
+
+
 void RenderManager::vUpdate()
 {
 }
