@@ -16,14 +16,17 @@ namespace rep
 void Application::run()
 {
     this->init();
+    this->vInit();
 
     while (!WindowManager::get().shouldClose())
     {
         WindowManager::get().poolEvent();
         ProfilerManager::get().vUpdate();
+
+        this->vUpdate();
     }
 
-    this->clean();
+    this->destroy();
 }
 
 void Application::init()
@@ -62,8 +65,9 @@ void Application::init()
     END_PROFILING
 }
 
-void Application::clean()
+void Application::destroy()
 {
+    this->vDestroy();
     RenderManager::destroy();
     WindowManager::destroy();
 

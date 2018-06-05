@@ -22,9 +22,9 @@ struct WindowManagerInitializeArgs_t
 
 
 class WindowManager :
-        public Manager<WindowManager, WindowManagerInitializeArgs_t>
+        public SingletonManager<WindowManager, WindowManagerInitializeArgs_t>
 {
-    friend Manager<WindowManager, WindowManagerInitializeArgs_t>;
+    friend SingletonManager<WindowManager, WindowManagerInitializeArgs_t>;
 private:
     std::string windowName;
     uint16_t windowWidth;
@@ -53,8 +53,6 @@ public:
     bool shouldClose();
 
     GLFWwindow* const getWindowHandle();
-
-
 
 };
 

@@ -30,6 +30,35 @@ struct SwapChainSupportDetails
 };
 
 
+struct PipelineInfos
+{
+    VkShaderModule vertexShaderModule;
+    VkShaderModule geometryShaderModule;
+    VkShaderModule fragmentShaderModule;
+
+    VkVertexInputBindingDescription vertexInputBindingDescription;
+    std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+    VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+    VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
+    /**
+     * Once the pipeline created, pipeline member will store the pipeline handler
+     */
+    VkPipeline pipeline = VK_NULL_HANDLE;
+};
+
+void createGraphicPipeline(VkDevice device,
+                           VkRenderPass renderPass,
+                           VkExtent2D extent,
+                           const char *vertShaderFilename,
+                           const char *fragShaderFilename,
+                           PipelineInfos *pipelineInfos);
+
+
+void destroyPipeline(VkDevice device,
+                     PipelineInfos & pipelineInfos);
+
+
 std::vector<const char *> getRequiredExtensions();
 
 
@@ -82,9 +111,14 @@ void createCommandPool(VkPhysicalDevice physicalDevice,
                        VkCommandPool *commandPool);
 
 
+void createDescriptorPool(VkDevice device,
+                          VkDescriptorPool *descriptorPool);
+
+
 VkFormat findSupportedFormat(VkPhysicalDevice physicalDevice,
                              const std::vector<VkFormat> &candidates,
-                             VkImageTiling tiling, VkFormatFeatureFlags features);
+                             VkImageTiling tiling,
+                             VkFormatFeatureFlags features);
 
 
 VkFormat findDepthFormat(VkPhysicalDevice physicalDevice);
@@ -163,5 +197,61 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags,
 }
 
 }
+
+
+/*
+#ifdef _WIN32
+
+    #include <Windows.h>
+
+    #define LIBRARY_TYPE HMODULE
+    #define LoadFunction GetProcAddress
+#elif defined __linux
+    #include <dlfcn.h>
+    #define LIBRARY_TYPE void*
+    #define LoadFunction dlsym
+#endif
+
+namespace rep
+{
+
+
+    void getVulkanLibHandler(LIBRARY_TYPE &vulkan_library)
+    {
+#ifdef _WIN32
+        vulkan_library = LoadLibrary("vulkan-1.dll");
+#elif defined __linux
+        vulkan_library = dlopen("vulkan-1.so.1");
+#endif
+
+        if (nullptr == vulkan_library)
+        {
+            throw std::runtime_error("failed to get handler on vulkan dynamic library");
+        }
+    }
+
+    void bindVulkanPointertoFunctions(LIBRARY_TYPE const &vulkan_library)
+    {
+#define EXPORTED_VULKAN_FUNCTION(function)\
+    function = (PFN_##function) LoadFunction(vulkan_library, #function);\
+    if((function) == nullptr){\
+        throw std::runtime_error("failed to load vulkan function pointer");\
+    }
+
+#define GLOBAL_LEVEL_VULKAN_FUNCTION(function) \
+    function = (PFN_##function) vkGetInstanceProcAddr(nullptr, #function);\
+    if((function) == nullptr){\
+        throw std::runtime_error("failed to load vulkan function pointer");\
+    }
+
+#define INSTANCE_LEVEL_VULKAN_FUNCTION(function)
+#define INSTANCE_LEVEL_VULKAN_FUNCTION_FROM_EXTENSION(function, extension)
+#define DEVICE_LEVEL_VULKAN_FUNCTION(function)
+#define DEVICE_LEVEL_VULKAN_FUNCTION_FROM_EXTENSION(function, extension)
+
+#include "render/listVulkanFunctions.inc.hpp"
+    }
+}
+*/
 
 #endif

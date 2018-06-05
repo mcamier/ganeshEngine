@@ -96,9 +96,9 @@ struct ProfilerManagerInitializeArgs_t
  * provides related datas for debugging purposes
  */
 class ProfilerManager :
-        public Manager<ProfilerManager, ProfilerManagerInitializeArgs_t>
+        public SingletonManager<ProfilerManager, ProfilerManagerInitializeArgs_t>
 {
-    friend Manager<ProfilerManager, ProfilerManagerInitializeArgs_t>;
+    friend SingletonManager<ProfilerManager, ProfilerManagerInitializeArgs_t>;
 
 private:
     /**

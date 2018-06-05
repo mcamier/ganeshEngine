@@ -247,9 +247,9 @@ private:
 
 
 class LoggerManager :
-        public Manager<LoggerManager, LoggerManagerInitializeArgs_t>
+        public SingletonManager<LoggerManager, LoggerManagerInitializeArgs_t>
 {
-    friend Manager<LoggerManager, LoggerManagerInitializeArgs_t>;
+    friend SingletonManager<LoggerManager, LoggerManagerInitializeArgs_t>;
 
 private:
     ConsoleLogger *pConsoleLogger;

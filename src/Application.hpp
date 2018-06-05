@@ -15,14 +15,25 @@ private:
     Clock clock;
 
 public:
+    Application() = default;
+
+    Application(const Application &) = delete;
+
+    Application &operator=(const Application &) = delete;
+
     void run();
 
 private:
-
     void init();
 
-    void clean();
+    void destroy();
 
+protected:
+    virtual void vInit() = 0;
+
+    virtual void vUpdate() = 0;
+
+    virtual void vDestroy() = 0;
 };
 
 }

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../common/managers.hpp"
+#include "../common/vulkan/vulkan_helpers.hpp"
 
 namespace rep
 {
@@ -21,11 +22,20 @@ struct RenderManagerInitializeArgs_t
 
 
 class RenderManager :
-        public Manager<RenderManager, RenderManagerInitializeArgs_t>
+        public SingletonManager<RenderManager, RenderManagerInitializeArgs_t>
 {
-    friend Manager<RenderManager, RenderManagerInitializeArgs_t>;
+    friend SingletonManager<RenderManager, RenderManagerInitializeArgs_t>;
 
 private:
+    /**
+     * Synchronisation related members
+     */
+    const int MAX_CONCURRENT_FRAMES = 2;
+    size_t currentFrame = 0;
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFligtFences;
+
     /**
      * instance and device related members
      */
@@ -67,8 +77,8 @@ private:
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
 
-    VkShaderModule vertShaderModule;
-    VkShaderModule fragShaderModule;
+
+    std::vector<PipelineInfos> availablePipelines;
 
 protected:
     RenderManager() = default;
@@ -81,20 +91,26 @@ protected:
 
     void vDestroy() override;
 
+    void destroySwapchain();
+
     void updateSwapchain();
 
     void createSwapchain();
 
-    void createGraphicPipeline();
+    void createDefaultGraphicPipeline(const char *vertShaderFilename,
+                                      const char *fragShaderFilename);
 
     void createFramebuffers();
 
     void createCommandBuffers();
 
-    void destroySwapchain();
+    void createAsyncObjects();
+
+    void destroyAsyncObjects();
 
 public:
     void vUpdate() override;
+
 };
 
 }

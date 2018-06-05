@@ -65,8 +65,39 @@ public:
 };
 
 
+template<typename T, typename INIT_T>
+class Manager
+{
+
+protected:
+    virtual void vInit(INIT_T initStructArg) = 0;
+
+    virtual void vDestroy() = 0;
+
+public:
+    virtual void vUpdate() = 0;
+};
+
+
 /**
-*  Manager classes meant to be used as global services providers, they are singletons and requires
+ *  Template specialization for Manager class without init args requirement
+ */
+template<typename T>
+class Manager<T, void>
+{
+
+protected:
+    virtual void vInit() = 0;
+
+    virtual void vDestroy() = 0;
+
+public:
+    virtual void vUpdate() = 0;
+};
+
+
+/**
+*  SingletonManager classes meant to be used as global services providers, they are singletons and requires
 *  to be initialized within the Application's initialization and destroyed within Application's
 *  destruction.
 *  They could must accessed through the entire application
@@ -75,20 +106,21 @@ public:
 *  Furthermore, its constructor should be private or private as a semantic requirement
 */
 template<typename T, typename INIT_T>
-class Manager :
-        public Singleton<T>
+class SingletonManager :
+        public Singleton<T>,
+        public virtual Manager<T, INIT_T>
 {
 public:
     static void initialize(INIT_T initStructArg)
     {
-        static_assert(std::is_base_of<Manager, T>::value, "Type T must be derivated from Manager");
+        static_assert(std::is_base_of<SingletonManager, T>::value, "Type T must be derivated from Manager");
 
         if ((Singleton<T>::_state() & UNINITIALIZED) == UNINITIALIZED)
         {
             ASSERT(Singleton<T>::_instance() == nullptr);
 
             Singleton<T>::_instance() = new T();
-            ((Manager *) Singleton<T>::_instance())->vInit(std::forward<INIT_T>(initStructArg));
+            ((SingletonManager *) Singleton<T>::_instance())->vInit(std::forward<INIT_T>(initStructArg));
             Singleton<T>::_state() = INITIALIZED;
         }
     }
@@ -98,21 +130,13 @@ public:
     {
         ASSERT_FLAG(Singleton<T>::_state(), INITIALIZED);
 
-        ((Manager *) Singleton<T>::_instance())->vDestroy();
+        ((SingletonManager *) Singleton<T>::_instance())->vDestroy();
         delete Singleton<T>::_instance();
         Singleton<T>::_instance() = nullptr;
         Singleton<T>::_state() = DESTROYED;
     }
-
-
-protected:
-    virtual void vInit(INIT_T initStructArg) = 0;
-
-    virtual void vDestroy() = 0;
-
-    virtual void vUpdate() = 0;
-
 };
+
 
 }
 

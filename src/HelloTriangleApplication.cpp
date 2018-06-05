@@ -64,6 +64,8 @@ void HelloTriangleApplication::initVulkan()
     this->createGraphicPipeline();
     this->createDepthResources();
     this->createFramebuffers();
+    this->createDescriptorpool();
+    this->createDescriptorSet();
     // image
     this->createTextureImage();
     this->createTextureImageView();
@@ -72,8 +74,6 @@ void HelloTriangleApplication::initVulkan()
     this->createVertexBuffer();
     this->createIndexBuffer();
     this->createUboBuffer();
-    this->createDescriptorpool();
-    this->createDescriptorSet();
     // draw command
     this->createCommandBuffers();
     // other
