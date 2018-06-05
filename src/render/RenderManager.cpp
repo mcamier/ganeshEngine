@@ -9,6 +9,8 @@ namespace rep
 
 void RenderManager::vInit(RenderManagerInitializeArgs_t args)
 {
+    REP_DEBUG("RenderManager initialization...", LOG_CHANNEL::RENDER)
+
     VkApplicationInfo appInfo = {};
     appInfo.pApplicationName = "Hello Triangle";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -48,6 +50,7 @@ void RenderManager::vInit(RenderManagerInitializeArgs_t args)
     {
         throw std::runtime_error("Create vulkan instance failed");
     }
+    REP_DEBUG("  vulkan instance initialized", LOG_CHANNEL::RENDER);
     /**
      * Setup callback method for validation layer
      */
@@ -61,12 +64,12 @@ void RenderManager::vInit(RenderManagerInitializeArgs_t args)
     {
         throw std::runtime_error("Callback for validation layer failed");
     }
-
-    this->createAsyncObjects();
+    REP_DEBUG("  debug callback initialized", LOG_CHANNEL::RENDER);
 
     createSurface(this->vulkanInstance,
                   WindowManager::get().getWindowHandle(),
                   &this->surface);
+    REP_DEBUG("  surface initialized", LOG_CHANNEL::RENDER);
 
     std::array<const char *, 1> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     pickPhysicalDevice(this->vulkanInstance,
@@ -74,6 +77,7 @@ void RenderManager::vInit(RenderManagerInitializeArgs_t args)
                        static_cast<uint16_t>(deviceExtensions.size()),
                        deviceExtensions.data(),
                        &this->physicalDevice);
+    REP_DEBUG("  debug callback choosed", LOG_CHANNEL::RENDER);
 
     QueueFamilyIndices indices = findQueueFamilies(this->physicalDevice, this->surface);
 
@@ -84,33 +88,52 @@ void RenderManager::vInit(RenderManagerInitializeArgs_t args)
                         static_cast<uint32_t>(deviceExtensions.size()),
                         deviceExtensions.data(),
                         &this->device);
+    REP_DEBUG("  logical device initialized", LOG_CHANNEL::RENDER);
+
+    this->createAsyncObjects();
+    REP_DEBUG("  async objects initialized", LOG_CHANNEL::RENDER);
 
     vkGetDeviceQueue(this->device, indices.graphicsFamily, 0, &this->graphicQueue);
     vkGetDeviceQueue(this->device, indices.presentFamily, 0, &this->presentQueue);
 
     this->createSwapchain();
+    REP_DEBUG("  swapchain initialized", LOG_CHANNEL::RENDER);
 
     createRenderPass(this->physicalDevice,
                      this->device,
                      this->swapchainImageFormat,
                      &this->renderPass);
+    REP_DEBUG("  renderpass initialized", LOG_CHANNEL::RENDER);
+
+
+    createDepthTest();
+    REP_DEBUG("  depth test initialized", LOG_CHANNEL::RENDER);
 
     createCommandPool(this->physicalDevice,
                       this->device,
                       indices,
                       &this->commandPool);
+    REP_DEBUG("  command pool initialized", LOG_CHANNEL::RENDER);
 
     createDescriptorPool(this->device,
                          &this->descriptorPool);
+    REP_DEBUG("  descriptor pool initialized", LOG_CHANNEL::RENDER);
 
     /**
      * Setup a first default pipeline
      */
+    REP_DEBUG("  default graphic pipeline initialization...", LOG_CHANNEL::RENDER);
     this->createDefaultGraphicPipeline(
             "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/vert.spv",
             "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/frag.spv");
+    REP_DEBUG("  default graphic pipeline initialized", LOG_CHANNEL::RENDER);
+
     this->createFramebuffers();
+    REP_DEBUG("  framebuffers initialized", LOG_CHANNEL::RENDER);
+
     this->createCommandBuffers();
+    REP_DEBUG("  command buffers initialized", LOG_CHANNEL::RENDER);
+
 
     REP_DEBUG("RenderManager initialized", LOG_CHANNEL::RENDER)
 }
@@ -262,6 +285,33 @@ void RenderManager::createDefaultGraphicPipeline(const char *vertShaderFilename,
 }
 
 
+void RenderManager::createDepthTest()
+{
+    VkFormat depthFormat = findDepthFormat(this->physicalDevice);
+
+    createImage(this->device,
+                this->physicalDevice,
+                this->swapChainExtent.width,
+                this->swapChainExtent.height,
+                depthFormat,
+                VK_IMAGE_TILING_OPTIMAL,
+                VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                this->depthImage,
+                this->depthImageMemory);
+
+    this->depthImageView = createImageView(this->depthImage,
+                                           depthFormat ,
+                                           VK_IMAGE_ASPECT_DEPTH_BIT);
+    transitionImageLayout(this->device,
+                          this->commandPool,
+                          this->graphicQueue,
+                          this->depthImage,
+                          depthFormat,
+                          VK_IMAGE_LAYOUT_UNDEFINED,
+                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+}
+
+
 void RenderManager::createFramebuffers()
 {
     size_t size = this->swapchainImageViews.size();
@@ -287,6 +337,7 @@ void RenderManager::createFramebuffers()
         {
             throw std::runtime_error("failed to create framebuffers");
         }
+        REP_WARNING("  framebuffer is initialized", LOG_CHANNEL::RENDER)
     }
 }
 
@@ -472,8 +523,8 @@ void RenderManager::vDestroy()
     destroySwapchain();
     vkDestroyDescriptorPool(this->device, this->descriptorPool, nullptr);
     vkDestroyCommandPool(this->device, this->commandPool, nullptr);
-    vkDestroyDevice(this->device, nullptr);
     this->destroyAsyncObjects();
+    vkDestroyDevice(this->device, nullptr);
     destroyDebugReportCallbackEXT(this->vulkanInstance, this->debugReportCallback, nullptr);
     vkDestroyInstance(this->vulkanInstance, nullptr);
     REP_DEBUG("RenderManager destroyed", LOG_CHANNEL::RENDER)

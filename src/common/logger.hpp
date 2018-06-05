@@ -228,7 +228,7 @@ private:
     /**
      * Internal helper writting pending LogEntry s into file
      */
-    void writePendingLogsIntroFileAndSwap();
+    void writePendingLogsIntoFileAndSwap();
 
     /**
      * Enqueue a LogEntry before being written in the log file

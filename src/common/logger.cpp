@@ -33,7 +33,7 @@ void FileLogger::vInitialize(void)
 
 void FileLogger::vDestroy(void)
 {
-    writePendingLogsIntroFileAndSwap();
+    writePendingLogsIntoFileAndSwap();
 }
 
 void FileLogger::vLog(LOG_LEVEL lvl, const char *file, int line, std::string &message)
@@ -46,7 +46,7 @@ void FileLogger::vLog(LOG_LEVEL lvl, const char *file, int line, std::string &me
         }
         else
         {
-            writePendingLogsIntroFileAndSwap();
+            writePendingLogsIntoFileAndSwap();
             appendLogEntry(lvl, file, line, message);
         }
     }
@@ -54,10 +54,10 @@ void FileLogger::vLog(LOG_LEVEL lvl, const char *file, int line, std::string &me
 
 void FileLogger::vFlush()
 {
-    writePendingLogsIntroFileAndSwap();
+    writePendingLogsIntoFileAndSwap();
 }
 
-void FileLogger::writePendingLogsIntroFileAndSwap()
+void FileLogger::writePendingLogsIntoFileAndSwap()
 {
     FILE *fp = getLogFile();
     if (fp != nullptr)
@@ -131,7 +131,7 @@ FILE *FileLogger::getLogFile()
             .append(dateAsString)
             .append(".txt");
 
-    fopen_s(&fp, filename.c_str(), "w");
+    fopen_s(&fp, filename.c_str(), "a+");
     return fp;
 }
 

@@ -102,6 +102,8 @@ protected:
 
     void createFramebuffers();
 
+    void createDepthTest();
+
     void createCommandBuffers();
 
     void createAsyncObjects();

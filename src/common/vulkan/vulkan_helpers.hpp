@@ -56,7 +56,7 @@ void createGraphicPipeline(VkDevice device,
 
 
 void destroyPipeline(VkDevice device,
-                     PipelineInfos & pipelineInfos);
+                     PipelineInfos &pipelineInfos);
 
 
 std::vector<const char *> getRequiredExtensions();
@@ -158,6 +158,17 @@ VkImageView createImageView(VkDevice device,
                             VkImageAspectFlags aspectFlags);
 
 
+void createImage(VkDevice device,
+                 VkPhysicalDevice,
+                 uint32_t width,
+                 uint32_t height,
+                 VkFormat format,
+                 VkImageTiling tiling,
+                 VkImageUsageFlags usages,
+                 VkImage *image,
+                 VkDeviceMemory deviceMemory);
+
+
 void createRenderPass(VkPhysicalDevice physicalDevice,
                       VkDevice device,
                       VkFormat swapchainImageFormat,
@@ -167,6 +178,26 @@ void createRenderPass(VkPhysicalDevice physicalDevice,
 void createShaderModule(VkDevice device,
                         const std::vector<char> &code,
                         VkShaderModule *shaderModule);
+
+
+
+VkCommandBuffer beginSingleTimeCommand(VkDevice device,
+                                       VkCommandPool commandPool);
+
+
+void endSingleTimeCommand(VkDevice device,
+                          VkCommandPool commandPool,
+                          VkCommandBuffer commandBuffer,
+                          VkQueue queueToSubmit);
+
+
+void transitionImageLayout(VkDevice device,
+                           VkCommandPool commandPool,
+                           VkQueue queue,
+                           VkImage image,
+                           VkFormat format,
+                           VkImageLayout oldLayout,
+                           VkImageLayout newLayout);
 
 
 /*
@@ -193,6 +224,10 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags,
                                                     void *userData)
 {
     REP_WARNING(msg, LOG_CHANNEL::RENDER)
+    /**
+     * We do want to loose log entries if vulkan crash the application after this error
+     */
+    LoggerManager::get().flush();
     return VK_FALSE;
 }
 

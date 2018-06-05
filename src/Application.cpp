@@ -24,6 +24,7 @@ void Application::run()
         ProfilerManager::get().vUpdate();
 
         this->vUpdate();
+        //RenderManager::get().vUpdate();
     }
 
     this->destroy();
