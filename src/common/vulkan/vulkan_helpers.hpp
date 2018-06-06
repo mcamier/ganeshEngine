@@ -30,7 +30,7 @@ struct SwapChainSupportDetails
 };
 
 
-struct PipelineInfos
+struct pipelineInfos_t
 {
     VkShaderModule vertexShaderModule;
     VkShaderModule geometryShaderModule;
@@ -39,24 +39,26 @@ struct PipelineInfos
     VkVertexInputBindingDescription vertexInputBindingDescription;
     std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
 
-    VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+    VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
     VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
     /**
      * Once the pipeline created, pipeline member will store the pipeline handler
      */
+    VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     VkPipeline pipeline = VK_NULL_HANDLE;
 };
 
 void createGraphicPipeline(VkDevice device,
+                           VkDescriptorPool descriptorPool,
                            VkRenderPass renderPass,
                            VkExtent2D extent,
                            const char *vertShaderFilename,
                            const char *fragShaderFilename,
-                           PipelineInfos *pipelineInfos);
+                           pipelineInfos_t *pipelineInfos);
 
 
 void destroyPipeline(VkDevice device,
-                     PipelineInfos &pipelineInfos);
+                     pipelineInfos_t &pipelineInfos);
 
 
 std::vector<const char *> getRequiredExtensions();
@@ -107,7 +109,7 @@ void createLogicalDevice(VkPhysicalDevice physicalDevice,
 
 void createCommandPool(VkPhysicalDevice physicalDevice,
                        VkDevice device,
-                       QueueFamilyIndices indices,
+                       uint32_t queueIndex,
                        VkCommandPool *commandPool);
 
 
@@ -165,8 +167,8 @@ void createImage(VkDevice device,
                  VkFormat format,
                  VkImageTiling tiling,
                  VkImageUsageFlags usages,
-                 VkImage *image,
-                 VkDeviceMemory deviceMemory);
+                 VkImage &image,
+                 VkDeviceMemory &deviceMemory);
 
 
 void createRenderPass(VkPhysicalDevice physicalDevice,
@@ -178,7 +180,6 @@ void createRenderPass(VkPhysicalDevice physicalDevice,
 void createShaderModule(VkDevice device,
                         const std::vector<char> &code,
                         VkShaderModule *shaderModule);
-
 
 
 VkCommandBuffer beginSingleTimeCommand(VkDevice device,
@@ -198,6 +199,20 @@ void transitionImageLayout(VkDevice device,
                            VkFormat format,
                            VkImageLayout oldLayout,
                            VkImageLayout newLayout);
+
+
+void populateDeviceMemory(VkDevice device,
+                          VkDeviceMemory deviceMemory,
+                          uint32_t offset,
+                          uint32_t size,
+                          void *pSrc);
+
+void copyBuffer(VkDevice device,
+                VkCommandPool commandPool,
+                VkQueue queueToSubmit,
+                VkBuffer sourceBuffer,
+                VkBuffer destinationBuffer,
+                uint64_t size);
 
 
 /*
@@ -223,7 +238,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags,
                                                     const char *msg,
                                                     void *userData)
 {
-    REP_WARNING(msg, LOG_CHANNEL::RENDER)
+    REP_ERROR(msg, LOG_CHANNEL::RENDER)
     /**
      * We do want to loose log entries if vulkan crash the application after this error
      */

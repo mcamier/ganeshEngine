@@ -11,11 +11,12 @@ namespace rep
 {
 
 void createGraphicPipeline(VkDevice device,
+                           VkDescriptorPool descriptorPool,
                            VkRenderPass renderPass,
                            VkExtent2D extent,
                            const char *vertShaderFilename,
                            const char *fragShaderFilename,
-                           PipelineInfos *pipelineInfos)
+                           pipelineInfos_t *pipelineInfos)
 {
     createShaderModule(device,
                        readFile(vertShaderFilename),
@@ -54,7 +55,7 @@ void createGraphicPipeline(VkDevice device,
     vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 
     /**
-     * descriptor
+     * descriptor set layout
      */
     VkDescriptorSetLayoutBinding uboLayoutBinding = {};
     uboLayoutBinding.binding = 0;
@@ -77,11 +78,28 @@ void createGraphicPipeline(VkDevice device,
     descSetLayoutCreateInfo.bindingCount = static_cast<uint32_t>(descSetLayoutBindings.size());
     descSetLayoutCreateInfo.pBindings = descSetLayoutBindings.data();
 
-    if (VK_SUCCESS != vkCreateDescriptorSetLayout(device, &descSetLayoutCreateInfo, nullptr, &pipelineInfos->descriptorSetLayout))
+    if (VK_SUCCESS !=
+        vkCreateDescriptorSetLayout(device, &descSetLayoutCreateInfo, nullptr, &pipelineInfos->descriptorSetLayout))
     {
         throw std::runtime_error("failed to create a descriptor layout");
     }
     REP_DEBUG("    descriptorSetLayout created", LOG_CHANNEL::RENDER);
+
+    /**
+     * descriptor set
+     */
+    VkDescriptorSetAllocateInfo descriptorSetAllocInfo = {};
+    descriptorSetAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    descriptorSetAllocInfo.descriptorPool = descriptorPool;
+    descriptorSetAllocInfo.pSetLayouts = &pipelineInfos->descriptorSetLayout;
+    descriptorSetAllocInfo.descriptorSetCount = 1;
+
+    if (VK_SUCCESS != vkAllocateDescriptorSets(device, &descriptorSetAllocInfo, &pipelineInfos->descriptorSet))
+    {
+        throw std::runtime_error("failed to create a descriptorSet");
+    }
+
+    REP_DEBUG("    descriptorSet created", LOG_CHANNEL::RENDER);
 
     /*
      * input assembly
@@ -121,7 +139,8 @@ void createGraphicPipeline(VkDevice device,
     rasterizer.depthClampEnable = VK_FALSE;
     rasterizer.lineWidth = 1.0f;
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
+    //rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
     rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
@@ -215,7 +234,7 @@ void createGraphicPipeline(VkDevice device,
 
 
 void destroyPipeline(VkDevice device,
-                     PipelineInfos &pipelineInfos)
+                     pipelineInfos_t &pipelineInfos)
 {
     if (pipelineInfos.vertexShaderModule != VK_NULL_HANDLE)
     {
@@ -472,6 +491,7 @@ void createLogicalDevice(VkPhysicalDevice physicalDevice,
 {
     VkPhysicalDeviceFeatures deviceFeatures = {};
     deviceFeatures.samplerAnisotropy = VK_TRUE;
+    deviceFeatures.fillModeNonSolid = VK_TRUE;
 
     float queuePriority = 1.0f;
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -512,12 +532,12 @@ void createLogicalDevice(VkPhysicalDevice physicalDevice,
 
 void createCommandPool(VkPhysicalDevice physicalDevice,
                        VkDevice device,
-                       QueueFamilyIndices indices,
+                       uint32_t queueIndex,
                        VkCommandPool *commandPool)
 {
     VkCommandPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.queueFamilyIndex = indices.graphicsFamily;
+    poolInfo.queueFamilyIndex = queueIndex;
     poolInfo.flags = 0;
 
     if (VK_SUCCESS != vkCreateCommandPool(device, &poolInfo, nullptr, commandPool))
@@ -860,7 +880,6 @@ void createShaderModule(VkDevice device,
 }
 
 
-
 VkCommandBuffer beginSingleTimeCommand(VkDevice device,
                                        VkCommandPool commandPool)
 {
@@ -922,13 +941,17 @@ void transitionImageLayout(VkDevice device,
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.image = image;
 
-    if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+    if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+    {
         barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 
-        if (hasStencilComponent(format)) {
+        if (hasStencilComponent(format))
+        {
             barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
         }
-    } else {
+    }
+    else
+    {
         barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     }
     barrier.subresourceRange.baseMipLevel = 0;
@@ -939,25 +962,33 @@ void transitionImageLayout(VkDevice device,
     VkPipelineStageFlags sourceStage;
     VkPipelineStageFlags destinationStage;
 
-    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+    {
         barrier.srcAccessMask = 0;
         barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
         sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    }
+    else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+    {
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
         sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    } else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+    }
+    else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+    {
         barrier.srcAccessMask = 0;
-        barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        barrier.dstAccessMask =
+                VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
         sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-    } else {
+    }
+    else
+    {
         throw std::invalid_argument("unsupported layout transition!");
     }
 
@@ -971,6 +1002,36 @@ void transitionImageLayout(VkDevice device,
     endSingleTimeCommand(device, commandPool, commandBuffer, queue);
 }
 
+
+void populateDeviceMemory(VkDevice device,
+                          VkDeviceMemory deviceMemory,
+                          uint32_t offset,
+                          uint32_t size,
+                          void *pSrc)
+{
+
+    void *data;
+    vkMapMemory(device, deviceMemory, offset, size, 0, &data);
+    memcpy(data, pSrc, size);
+    vkUnmapMemory(device, deviceMemory);
+}
+
+
+void copyBuffer(VkDevice device,
+                VkCommandPool commandPool,
+                VkQueue queueToSubmit,
+                VkBuffer sourceBuffer,
+                VkBuffer destinationBuffer,
+                uint64_t size)
+{
+    VkCommandBuffer commandBuffer = beginSingleTimeCommand(device, commandPool);
+
+    VkBufferCopy copyInfo = {};
+    copyInfo.size = size;
+    vkCmdCopyBuffer(commandBuffer, sourceBuffer, destinationBuffer, 1, &copyInfo);
+
+    endSingleTimeCommand(device, commandPool, commandBuffer, queueToSubmit);
+}
 
 VkResult createDebugReportCallbackEXT(VkInstance instance,
                                       const VkDebugReportCallbackCreateInfoEXT *pCreateInfo,

@@ -1,14 +1,79 @@
 #include "RenderManager.hpp"
 
-#include <array>
-
 #include "../window/WindowManager.hpp"
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
+#include <array>
+#include <vector>
+#include <string>
 
 namespace rep
 {
 
+void loadModel(std::string &modelPath,
+               std::vector<VertexPosColorTex> & vertices,
+               std::vector<uint32_t > & indices)
+{
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string err;
+
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, modelPath.c_str()))
+    {
+        throw std::runtime_error(err);
+    }
+
+    for (const auto &shape : shapes)
+    {
+        for (const auto &index : shape.mesh.indices)
+        {
+            VertexPosColorTex vertex = {};
+
+            vertex.position = {
+                    attrib.vertices[3 * index.vertex_index + 0],
+                    attrib.vertices[3 * index.vertex_index + 1],
+                    attrib.vertices[3 * index.vertex_index + 2]
+            };
+
+            vertex.texCoord = {
+                    attrib.texcoords[2 * index.texcoord_index + 0],
+                    attrib.texcoords[2 * index.texcoord_index + 1]
+            };
+
+            vertex.color = {1.0f, 1.0f, 1.0f};
+
+            vertex.texCoord = {
+                    attrib.texcoords[2 * index.texcoord_index + 0],
+                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+            };
+
+            vertices.push_back(vertex);
+            indices.push_back(indices.size());
+        }
+    }
+}
+
 void RenderManager::vInit(RenderManagerInitializeArgs_t args)
 {
+    /**
+     * Temp load mesh
+     * TODO remove it
+     */
+    std::string path("C:/Users/Mickael/Documents/workspace/renderEnginePlayground/models/cube.obj");
+    loadModel(path, this->vertices, this->indices);
+    meshInstance_t meshInstance = {};
+    meshInstance.indexSize = sizeof(uint32_t);
+    meshInstance.indexCount = this->indices.size();
+    meshInstance.indices = this->indices.data();
+    meshInstance.vertexSize = sizeof(VertexPosColorTex);
+    meshInstance.verticeCount= this->indices.size();
+    meshInstance.vertices = this->vertices.data();
+    this->registeredMeshes.push_back(meshInstance);
+
+
     REP_DEBUG("RenderManager initialization...", LOG_CHANNEL::RENDER)
 
     VkApplicationInfo appInfo = {};
@@ -105,15 +170,14 @@ void RenderManager::vInit(RenderManagerInitializeArgs_t args)
                      &this->renderPass);
     REP_DEBUG("  renderpass initialized", LOG_CHANNEL::RENDER);
 
+    createCommandPool(this->physicalDevice,
+                      this->device,
+                      indices.graphicsFamily,
+                      &this->graphicCommandPool);
+    REP_DEBUG("  command pool initialized", LOG_CHANNEL::RENDER);
 
     createDepthTest();
     REP_DEBUG("  depth test initialized", LOG_CHANNEL::RENDER);
-
-    createCommandPool(this->physicalDevice,
-                      this->device,
-                      indices,
-                      &this->commandPool);
-    REP_DEBUG("  command pool initialized", LOG_CHANNEL::RENDER);
 
     createDescriptorPool(this->device,
                          &this->descriptorPool);
@@ -123,17 +187,17 @@ void RenderManager::vInit(RenderManagerInitializeArgs_t args)
      * Setup a first default pipeline
      */
     REP_DEBUG("  default graphic pipeline initialization...", LOG_CHANNEL::RENDER);
-    this->createDefaultGraphicPipeline(
-            "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/vert.spv",
-            "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/frag.spv");
+    this->createDefaultGraphicPipeline(DEFAULT_VERT_SHADER_LOCATION, DEFAULT_FRAG_SHADER_LOCATION);
     REP_DEBUG("  default graphic pipeline initialized", LOG_CHANNEL::RENDER);
 
     this->createFramebuffers();
     REP_DEBUG("  framebuffers initialized", LOG_CHANNEL::RENDER);
 
+    this->createVertexAndIndexBuffer();
+    REP_DEBUG("  vertex and index buffers initialized", LOG_CHANNEL::RENDER);
+
     this->createCommandBuffers();
     REP_DEBUG("  command buffers initialized", LOG_CHANNEL::RENDER);
-
 
     REP_DEBUG("RenderManager initialized", LOG_CHANNEL::RENDER)
 }
@@ -220,8 +284,8 @@ void RenderManager::updateSwapchain()
     this->destroySwapchain();
 
     this->createSwapchain();
-    // TODO update all available pipelines to match with new swapchain parameters
-    //this->createDepthResources();
+    this->createDefaultGraphicPipeline(DEFAULT_VERT_SHADER_LOCATION, DEFAULT_FRAG_SHADER_LOCATION);
+    this->createDepthTest();
     this->createFramebuffers();
     this->createCommandBuffers();
 }
@@ -233,6 +297,11 @@ void RenderManager::destroySwapchain()
     vkDestroyImage(device, this->depthImage, nullptr);
     vkFreeMemory(device, this->depthImageMemory, nullptr);
     */
+    vkFreeCommandBuffers(this->device,
+                         this->graphicCommandPool,
+                         static_cast<uint32_t>(commandBuffers.size()),
+                         commandBuffers.data());
+
     for (auto framebuffer : this->swapChainFramebuffers)
     {
         vkDestroyFramebuffer(device,
@@ -240,17 +309,13 @@ void RenderManager::destroySwapchain()
                              nullptr);
     }
 
-    vkFreeCommandBuffers(this->device,
-                         this->commandPool,
-                         static_cast<uint32_t>(commandBuffers.size()),
-                         commandBuffers.data());
+    this->destroyDepthTest();
 
-    vkDestroyPipeline(this->device,
-                      this->pipeline,
-                      nullptr);
-    vkDestroyPipelineLayout(this->device,
-                            this->pipelineLayout,
-                            nullptr);
+    for (auto &p : this->availablePipelines)
+    {
+        destroyPipeline(this->device, p);
+    }
+
     vkDestroyRenderPass(this->device,
                         this->renderPass,
                         nullptr);
@@ -270,8 +335,9 @@ void RenderManager::createDefaultGraphicPipeline(const char *vertShaderFilename,
                                                  const char *fragShaderFilename)
 {
     this->availablePipelines.resize(1);
-    PipelineInfos pipelineInfos = {};
+    pipelineInfos_t pipelineInfos = pipelineInfosBuilder<VertexPosColorTex>::build();
     createGraphicPipeline(this->device,
+                          this->descriptorPool,
                           this->renderPass,
                           this->swapchainExtent,
                           vertShaderFilename,
@@ -281,7 +347,8 @@ void RenderManager::createDefaultGraphicPipeline(const char *vertShaderFilename,
     {
         REP_FATAL("Failed to create default pipeline", LOG_CHANNEL::RENDER);
     }
-    this->availablePipelines.push_back(pipelineInfos);
+    this->availablePipelines[0] = pipelineInfos;
+
 }
 
 
@@ -291,24 +358,32 @@ void RenderManager::createDepthTest()
 
     createImage(this->device,
                 this->physicalDevice,
-                this->swapChainExtent.width,
-                this->swapChainExtent.height,
+                this->swapchainExtent.width,
+                this->swapchainExtent.height,
                 depthFormat,
                 VK_IMAGE_TILING_OPTIMAL,
                 VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                 this->depthImage,
                 this->depthImageMemory);
 
-    this->depthImageView = createImageView(this->depthImage,
-                                           depthFormat ,
+    this->depthImageView = createImageView(this->device,
+                                           this->depthImage,
+                                           depthFormat,
                                            VK_IMAGE_ASPECT_DEPTH_BIT);
     transitionImageLayout(this->device,
-                          this->commandPool,
+                          this->graphicCommandPool,
                           this->graphicQueue,
                           this->depthImage,
                           depthFormat,
                           VK_IMAGE_LAYOUT_UNDEFINED,
                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+}
+
+void RenderManager::destroyDepthTest()
+{
+    vkFreeMemory(this->device, this->depthImageMemory, nullptr);
+    vkDestroyImageView(this->device, this->depthImageView, nullptr);
+    vkDestroyImage(this->device, this->depthImage, nullptr);
 }
 
 
@@ -329,8 +404,8 @@ void RenderManager::createFramebuffers()
         createInfo.renderPass = renderPass;
         createInfo.attachmentCount = static_cast<uint32_t>(attachments->size());
         createInfo.pAttachments = attachments->data();
-        createInfo.width = swapchainExtent.width;
-        createInfo.height = swapchainExtent.height;
+        createInfo.width = this->swapchainExtent.width;
+        createInfo.height = this->swapchainExtent.height;
         createInfo.layers = 1;
 
         if (VK_SUCCESS != vkCreateFramebuffer(this->device, &createInfo, nullptr, &this->swapChainFramebuffers[i]))
@@ -339,6 +414,91 @@ void RenderManager::createFramebuffers()
         }
         REP_WARNING("  framebuffer is initialized", LOG_CHANNEL::RENDER)
     }
+}
+
+
+void RenderManager::createVertexAndIndexBuffer()
+{
+    /**
+     * get total size of the buffer
+     */
+    uint64_t bufferSize = 0;
+    for (meshInstance_t &mesh : this->registeredMeshes)
+    {
+        bufferSize += mesh.verticeCount * mesh.vertexSize;
+        bufferSize += mesh.indexCount * mesh.indexSize;
+    }
+
+    if (bufferSize == 0)
+        return;
+
+    /**
+     * instantiate buffer and allocate memory for staging
+     */
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    createBuffer(this->device,
+                 this->physicalDevice,
+                 bufferSize,
+                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                 stagingBuffer,
+                 stagingBufferMemory);
+
+    createBuffer(this->device,
+                 this->physicalDevice,
+                 bufferSize,
+                 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                 this->vertexAndIndexBuffer,
+                 this->vertexAndIndexBufferMemory);
+
+    uint32_t meshOffset = 0;
+    uint32_t meshIndexesOffset = 0;
+    uint32_t indicesSize = 0;
+    for (meshInstance_t &mesh : this->registeredMeshes)
+    {
+        meshIndexesOffset = mesh.verticeCount * mesh.vertexSize;
+        indicesSize = mesh.indexCount * mesh.indexSize;
+
+        /**
+         * persist buffer's offset for later use during drawing process
+         */
+        mesh.offset = {meshOffset, meshIndexesOffset};
+
+        // populate with vertices
+        populateDeviceMemory(this->device,
+                             stagingBufferMemory,
+                             meshOffset,
+                             meshIndexesOffset,
+                             mesh.vertices);
+        // populate with indices
+        populateDeviceMemory(this->device,
+                             stagingBufferMemory,
+                             meshOffset + meshIndexesOffset,
+                             indicesSize,
+                             mesh.indices);
+
+        // after meshOffset assigment, its value is the offset of the next mesh
+        meshOffset += meshIndexesOffset + indicesSize;
+    }
+
+
+    /**
+     * copy staging buffer content into fast memory in GPU
+     */
+    copyBuffer(this->device,
+               this->graphicCommandPool,
+               this->graphicQueue,
+               stagingBuffer,
+               this->vertexAndIndexBuffer,
+               bufferSize);
+
+    /**
+     * destroy buffer and free memory for staging buffer
+     */
+    vkDestroyBuffer(this->device, stagingBuffer, nullptr);
+    vkFreeMemory(this->device, stagingBufferMemory, nullptr);
 }
 
 
@@ -352,7 +512,7 @@ void RenderManager::createCommandBuffers()
 
     VkCommandBufferAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool = this->commandPool;
+    allocInfo.commandPool = this->graphicCommandPool;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = (uint32_t) this->commandBuffers.size();
 
@@ -360,6 +520,7 @@ void RenderManager::createCommandBuffers()
     {
         throw std::runtime_error("failed to allocate command buffers!");
     }
+
 
     for (size_t i = 0; i < this->commandBuffers.size(); i++)
     {
@@ -382,20 +543,42 @@ void RenderManager::createCommandBuffers()
         renderPassInfo.pClearValues = clearValues.data();
 
         vkCmdBeginRenderPass(this->commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        vkCmdBindPipeline(this->commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, this->pipeline);
 
-        vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
-                                &descriptorSet, 0, nullptr);
+        /**
+         *  for now let's assume all meshes use the same default pipeline
+         */
+        pipelineInfos_t &pipeline = this->availablePipelines[0];
+        vkCmdBindPipeline(this->commandBuffers[i],
+                          VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          pipeline.pipeline);
 
-        /*
-        VkBuffer vertexBuffer[] = {this->vertexBuffer};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(this->commandBuffers[i], 0, 1, vertexBuffer, offsets);
-        vkCmdBindIndexBuffer(this->commandBuffers[i], this->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindDescriptorSets(commandBuffers[i],
+                                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                pipeline.pipelineLayout,
+                                0,
+                                1,
+                                &descriptorSet,
+                                0,
+                                nullptr);
 
-        //vkCmdDraw(this->commandBuffers[i], 3, 1, 0, 0);
-        vkCmdDrawIndexed(this->commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-        */
+        for (meshInstance_t &meshInstance : this->registeredMeshes)
+        {
+            vkCmdBindVertexBuffers(this->commandBuffers[i],
+                                   0,
+                                   1,
+                                   &this->vertexAndIndexBuffer,
+                                   &meshInstance.offset.meshOffset);
+
+            vkCmdBindIndexBuffer(this->commandBuffers[i],
+                                 this->vertexAndIndexBuffer,
+                                 meshInstance.offset.meshOffset + meshInstance.offset.meshRelativeIndicesOffset,
+                                 VK_INDEX_TYPE_UINT32);
+
+            vkCmdDrawIndexed(this->commandBuffers[i],
+                             static_cast<uint32_t>(meshInstance.indexSize),
+                             1, 0, 0, 0);
+        }
+
         vkCmdEndRenderPass(commandBuffers[i]);
 
         if (VK_SUCCESS != vkEndCommandBuffer(this->commandBuffers[i]))
@@ -408,6 +591,7 @@ void RenderManager::createCommandBuffers()
 
 void RenderManager::vUpdate()
 {
+
     auto timeout = std::numeric_limits<uint64_t>::max();
     vkWaitForFences(this->device, 1, &this->inFligtFences[currentFrame], VK_TRUE, timeout);
     vkResetFences(this->device, 1, &this->inFligtFences[currentFrame]);
@@ -424,9 +608,10 @@ void RenderManager::vUpdate()
     {
         this->updateSwapchain();
         return;
-    } else if (VK_SUCCESS != result && VK_SUBOPTIMAL_KHR != result)
+    }
+    else if (VK_SUCCESS != result && VK_SUBOPTIMAL_KHR != result)
     {
-        throw std::runtime_error("failed to qcquire swap chain image");
+        throw std::runtime_error("failed to acquire swap chain image");
     }
 
     VkSubmitInfo submitInfo = {};
@@ -464,7 +649,8 @@ void RenderManager::vUpdate()
     if (VK_ERROR_OUT_OF_DATE_KHR == result || VK_SUBOPTIMAL_KHR == result)
     {
         updateSwapchain();
-    } else if (VK_SUCCESS != result)
+    }
+    else if (VK_SUCCESS != result)
     {
         throw std::runtime_error("failed to present swapchain image");
     }
@@ -513,16 +699,14 @@ void RenderManager::destroyAsyncObjects()
     }
 }
 
-
 void RenderManager::vDestroy()
 {
-    for (auto &pipelineInfos : this->availablePipelines)
-    {
-        destroyPipeline(this->device, pipelineInfos);
-    }
+
+    vkFreeMemory(this->device, vertexAndIndexBufferMemory, nullptr);
+    vkDestroyBuffer(this->device, this->vertexAndIndexBuffer, nullptr);
     destroySwapchain();
     vkDestroyDescriptorPool(this->device, this->descriptorPool, nullptr);
-    vkDestroyCommandPool(this->device, this->commandPool, nullptr);
+    vkDestroyCommandPool(this->device, this->graphicCommandPool, nullptr);
     this->destroyAsyncObjects();
     vkDestroyDevice(this->device, nullptr);
     destroyDebugReportCallbackEXT(this->vulkanInstance, this->debugReportCallback, nullptr);

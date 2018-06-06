@@ -7,6 +7,7 @@
 
 #include "../common/managers.hpp"
 #include "../common/vulkan/vulkan_helpers.hpp"
+#include "geometry.hpp"
 
 namespace rep
 {
@@ -27,6 +28,8 @@ class RenderManager :
     friend SingletonManager<RenderManager, RenderManagerInitializeArgs_t>;
 
 private:
+    const char * DEFAULT_VERT_SHADER_LOCATION = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/vert.spv";
+    const char * DEFAULT_FRAG_SHADER_LOCATION = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/frag.spv";
     /**
      * Synchronisation related members
      */
@@ -47,7 +50,7 @@ private:
 
     VkQueue graphicQueue;
     VkQueue presentQueue;
-    VkCommandPool commandPool;
+    VkCommandPool graphicCommandPool;
     std::vector<VkCommandBuffer> commandBuffers;
 
     /**
@@ -64,9 +67,6 @@ private:
      * graphic chain related members
      */
     VkRenderPass renderPass;
-    VkPipelineLayout pipelineLayout;
-    VkPipeline pipeline;
-    VkDescriptorSetLayout descriptorSetLayout;
     VkDescriptorPool descriptorPool;
     VkDescriptorSet descriptorSet;
 
@@ -78,7 +78,18 @@ private:
     VkImageView depthImageView;
 
 
-    std::vector<PipelineInfos> availablePipelines;
+    std::vector<pipelineInfos_t> availablePipelines;
+    std::vector<meshInstance_t> registeredMeshes;
+    bool registeredMeshVectorUpdated = false;
+
+    VkBuffer vertexAndIndexBuffer;
+    VkDeviceMemory vertexAndIndexBufferMemory;
+
+    /**
+     * temp
+     */
+    std::vector<VertexPosColorTex> vertices;
+    std::vector<uint32_t> indices;
 
 protected:
     RenderManager() = default;
@@ -104,6 +115,8 @@ protected:
 
     void createDepthTest();
 
+    void destroyDepthTest();
+
     void createCommandBuffers();
 
     void createAsyncObjects();
@@ -113,9 +126,10 @@ protected:
 public:
     void vUpdate() override;
 
+    void createVertexAndIndexBuffer();
+
 };
 
 }
-
 
 #endif //RENDERENGINEPLAYGROUND_RENDERMANAGER_HPP

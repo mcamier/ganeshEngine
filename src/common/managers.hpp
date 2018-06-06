@@ -80,23 +80,6 @@ public:
 
 
 /**
- *  Template specialization for Manager class without init args requirement
- */
-template<typename T>
-class Manager<T, void>
-{
-
-protected:
-    virtual void vInit() = 0;
-
-    virtual void vDestroy() = 0;
-
-public:
-    virtual void vUpdate() = 0;
-};
-
-
-/**
 *  SingletonManager classes meant to be used as global services providers, they are singletons and requires
 *  to be initialized within the Application's initialization and destroyed within Application's
 *  destruction.
