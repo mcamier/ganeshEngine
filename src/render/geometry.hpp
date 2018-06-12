@@ -4,39 +4,28 @@
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 #include <vector>
-#include "../common/vulkan/vulkan_helpers.hpp"
+#include "vulkan_helpers.hpp"
 
 namespace rep
 {
 
-struct UniformBufferObject
+struct ViewProjTransformation
 {
-    glm::mat4 model;
     glm::mat4 view;
     glm::mat4 proj;
 };
 
-
-struct VertexPosColorTex
+struct ModelTransformation
 {
-    glm::vec3 position;
-    glm::vec3 color;
-    glm::vec2 texCoord;
-
-    static VkVertexInputBindingDescription getBindingDescription();
-
-    static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+    glm::mat4 model;
 };
-
 
 struct VertexPosNormalColorTex
 {
     glm::vec3 position;
-    glm::vec3 normal;
     glm::vec3 color;
+    glm::vec3 normal;
     glm::vec2 texCoord;
-
-    static VkVertexInputBindingDescription getBindingDescription();
 
     static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 };
@@ -49,34 +38,17 @@ struct meshBufferOffset_t
 };
 
 
-struct meshInstance_t
+struct vulkanContextInfos_t
 {
-    uint32_t vertexSize = sizeof(VertexPosColorTex);
-    uint32_t indexSize = sizeof(uint32_t);
-
-    uint32_t verticeCount;
-    VertexPosColorTex *vertices;
-    uint32_t indexCount;
-    uint32_t *indices;
-    /**
-     * pipeline to use, if value set to -1, the renderManager will use its default pipeline
-     */
-    uint32_t pipelineId = -1;
-
-    /**
-     * for renderManager internal use
-     */
-    meshBufferOffset_t offset;
-};
-
-template<typename T>
-struct pipelineInfosBuilder {
-    static pipelineInfos_t build() {
-        pipelineInfos_t infos = {};
-        infos.vertexInputBindingDescription = T::getBindingDescription();
-        infos.attributeDescriptions = T::getAttributeDescriptions();
-        return infos;
-    }
+    const VkInstance &        vulkanInstance;
+    const VkSurfaceKHR &      surface;
+    const VkPhysicalDevice &  physicalDevice;
+    const VkDevice &          device;
+    const VkQueue &           graphicQueue;
+    const VkQueue &           presentQueue;
+    const VkCommandPool &     graphicCommandPool;
+    const VkRenderPass &      renderPass;
+    const VkSwapchainKHR &    swapchain;
 };
 
 }

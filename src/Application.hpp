@@ -2,7 +2,7 @@
 #define RENDERENGINEPLAYGROUND_APPLICATION_HPP
 
 #include "window/WindowManager.hpp"
-#include "render/RenderManager.hpp"
+#include "render/VulkanContextManager.hpp"
 #include "common/clock.hpp"
 
 namespace rep
