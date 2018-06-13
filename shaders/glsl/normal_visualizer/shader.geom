@@ -10,7 +10,7 @@ layout(set = 1, binding = 0) uniform ViewProjTransformation {
 } viewProjMat;
 
 layout(triangles) in;
-layout(location=0) in vec4 vert_normal[];
+layout(location=0) in vec4 vert_normal[3];
 
 layout(line_strip, max_vertices=6) out;
 layout(location=0) out vec4 geom_color;
@@ -18,11 +18,11 @@ layout(location=0) out vec4 geom_color;
 
 void main() {
     for( int vertex = 0; vertex < 3; ++vertex ) {
-        gl_Position = viewProjMat.proj * viewProjMat.view * modelMat.model * gl_in[vertex].gl_Position;
+        gl_Position = gl_in[vertex].gl_Position;
         geom_color = vec4(1.0, 0.0, 0.0, 1.0);
         EmitVertex();
 
-        gl_Position = viewProjMat.proj * viewProjMat.view * modelMat.model * (gl_in[vertex].gl_Position + vert_normal[vertex]);
+        gl_Position = (gl_in[vertex].gl_Position + normalize(vert_normal[vertex]));
         geom_color = vec4(0.0, 1.0, 0.0, 1.0);
         EmitVertex();
 

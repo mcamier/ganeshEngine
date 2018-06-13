@@ -3,6 +3,7 @@
 
 #include "window/WindowManager.hpp"
 #include "render/VulkanContextManager.hpp"
+#include "input/InputManager.hpp"
 #include "common/clock.hpp"
 
 namespace rep

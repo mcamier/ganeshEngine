@@ -3,9 +3,6 @@
 #include <array>
 
 #include "Application.hpp"
-#include "render/pipeline.hpp"
-
-#include <tiny_obj_loader.h>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -15,70 +12,17 @@
 using namespace rep;
 
 
-inline float clamp(float x, float a, float b)
-{
-    return x < a ? x : b;
-}
-
-
-void loadModel(std::string &modelPath,
-               std::vector<VertexPosNormalColorTex> &vertices,
-               std::vector<uint32_t> &indices)
-{
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-    std::string err;
-
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, modelPath.c_str()))
-    {
-        throw std::runtime_error(err);
-    }
-
-    for (const auto &shape : shapes)
-    {
-        for (const auto &index : shape.mesh.indices)
-        {
-            VertexPosNormalColorTex vertex = {};
-
-            vertex.position = {
-                    attrib.vertices[3 * index.vertex_index + 0],
-                    attrib.vertices[3 * index.vertex_index + 1],
-                    attrib.vertices[3 * index.vertex_index + 2]
-            };
-
-            vertex.normal = {
-                    attrib.normals[3 * index.normal_index + 0],
-                    attrib.normals[3 * index.normal_index + 1],
-                    attrib.normals[3 * index.normal_index + 2],
-            };
-
-            vertex.texCoord = {
-                    attrib.texcoords[2 * index.texcoord_index + 0],
-                    attrib.texcoords[2 * index.texcoord_index + 1]
-            };
-
-            vertex.color = {1.0f, 0.5f, 0.0f};
-
-            vertex.texCoord = {
-                    attrib.texcoords[2 * index.texcoord_index + 0],
-                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-            };
-
-            vertices.push_back(vertex);
-            indices.push_back(indices.size());
-        }
-    }
-
-    REP_DEBUG("mesh loaded [" << vertices.size() << " vertices] [" << indices.size() << " indices]",
-              LOG_CHANNEL::RENDER)
-}
-
-
 class Demo :
         public Application
 {
 private:
+    const char *DEFAULT_SHADER_VERT = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/standard/vert.spv";
+    const char *DEFAULT_SHADER_FRAG = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/standard/frag.spv";
+
+    const char *NORM_VISUALIZER_SHADER_VERT = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/normal_visualizer/vert.spv";
+    const char *NORM_VISUALIZER_SHADER_GEOM = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/normal_visualizer/geom.spv";
+    const char *NORM_VISUALIZER_SHADER_FRAG = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/normal_visualizer/frag.spv";
+
     std::string mesh = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/models/cube.obj";
     std::vector<VertexPosNormalColorTex> vertices;
     std::vector<uint32_t> indices;
@@ -95,11 +39,63 @@ private:
 
     VkSemaphore imageAcquiredSemaphore;
     VkSemaphore renderReadySemaphore;
-    VkFence drawFinishedFence;
 
-    VkClearColorValue clearColorValue = {0.0f, 0.0f, 0.0f, 0.0f};
+    VkClearColorValue clearColorValue = {0.08f, 0.05f, 0.38f, 0.0f};
 
 protected:
+
+    void vInit() override
+    {
+        initSyncObjects();
+        loadModel(mesh, this->vertices, this->indices);
+        loadModelIntoBuffer();
+        initPipeline();
+        initUniformBuffer();
+        REP_DEBUG("application demo initialized", LOG_CHANNEL::DEFAULT)
+    }
+
+
+    void initPipeline()
+    {
+        vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
+
+        this->defaultPipeline = Pipeline::Builder()
+                .setDevice(ctxt.device)
+                .setRenderPass(ctxt.renderPass)
+                .setViewport(ViewportStateCreateInfo(VulkanContextManager::get().getCurrentExtent()))
+                .setVertexInputBinding(VertexInputInfo::from<VertexPosNormalColorTex>())
+                .setVertexShader(DEFAULT_SHADER_VERT)
+                .setFragmentShader(DEFAULT_SHADER_FRAG)
+                .addDescriptorSet(DescriptorSetLayoutInfo().addBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                                                       VK_SHADER_STAGE_VERTEX_BIT, 0, 1))
+                .addDescriptorSet(DescriptorSetLayoutInfo().addBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                                                       VK_SHADER_STAGE_VERTEX_BIT, 0, 1))
+                .build();
+
+        this->normalVisualizerPipeline = Pipeline::Builder()
+                .setDevice(ctxt.device)
+                .setRenderPass(ctxt.renderPass)
+                .setViewport(ViewportStateCreateInfo(VulkanContextManager::get().getCurrentExtent()))
+                .setVertexInputBinding(VertexInputInfo::from<VertexPosNormalColorTex>())
+                .setVertexShader(NORM_VISUALIZER_SHADER_VERT)
+                .setGeometryShader(NORM_VISUALIZER_SHADER_GEOM)
+                .setFragmentShader(NORM_VISUALIZER_SHADER_FRAG)
+                .addDescriptorSet(
+                        DescriptorSetLayoutInfo()
+                                .addBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_GEOMETRY_BIT,
+                                            0,
+                                            1))
+                .addDescriptorSet(
+                        DescriptorSetLayoutInfo()
+                                .addBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_GEOMETRY_BIT,
+                                            0,
+                                            1))
+                .build();
+
+    }
+
 
     void initSyncObjects()
     {
@@ -113,12 +109,8 @@ protected:
         VkSemaphoreCreateInfo renderFinishedSemaphoreInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
         result = vkCreateSemaphore(ctxt.device, &renderFinishedSemaphoreInfo, nullptr, &this->renderReadySemaphore);
         assert(result == VK_SUCCESS);
-
-        /*VkFenceCreateInfo drawFinishedFenceInfo = {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
-        result = vkCreateFence(ctxt.device, &drawFinishedFenceInfo, nullptr, &this->drawFinishedFence);
-        vkResetFences(ctxt.device, 1, &this->drawFinishedFence);
-        assert(result == VK_SUCCESS);*/
     }
+
 
     void initUniformBuffer()
     {
@@ -206,68 +198,15 @@ protected:
         writePojViewDescSet2.descriptorCount = 1;
         writePojViewDescSet2.pBufferInfo = &projViewBufferInfo2;
 
-        //VkWriteDescriptorSet writes[] = {writeModelDescSet, writePojViewDescSet};
-        VkWriteDescriptorSet writes[] = {writeModelDescSet, writePojViewDescSet, writeModelDescSet2, writePojViewDescSet2};
-        //vkUpdateDescriptorSets(ctxt.device, 2, writes, 0, nullptr);
+        VkWriteDescriptorSet writes[] = {writeModelDescSet, writePojViewDescSet, writeModelDescSet2,
+                                         writePojViewDescSet2};
+
         vkUpdateDescriptorSets(ctxt.device, 4, writes, 0, nullptr);
     }
 
-    void updateUniformBuffer()
-    {
-        auto ctxt = VulkanContextManager::get().getContextInfos();
-        auto extent = VulkanContextManager::get().getCurrentExtent();
-        static float time = .0000001f;
-        time += 0.0001f;
-
-        ViewProjTransformation viewProj = {};
-        viewProj.view = glm::lookAt(glm::vec3(2.5f, 2.5f, 2.5f), glm::vec3(0.0f, 0.0f, 0.0f),
-                                    glm::vec3(0.0f, 0.0f, 1.0f));
-        viewProj.proj = glm::perspective(glm::radians(45.0f), extent.width / (float) extent.height, 0.1f,
-                                         10.0f);
-        viewProj.proj[1][1] *= -1;
-
-        ModelTransformation model = {};
-        model.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        void *data;
-        size_t size = sizeof(ModelTransformation);
-        vkMapMemory(ctxt.device,
-                    this->uboBufferMemory,
-                    0,
-                    size,
-                    0,
-                    &data);
-        memcpy(data, &model, size);
-        vkUnmapMemory(ctxt.device, this->uboBufferMemory);
-
-        vkMapMemory(ctxt.device,
-                    this->uboBufferMemory,
-                    uboOffset,
-                    sizeof(ViewProjTransformation),
-                    0,
-                    &data);
-        memcpy(data, &viewProj, sizeof(ViewProjTransformation));
-        vkUnmapMemory(ctxt.device, this->uboBufferMemory);
-    }
-
-
-    void vInit() override
-    {
-        initSyncObjects();
-        loadModel(mesh, this->vertices, this->indices);
-        loadModelIntoBuffer();
-        initPipeline();
-        initUniformBuffer();
-        REP_DEBUG("application demo initialized", LOG_CHANNEL::DEFAULT)
-    }
 
     void vUpdate() override
     {
-        clearColorValue.float32[0] = clamp(clearColorValue.float32[0] + 0.00001f, 1.0f, 0.0f);
-        clearColorValue.float32[1] = clamp(clearColorValue.float32[1] + 0.000001f, 1.0f, 0.0f);
-        clearColorValue.float32[2] = clamp(clearColorValue.float32[2] + 0.00002f, 1.0f, 0.0f);
-        clearColorValue.float32[3] = 1.0f;
-
         vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
         uint64_t timeout = std::numeric_limits<uint64_t>::max();
         uint32_t imageAcquired;
@@ -350,20 +289,45 @@ protected:
         vkDestroyFramebuffer(ctxt.device, framebuffer, nullptr);
     }
 
-    void vDestroy() override
+
+    void updateUniformBuffer()
     {
-        vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
-        vkDestroySemaphore(ctxt.device, this->imageAcquiredSemaphore, nullptr);
-        vkDestroySemaphore(ctxt.device, this->renderReadySemaphore, nullptr);
-        //vkDestroyFence(ctxt.device, this->drawFinishedFence, nullptr);
-        this->defaultPipeline.release();
-        this->normalVisualizerPipeline.release();
-        vkFreeMemory(ctxt.device, this->bufferMemory, nullptr);
-        vkDestroyBuffer(ctxt.device, this->buffer, nullptr);
-        vkFreeMemory(ctxt.device, this->uboBufferMemory, nullptr);
-        vkDestroyBuffer(ctxt.device, this->uboBuffer, nullptr);
-        REP_DEBUG("application demo destroyed", LOG_CHANNEL::DEFAULT)
+        auto ctxt = VulkanContextManager::get().getContextInfos();
+        auto extent = VulkanContextManager::get().getCurrentExtent();
+        static float time = .0000001f;
+        time += 0.0002f;
+
+        ViewProjTransformation viewProj = {};
+        viewProj.view = glm::lookAt(glm::vec3(2.0f, 4.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+                                    glm::vec3(0.0f, 0.0f, 1.0f));
+        viewProj.proj = glm::perspective(glm::radians(45.0f), extent.width / (float) extent.height, 0.1f,
+                                         100.0f);
+        viewProj.proj[1][1] *= -1;
+
+        ModelTransformation model = {};
+        model.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        void *data;
+        size_t size = sizeof(ModelTransformation);
+        vkMapMemory(ctxt.device,
+                    this->uboBufferMemory,
+                    0,
+                    size,
+                    0,
+                    &data);
+        memcpy(data, &model, size);
+        vkUnmapMemory(ctxt.device, this->uboBufferMemory);
+
+        vkMapMemory(ctxt.device,
+                    this->uboBufferMemory,
+                    uboOffset,
+                    sizeof(ViewProjTransformation),
+                    0,
+                    &data);
+        memcpy(data, &viewProj, sizeof(ViewProjTransformation));
+        vkUnmapMemory(ctxt.device, this->uboBufferMemory);
     }
+
 
     void recordDrawCommand(VkFramebuffer framebuffer)
     {
@@ -420,6 +384,7 @@ protected:
         /**
          * draw model's normals
          */
+
         vkCmdBindPipeline(this->drawCommands, VK_PIPELINE_BIND_POINT_GRAPHICS, normalVisualizerPipeline.getPipeline());
 
         vkCmdBindDescriptorSets(this->drawCommands,
@@ -441,43 +406,6 @@ protected:
         assert(result == VK_SUCCESS);
     }
 
-    void initPipeline()
-    {
-        vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
-
-        this->defaultPipeline = Pipeline::Builder()
-                .setDevice(ctxt.device)
-                .setRenderPass(ctxt.renderPass)
-                .setViewport(ViewportStateCreateInfo(VulkanContextManager::get().getCurrentExtent()))
-                .setVertexInputBinding(VertexInputInfo::from<VertexPosNormalColorTex>())
-                .setVertexShader("../shaders/compiled/standard/vert.spv")
-                .setFragmentShader("../shaders/compiled/standard/frag.spv")
-                .addDescriptorSet(DescriptorSetLayoutInfo().addBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0, 1))
-                .addDescriptorSet(DescriptorSetLayoutInfo().addBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0, 1))
-                .build();
-
-        this->normalVisualizerPipeline = Pipeline::Builder()
-                .setDevice(ctxt.device)
-                .setRenderPass(ctxt.renderPass)
-                .setViewport(ViewportStateCreateInfo(VulkanContextManager::get().getCurrentExtent()))
-                .setVertexShader("../shaders/compiled/normal_visualizer/vert.spv")
-                .setGeometryShader("../shaders/compiled/normal_visualizer/geom.spv")
-                .setFragmentShader("../shaders/compiled/normal_visualizer/frag.spv")
-                .addDescriptorSet(
-                        DescriptorSetLayoutInfo()
-                                .addBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_GEOMETRY_BIT,
-                                            0,
-                                            1))
-                .addDescriptorSet(
-                        DescriptorSetLayoutInfo()
-                                .addBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_GEOMETRY_BIT,
-                                            0,
-                                            1))
-                .build();
-
-    }
 
     void loadModelIntoBuffer()
     {
@@ -503,6 +431,22 @@ protected:
         vkMapMemory(ctxt.device, this->bufferMemory, verticesSize, indicesSize, 0, &pLocalMem);
         memcpy(pLocalMem, this->indices.data(), indicesSize);
         vkUnmapMemory(ctxt.device, this->bufferMemory);
+    }
+
+
+    void vDestroy() override
+    {
+        vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
+        vkDestroySemaphore(ctxt.device, this->imageAcquiredSemaphore, nullptr);
+        vkDestroySemaphore(ctxt.device, this->renderReadySemaphore, nullptr);
+        //vkDestroyFence(ctxt.device, this->drawFinishedFence, nullptr);
+        this->defaultPipeline.release();
+        this->normalVisualizerPipeline.release();
+        vkFreeMemory(ctxt.device, this->bufferMemory, nullptr);
+        vkDestroyBuffer(ctxt.device, this->buffer, nullptr);
+        vkFreeMemory(ctxt.device, this->uboBufferMemory, nullptr);
+        vkDestroyBuffer(ctxt.device, this->uboBuffer, nullptr);
+        REP_DEBUG("application demo destroyed", LOG_CHANNEL::DEFAULT)
     }
 };
 

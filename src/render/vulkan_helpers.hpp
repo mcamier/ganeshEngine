@@ -50,6 +50,12 @@ struct pipelineInfos_t
     VkPipeline pipeline = VK_NULL_HANDLE;
 };
 
+template<typename VERTEX>
+void loadModel(std::string &modelPath,
+               std::vector<VERTEX> &vertices,
+               std::vector<uint32_t> &indices);
+
+
 void createGraphicPipeline(VkDevice device,
                            VkDescriptorPool descriptorPool,
                            VkRenderPass renderPass,

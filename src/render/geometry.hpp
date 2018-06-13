@@ -20,6 +20,7 @@ struct ModelTransformation
     glm::mat4 model;
 };
 
+
 struct VertexPosNormalColorTex
 {
     glm::vec3 position;
@@ -28,13 +29,6 @@ struct VertexPosNormalColorTex
     glm::vec2 texCoord;
 
     static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
-};
-
-
-struct meshBufferOffset_t
-{
-    uint64_t meshOffset;
-    uint64_t meshRelativeIndicesOffset;
 };
 
 

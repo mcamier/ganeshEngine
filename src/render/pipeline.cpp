@@ -6,10 +6,6 @@ namespace rep
 
 void Pipeline::release()
 {
-    for (auto &descriptorSet: descriptorSets)
-    {
-        vkFreeDescriptorSets(this->device, this->descriptorPool, descriptorSet, nullptr);
-    }
     for (auto &descriptorSetLayout: descriptorSetLayouts)
     {
         vkDestroyDescriptorSetLayout(this->device, descriptorSetLayout, nullptr);

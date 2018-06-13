@@ -1,10 +1,13 @@
+#include <iostream>
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include "WindowManager.hpp"
 #include "../common/logger.hpp"
+#include "../input/inputManager.hpp"
+#include "../input/input_glfw.hpp"
 
-#include <iostream>
 
 namespace rep
 {
@@ -72,9 +75,13 @@ void WindowManager::initInputCallbacks()
     });
 
     glfwSetCursorPosCallback(this->pWindow, [](GLFWwindow *window, double xpos, double ypos) {
+        InputManager::get().registerMouseMouveInput(xpos, ypos);
     });
 
     glfwSetMouseButtonCallback(this->pWindow, [](GLFWwindow *window, int button, int action, int mods) {
+        InputManager::get().registerMouseButtonInput(convertGlfwInputMouseButton(button),
+                                                     convertGlfwInputAction(action),
+                                                     convertGlfwInputModifier(mods));
     });
 
     glfwSetScrollCallback(this->pWindow, [](GLFWwindow *window, double offsetX, double offsetY) {

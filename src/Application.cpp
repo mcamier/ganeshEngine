@@ -20,6 +20,7 @@ void Application::run()
 
         this->vUpdate();
         VulkanContextManager::get().vUpdate();
+        InputManager::get().vUpdate();
     }
 
     this->destroy();
@@ -51,12 +52,14 @@ void Application::init()
     loggerManagerInitArgs.logChannel = LOG_CHANNEL::DEFAULT | LOG_CHANNEL::RENDER;
 
     ProfilerManagerInitializeArgs_t profilerManagerInitArgs = {};
+    InputManagerInitializeArgs_t inputManagerInitArgs = {};
 
     LoggerManager::initialize(loggerManagerInitArgs);
     ProfilerManager::initialize(profilerManagerInitArgs);
 
     BEGIN_PROFILING("All Managers Init")
         WindowManager::initialize(windowManagerInitArgs);
+        InputManager::initialize(inputManagerInitArgs);
         VulkanContextManager::initialize(renderManagerInitArgs);
     END_PROFILING
 }
@@ -65,6 +68,7 @@ void Application::destroy()
 {
     this->vDestroy();
     VulkanContextManager::destroy();
+    InputManager::destroy();
     WindowManager::destroy();
 
     ProfilerManager::destroy();

@@ -25,6 +25,10 @@ layout(location = 1) out vec2 fragTexCoord;
 
 void main() {
     gl_Position = viewProjMat.proj * viewProjMat.view * modelMat.model * vec4(inPosition, 1.0);
-    fragColor = vec3(1.0, 1.0, 0.0);
+    //fragColor = vec3(1.0, 1.0, 0.0);
     fragTexCoord = vec2(1.0, 1.0);
+
+    vec3 viewModelNormal = mat3(viewProjMat.view * modelMat.model) * inNormal;
+    fragColor = vec3(max(0.0, dot(viewModelNormal, vec3(0.58, 0.58, 0.58))) + 0.1);
+
 }
