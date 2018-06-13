@@ -296,6 +296,19 @@ protected:
         static float time = .0000001f;
         time += 0.0002f;
 
+        if(InputManager::get().isKeyPressedOnce(INPUT_KEY_DOWN)) {
+            REP_DEBUG("DOWN", LogChannelBitsFlag::RENDER)
+        }
+        if(InputManager::get().isKeyPressedOnce(INPUT_KEY_LEFT)) {
+            REP_DEBUG("LEFT", LogChannelBitsFlag::RENDER)
+        }
+        if(InputManager::get().isKeyPressedOnce(INPUT_KEY_UP)) {
+            REP_DEBUG("UP", LogChannelBitsFlag::RENDER)
+        }
+        if(InputManager::get().isKeyPressedOnce(INPUT_KEY_RIGHT)) {
+            REP_DEBUG("RIGHT", LogChannelBitsFlag::RENDER)
+        }
+
         ViewProjTransformation viewProj = {};
         viewProj.view = glm::lookAt(glm::vec3(2.0f, 4.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                                     glm::vec3(0.0f, 0.0f, 1.0f));

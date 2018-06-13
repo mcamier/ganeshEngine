@@ -12,9 +12,7 @@
 namespace rep
 {
 
-/**
- * Stores values required for the VulkanContextManager's initialization
- */
+// Stores values required for the VulkanContextManager's initialization
 struct VulkanContextManagerInitializeArgs_t
 {
     uint32_t            validationLayerCount;
@@ -25,34 +23,28 @@ struct VulkanContextManagerInitializeArgs_t
 };
 
 
-/**
- * Manager responsible of the preparation and the destruction of a vulkan context:
- *  vulkan instance creation
- *  physical device selection
- *  logical device creation
- *  swapchain creation
- *  framebuffer for rendering creation
- *  depth test creation
- *  presentation queue and graphics queue creation
- *  a graphics command pool creation
- */
+// Manager responsible of the preparation and the destruction of a vulkan context:
+//  vulkan instance creation
+//  physical device selection
+//  logical device creation
+//  swapchain creation
+//  framebuffer for rendering creation
+//  depth test creation
+//  presentation queue and graphics queue creation
+//  a graphics command pool creation
 class VulkanContextManager :
         public SingletonManager<VulkanContextManager, VulkanContextManagerInitializeArgs_t>
 {
     friend SingletonManager<VulkanContextManager, VulkanContextManagerInitializeArgs_t>;
 
 private:
-    /**
-     * Synchronisation related members
-     */
+    // Synchronisation related members
     const int                       MAX_CONCURRENT_FRAMES = 2;
     size_t                          currentFrame = 0;
     std::vector<VkSemaphore>        imageAvailableSemaphores;
     std::vector<VkSemaphore>        renderFinishedSemaphores;
     std::vector<VkFence>            inFligtFences;
-    /**
-     * instance and device related members
-     */
+    // instance and device related members
     VkInstance                      vulkanInstance;
     VkDebugReportCallbackEXT        debugReportCallback;
     VkSurfaceKHR                    surface;
@@ -62,24 +54,18 @@ private:
     VkQueue                         graphicQueue;
     VkQueue                         presentQueue;
     VkCommandPool                   graphicCommandPool;
-    /**
-     *  swapchain related member
-     */
+    // swapchain related member
     VkSwapchainKHR                  swapchain;
     VkExtent2D                      swapchainExtent;
     VkFormat                        swapchainImageFormat;
     std::vector<VkImage>            swapchainImages;
     std::vector<VkImageView>        swapchainImageViews;
     std::vector<VkFramebuffer>      swapChainFramebuffers;
-    /**
-     * depth test related members
-     */
+    // depth test related members
     VkImage                         depthImage;
     VkDeviceMemory                  depthImageMemory;
     VkImageView                     depthImageView;
-    /**
-     * graphic chain related members
-     */
+    // graphic chain related members
     VkRenderPass                    renderPass;
 
 

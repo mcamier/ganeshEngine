@@ -1,6 +1,7 @@
 #include <iostream>
 
 #define GLFW_INCLUDE_VULKAN
+
 #include <GLFW/glfw3.h>
 
 #include "WindowManager.hpp"
@@ -63,10 +64,14 @@ bool WindowManager::shouldClose()
 
 void WindowManager::initInputCallbacks()
 {
-    glfwSetWindowCloseCallback(this->pWindow, [](GLFWwindow* window) {
+    glfwSetWindowCloseCallback(this->pWindow, [](GLFWwindow *window) {
     });
 
     glfwSetKeyCallback(this->pWindow, [](GLFWwindow *window, int key, int scancde, int action, int mods) {
+        InputManager::get().registerKeyboardInput(convertGlfwInputKeyboardKey(key),
+                                                  scancde,
+                                                  convertGlfwInputAction(action),
+                                                  convertGlfwInputModifier(mods));
     });
 
     glfwSetCursorPosCallback(this->pWindow, [](GLFWwindow *window, double xpos, double ypos) {
@@ -80,10 +85,11 @@ void WindowManager::initInputCallbacks()
     });
 
     glfwSetScrollCallback(this->pWindow, [](GLFWwindow *window, double offsetX, double offsetY) {
+        InputManager::get().registerMouseScrollInput(offsetX, offsetY);
     });
 }
 
-GLFWwindow* const WindowManager::getWindowHandle()
+GLFWwindow *const WindowManager::getWindowHandle()
 {
     return this->pWindow;
 }

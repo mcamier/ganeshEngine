@@ -7,11 +7,18 @@
 namespace rep
 {
 
+typedef struct inputKeyboardState
+{
+    inputActionButton action;
+    inputModifierFlag modifier;
+} inputKeyboardState;
+
 typedef struct inputMousePosition
 {
     double x;
     double y;
 } inputMousePosition ;
+typedef inputMousePosition inputMouseScroll;
 
 
 //
@@ -29,6 +36,11 @@ private:
     inputMousePosition lastPosition;
     inputMousePosition lastEventPosition;
 
+    inputMouseScroll lastEventScroll;
+
+    inputKeyboardState lastFrameKeyState[INPUT_KEY_COUNT];
+    inputKeyboardState currentFrameKeyState[INPUT_KEY_COUNT];
+
 protected:
     void vInit(InputManagerInitializeArgs_t initStructArg);
 
@@ -39,11 +51,17 @@ public:
 
     void registerMouseMouveInput(double xpos, double ypos);
 
+    void registerMouseScrollInput(double offsetX, double offsetY);
+
+    void registerKeyboardInput(inputKeyboardKey key, int scancode, inputActionButton action, inputModifierFlag mods);
+
     void registerMouseButtonInput(inputMouseButton button, inputActionButton action, inputModifierFlag mods);
 
     bool isMouseMoved(double *xpos, double *ypos);
 
-    bool isKeyPressed(int key);
+    bool isMouseScrolled(double *offsetX, double *offsetY);
+
+    bool isKeyPressedOnce(inputKeyboardKey key);
 
 };
 

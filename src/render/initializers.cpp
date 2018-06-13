@@ -25,7 +25,7 @@ ViewportStateCreateInfo::ViewportStateCreateInfo(VkExtent2D extent)
     viewport.width = extent.width;
     viewport.height = extent.height;
     viewport.minDepth = 0.0f;
-    viewport.maxDepth = 100.0f;
+    viewport.maxDepth = 1.0f;
     viewport.x = 0.0f;
     viewport.y = 0.0f;
 
