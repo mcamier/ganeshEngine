@@ -7,77 +7,79 @@
 namespace rep
 {
 
-/**
- * Log criticity level
- */
-enum class LOG_LEVEL : int
+// Log criticity level
+typedef enum LogLevelBitsFlag
 {
-    DEBUG = 0,
-    WARNING = 1,
-    ERROR = 2,
-    FATAL = 3
+    DEBUG       = 0x01,
+    WARNING     = 0x02,
+    ERROR       = 0x04,
+    FATAL       = 0x08
+} LogLevelBitsFlag;
+typedef uint8_t LogLevelFlag;
+
+
+// Log channel
+typedef enum LogChannelBitsFlag
+{
+    DEFAULT     = 0x01,
+    RENDER      = 0x02,
+    PHYSICS     = 0x04,
+    INPUT       = 0x08,
+    AI          = 0x10,
+    RESOURCE    = 0x20
+} LogChannelBitsFlag;
+typedef uint8_t LogChannelFlag;
+
+
+// Log criticity level name
+// indexes are related to the LogLevelFlag enum values
+static const char *LOG_LEVEL_NAMES[9] = {
+        "",
+        "DEBUG",        // 0x01
+        "WARNING",      // 0x02
+        "",
+        "ERROR",        // 0x04
+        "", "", "",
+        "FATAL"         // 0x08
 };
 
 
-/**
- *
- */
-enum class LOG_CHANNEL : int
-{
-    DEFAULT = 0x01,
-    RENDER = 0x02,
-    PHYSICS = 0x04,
-    INPUT = 0x08,
-    AI = 0x16,
-    RESOURCE = 0x32
+// Log channel name
+// indexes are related to the LogLevelFlag enum values
+static const char *LOG_CHANNEL_NAMES[33] = {
+        "",
+        "DEFAULT",      // 0x01
+        "RENDER",       // 0x02
+        "",
+        "PHYSICS",      // 0x04
+        "","","",
+        "INPUT",        // 0x08
+        "","","","","","","",
+        "AI",           // 0x10
+        "","","","","","","","","","","","","","","",
+        "RESOURCE"      // 0x20
 };
-using _LC = std::underlying_type<LOG_CHANNEL>::type;
 
 
-LOG_CHANNEL operator|(LOG_CHANNEL lhs, LOG_CHANNEL rhs);
-
-LOG_CHANNEL &operator|=(LOG_CHANNEL &lhs, LOG_CHANNEL rhs);
-
-LOG_CHANNEL operator&(LOG_CHANNEL lhs, LOG_CHANNEL rhs);
-
-LOG_CHANNEL &operator&=(LOG_CHANNEL &lhs, LOG_CHANNEL rhs);
-
-
-/**
- * Log criticity level name
- *
- * @note indexes are related to the LOG_LEVEL enum values
- */
-extern const char *LEVEL_NAMES[];
-
-
-/**
- * Gather informations about a log
- */
+// Gather informations about a log
 struct logEntry_t
 {
-    /**
-     * Criticity level of the log
-     */
-    LOG_LEVEL lvl;
-    /**
-     * Channel to use for logging this entry
-     */
-    LOG_CHANNEL channel;
-    /**
-     * Line number which triggered this LogEntry registering
-     */
-    int line;
-    /**
-     * Filename which triggered this LogEntry registering
-     */
+    // Criticity level of the log
+    LogLevelFlag lvl;
+
+    //Channel to use for logging this entry
+    LogChannelFlag channel;
+
+    // Line number which triggered this LogEntry registering
+    uint32_t line;
+
+    // Filename which triggered this LogEntry registering
     char file[512];
-    /**
-     * Message of the log
-     */
+
+    // Message of the log
     char message[512];
 };
 
-}
+} //namespace rep
 
 #endif //RENDERENGINEPLAYGROUND_LOG_UTILS_H

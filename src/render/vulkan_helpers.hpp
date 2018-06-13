@@ -32,41 +32,11 @@ struct SwapChainSupportDetails
 };
 
 
-struct pipelineInfos_t
-{
-    VkShaderModule vertexShaderModule;
-    VkShaderModule geometryShaderModule;
-    VkShaderModule fragmentShaderModule;
-
-    VkVertexInputBindingDescription vertexInputBindingDescription;
-    std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-
-    VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
-    VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
-    /**
-     * Once the pipeline created, pipeline member will store the pipeline handler
-     */
-    VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
-    VkPipeline pipeline = VK_NULL_HANDLE;
-};
 
 template<typename VERTEX>
 void loadModel(std::string &modelPath,
                std::vector<VERTEX> &vertices,
                std::vector<uint32_t> &indices);
-
-
-void createGraphicPipeline(VkDevice device,
-                           VkDescriptorPool descriptorPool,
-                           VkRenderPass renderPass,
-                           VkExtent2D extent,
-                           const char *vertShaderFilename,
-                           const char *fragShaderFilename,
-                           pipelineInfos_t *pipelineInfos);
-
-
-void destroyPipeline(VkDevice device,
-                     pipelineInfos_t &pipelineInfos);
 
 
 std::vector<const char *> getRequiredExtensions();
@@ -246,7 +216,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags,
                                                     const char *msg,
                                                     void *userData)
 {
-    REP_ERROR(msg, LOG_CHANNEL::RENDER)
+    REP_ERROR(msg, LogChannelBitsFlag::RENDER)
     /**
      * We do want to loose log entries if vulkan crash the application after this error
      */

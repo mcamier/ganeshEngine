@@ -10,9 +10,11 @@
 #include <string>
 
 #ifdef LOGGING_ENABLED
+
 #include <string>
 #include <sstream>
 #include <stdexcept>
+
 #define REP_LOG(LOG_LEVEL, MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
@@ -23,25 +25,25 @@
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        LoggerManager::get().log(LOG_LEVEL::DEBUG, CHANNELS, __FILE__, __LINE__, message);\
+        LoggerManager::get().log(LogLevelBitsFlag::DEBUG, CHANNELS, __FILE__, __LINE__, message);\
     }
 #define REP_WARNING(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        LoggerManager::get().log(LOG_LEVEL::WARNING, CHANNELS, __FILE__, __LINE__, message);\
+        LoggerManager::get().log(LogLevelBitsFlag::WARNING, CHANNELS, __FILE__, __LINE__, message);\
     }
 #define REP_ERROR(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        LoggerManager::get().log(LOG_LEVEL::ERROR, CHANNELS,__FILE__, __LINE__, message);\
+        LoggerManager::get().log(LogLevelBitsFlag::ERROR, CHANNELS,__FILE__, __LINE__, message);\
     }
 #define REP_FATAL(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        LoggerManager::get().log(LOG_LEVEL::FATAL, CHANNELS,__FILE__, __LINE__, message);\
+        LoggerManager::get().log(LogLevelBitsFlag::FATAL, CHANNELS,__FILE__, __LINE__, message);\
         throw std::runtime_error("Fatal error occured");\
     }
 #else
@@ -53,35 +55,37 @@
 #endif
 
 
-namespace rep {
+namespace rep
+{
 
 
 struct LoggerManagerInitializeArgs_t
 {
-    LOG_LEVEL logLevel;
-    LOG_CHANNEL logChannel;
+    LogLevelFlag logLevel;
+    LogChannelFlag logChannel;
     bool consoleLogEnabled;
     bool fileLogEnabled;
-    const char * fileLogFolder;
-    const char * fileLogBaseName;
+    const char *fileLogFolder;
+    const char *fileLogBaseName;
 };
 
 
-class ILogger {
+class ILogger
+{
 
 protected:
-    /**
-     * Minimum level needs for a log to be displayed processed by the ILogger instance
-     */
-    LOG_LEVEL mLogLevel;
+    // Minimum level needs for a log to be displayed processed by the ILogger instance
+    LogLevelFlag mLogLevel;
 
-    LOG_CHANNEL mLogChannels;
+    LogChannelFlag mLogChannels;
 
 public:
-    ILogger(LOG_LEVEL logLevel,
-            LOG_CHANNEL logChannel) : mLogLevel(logLevel), mLogChannels(logChannel) {}
+    ILogger(LogLevelFlag logLevel, LogChannelFlag logChannel) :
+            mLogLevel(logLevel),
+            mLogChannels(logChannel)
+    {}
 
-    virtual void vLog(LOG_LEVEL lvl,
+    virtual void vLog(LogLevelFlag lvl,
                       const char *file,
                       int line,
                       std::string &message) = 0;
@@ -91,50 +95,55 @@ public:
      * @param channels
      * @return
      */
-    bool isChannelAllowed(LOG_CHANNEL channels) {
+    bool isChannelAllowed(LogChannelFlag channels)
+    {
         return ((mLogChannels & channels) == channels);
     }
 
     /**
      *
      */
-    virtual void vFlush() {}
+    virtual void vFlush()
+    {}
 
     /**
      * Initialize logger
      *
      * @note Supposed to be called by LoggerManager
      */
-    virtual void vInitialize(void) {}
+    virtual void vInitialize(void)
+    {}
 
     /**
      * Destroy logger
      *
      * @note Supposed to be called by LoggerManager
      */
-    virtual void vDestroy(void) {}
+    virtual void vDestroy(void)
+    {}
 };
 
 
-class ConsoleLogger : public ILogger {
+class ConsoleLogger : public ILogger
+{
 
 public:
-    ConsoleLogger(LOG_LEVEL logLvl,
-                  LOG_CHANNEL logChannel) : ILogger(logLvl, logChannel) {}
+    ConsoleLogger(LogLevelFlag logLvl, LogChannelFlag logChannel) :
+            ILogger(logLvl, logChannel)
+    {}
 
     ConsoleLogger(const ConsoleLogger &) = delete;
 
     ConsoleLogger &operator=(const ConsoleLogger &) = delete;
 
-    /**
-     * Put a log into the stdout
-     *
-     * @param lvl log level of the given message
-     * @param file origin file where comes the log from
-     * @param line line of code where comes the log from
-     * @param message message to log
-     */
-    void vLog(LOG_LEVEL lvl,
+    // Put a log into the stdout
+    //
+    // param lvl log level of the given message
+    // param file origin file where comes the log from
+    // param line line of code where comes the log from
+    // param message message to log
+    //
+    void vLog(LogLevelFlag lvl,
               const char *file,
               int line,
               std::string &message) override;
@@ -143,16 +152,17 @@ public:
 };
 
 
-class FileLogger : public ILogger {
+class FileLogger : public ILogger
+{
 
 private:
-    /** Max amount of LogEntry stored in memory before being written in the log file */
+    // Max amount of LogEntry stored in memory before being written in the log file
     int maxBulkEntry;
 
-    /** Current amount of LogEntry stored in memory before being written in the log file */
+    // Current amount of LogEntry stored in memory before being written in the log file
     int currentAmount;
 
-    /** Target logging folder */
+    // Target logging folder
     const char *folder;
 
     const char *baseName;
@@ -170,8 +180,8 @@ private:
     std::list<logEntry_t *> pendingEntries;
 
 public:
-    FileLogger(LOG_LEVEL logLvl,
-               LOG_CHANNEL logChannel,
+    FileLogger(LogLevelFlag logLvl,
+               LogChannelFlag logChannel,
                const char *folder,
                const char *baseName,
                int maxBulkEntry = 5000) :
@@ -179,7 +189,8 @@ public:
             maxBulkEntry(maxBulkEntry),
             currentAmount(0),
             folder(folder),
-            baseName(baseName) {
+            baseName(baseName)
+    {
 
         pDBSAllocator = new DoubleBufferedStackAllocator(maxBulkEntry * sizeof(logEntry_t));
         pDBSAllocator->initialize();
@@ -199,7 +210,7 @@ public:
      * @param line line of code where comes the log from
      * @param message message to log
      */
-    void vLog(LOG_LEVEL lvl,
+    void vLog(LogLevelFlag lvl,
               const char *file,
               int line,
               std::string &message) override;
@@ -238,9 +249,9 @@ private:
      * @param line line of code where comes the log from
      * @param message message to log
      */
-    void appendLogEntry(LOG_LEVEL lvl, const char *file, int line, std::string &message);
+    void appendLogEntry(LogLevelFlag lvl, const char *file, int line, std::string &message);
 
-    FILE * getLogFile();
+    FILE *getLogFile();
 
     std::string getDateTimeNow();
 };
@@ -269,6 +280,7 @@ protected:
 
 public:
     void vUpdate() override;
+
     /**
          * Dispatch a log among all the managed loggers
          *
@@ -277,8 +289,8 @@ public:
          * @param line line of code where comes the log from
          * @param message message to log
          */
-    void log(LOG_LEVEL lvl,
-             LOG_CHANNEL logChannel,
+    void log(LogLevelFlag lvl,
+             LogChannelFlag logChannel,
              const char *file,
              int line,
              std::string &message);
@@ -290,8 +302,8 @@ public:
 
 private:
     void logInto(ILogger *logger,
-                 LOG_LEVEL lvl,
-                 LOG_CHANNEL logChannel,
+                 LogLevelFlag lvl,
+                 LogChannelFlag logChannel,
                  const char *file,
                  int line,
                  std::string &message);

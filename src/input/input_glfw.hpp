@@ -10,6 +10,7 @@
 namespace rep
 {
 
+//
 inputMouseButton convertGlfwInputMouseButton(int glfwMouseButton)
 {
     if (GLFW_MOUSE_BUTTON_1 == glfwMouseButton) return INPUT_MOUSE_BUTTON_1;
@@ -27,6 +28,7 @@ inputMouseButton convertGlfwInputMouseButton(int glfwMouseButton)
 }
 
 
+//
 inputActionButton convertGlfwInputAction(int glfwInputAction)
 {
     if (GLFW_PRESS == glfwInputAction) return INPUT_ACTION_PRESS;
@@ -35,6 +37,7 @@ inputActionButton convertGlfwInputAction(int glfwInputAction)
 }
 
 
+//
 inputModifierFlag convertGlfwInputModifier(int glfwInputModifier)
 {
     inputModifierFlag modifier = INPUT_MODIFIER_NONE;
@@ -45,6 +48,6 @@ inputModifierFlag convertGlfwInputModifier(int glfwInputModifier)
     return modifier;
 }
 
-}
+} // namespace rep
 
 #endif //RENDERENGINEPLAYGROUND_INPUT_GLFW_HPP

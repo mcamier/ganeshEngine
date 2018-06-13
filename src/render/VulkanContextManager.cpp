@@ -15,12 +15,12 @@ namespace rep
 void VulkanContextManager::vInit(VulkanContextManagerInitializeArgs_t args)
 {
     initVulkanInstance(args);
-    REP_DEBUG("  instance initialized", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  instance initialized", LogChannelBitsFlag::RENDER);
 
     createSurface(this->vulkanInstance,
                   WindowManager::get().getWindowHandle(),
                   &this->surface);
-    REP_DEBUG("  surface initialized", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  surface initialized", LogChannelBitsFlag::RENDER);
 
     std::array<const char *, 1> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     pickPhysicalDevice(this->vulkanInstance,
@@ -28,7 +28,7 @@ void VulkanContextManager::vInit(VulkanContextManagerInitializeArgs_t args)
                        static_cast<uint16_t>(deviceExtensions.size()),
                        deviceExtensions.data(),
                        &this->physicalDevice);
-    REP_DEBUG("  physical device selected", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  physical device selected", LogChannelBitsFlag::RENDER);
 
     QueueFamilyIndices indices = findQueueFamilies(this->physicalDevice, this->surface);
 
@@ -39,35 +39,35 @@ void VulkanContextManager::vInit(VulkanContextManagerInitializeArgs_t args)
                         static_cast<uint32_t>(deviceExtensions.size()),
                         deviceExtensions.data(),
                         &this->device);
-    REP_DEBUG("  logical device initialized", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  logical device initialized", LogChannelBitsFlag::RENDER);
 
     this->initAsyncObjects();
-    REP_DEBUG("  async objects initialized", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  async objects initialized", LogChannelBitsFlag::RENDER);
 
     vkGetDeviceQueue(this->device, indices.graphicsFamily, 0, &this->graphicQueue);
     vkGetDeviceQueue(this->device, indices.presentFamily, 0, &this->presentQueue);
 
     this->initSwapchain();
-    REP_DEBUG("  swapchain initialized", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  swapchain initialized", LogChannelBitsFlag::RENDER);
 
     createRenderPass(this->physicalDevice,
                      this->device,
                      this->swapchainImageFormat,
                      &this->renderPass);
-    REP_DEBUG("  renderpass initialized", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  renderpass initialized", LogChannelBitsFlag::RENDER);
 
     createCommandPool(this->physicalDevice,
                       this->device,
                       indices.graphicsFamily,
                       &this->graphicCommandPool);
-    REP_DEBUG("  command pool initialized", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  command pool initialized", LogChannelBitsFlag::RENDER);
 
     /*
     this->initDepthTest();
-    REP_DEBUG("  depth test initialized", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  depth test initialized", LogChannelBitsFlag::RENDER);
 */
 
-    REP_DEBUG("RenderManager initialized", LOG_CHANNEL::RENDER)
+    REP_DEBUG("RenderManager initialized", LogChannelBitsFlag::RENDER)
 }
 
 vulkanContextInfos_t VulkanContextManager::getContextInfos()
@@ -87,7 +87,7 @@ vulkanContextInfos_t VulkanContextManager::getContextInfos()
 
 void VulkanContextManager::initVulkanInstance(VulkanContextManagerInitializeArgs_t args)
 {
-    REP_DEBUG("RenderManager initialization...", LOG_CHANNEL::RENDER)
+    REP_DEBUG("RenderManager initialization...", LogChannelBitsFlag::RENDER)
 
     VkApplicationInfo appInfo = {};
     appInfo.pApplicationName = "Hello Triangle";
@@ -131,7 +131,7 @@ void VulkanContextManager::initVulkanInstance(VulkanContextManagerInitializeArgs
     {
         throw std::runtime_error("Create vulkan instance failed");
     }
-    REP_DEBUG("  vulkan instance initialized", LOG_CHANNEL::RENDER);
+    REP_DEBUG("  vulkan instance initialized", LogChannelBitsFlag::RENDER);
 
     if (args.validationLayerEnabled)
     {
@@ -149,7 +149,7 @@ void VulkanContextManager::initVulkanInstance(VulkanContextManagerInitializeArgs
         {
             throw std::runtime_error("Callback for validation layer failed");
         }
-        REP_DEBUG("  debug callback initialized", LOG_CHANNEL::RENDER);
+        REP_DEBUG("  debug callback initialized", LogChannelBitsFlag::RENDER);
     }
 }
 
@@ -224,7 +224,7 @@ void VulkanContextManager::initSwapchain()
 
     result = vkGetSwapchainImagesKHR(this->device, this->swapchain, &imageCount, nullptr);
     assert(result == VK_SUCCESS);
-    REP_DEBUG("Image amount detected for swapchain is : " << imageCount, LOG_CHANNEL::RENDER)
+    REP_DEBUG("Image amount detected for swapchain is : " << imageCount, LogChannelBitsFlag::RENDER)
 
     this->swapchainImages.resize(imageCount);
     result = vkGetSwapchainImagesKHR(this->device, this->swapchain, &imageCount, this->swapchainImages.data());
@@ -241,7 +241,7 @@ void VulkanContextManager::initSwapchain()
                                                        swapchainImageFormat,
                                                        VK_IMAGE_ASPECT_COLOR_BIT);
     }
-    REP_DEBUG("create " << swapchainImageViews.size() << " image views for the swapchain", LOG_CHANNEL::RENDER)
+    REP_DEBUG("create " << swapchainImageViews.size() << " image views for the swapchain", LogChannelBitsFlag::RENDER)
 }
 
 
@@ -333,7 +333,7 @@ void VulkanContextManager::initFramebuffers()
         {
             throw std::runtime_error("failed to create framebuffers");
         }
-        REP_WARNING("  framebuffer is initialized", LOG_CHANNEL::RENDER)
+        REP_WARNING("  framebuffer is initialized", LogChannelBitsFlag::RENDER)
     }
 }
 
@@ -403,7 +403,7 @@ void VulkanContextManager::vDestroy()
     this->destroySwapchain();
     vkDestroyDevice(this->device, nullptr);
     this->destroyVulkanInstance();
-    REP_DEBUG("RenderManager destroyed", LOG_CHANNEL::RENDER)
+    REP_DEBUG("RenderManager destroyed", LogChannelBitsFlag::RENDER)
 }
 
 }

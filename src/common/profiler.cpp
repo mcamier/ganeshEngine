@@ -19,12 +19,6 @@ AutoProfiler::~AutoProfiler()
 }
 
 
-void ProfilerManager::vInit(ProfilerManagerInitializeArgs_t args)
-{
-
-}
-
-
 void ProfilerManager::vUpdate()
 {
     for (auto &entry : lastFrameSamplesMap)
@@ -70,13 +64,13 @@ void ProfilerManager::registerSample(std::string &name, float durationMs)
 
 void ProfilerManager::vDestroy()
 {
-    REP_DEBUG("ProfilesManager details", LOG_CHANNEL::DEFAULT)
+    REP_DEBUG("ProfilesManager details", LogChannelBitsFlag::DEFAULT)
     for (auto &entry : globalSamplesMap)
     {
         REP_DEBUG("  " << entry.first << " [avg : " << entry.second.getAverageDurationMs() << "ms] [min : "
                        << entry.second.minDurationMs << "ms] [max : " << entry.second.maxDurationMs << "ms] ["
                        << entry.second.samplesAmount << " samples]",
-                  LOG_CHANNEL::DEFAULT);
+                  LogChannelBitsFlag::DEFAULT);
     }
 }
 

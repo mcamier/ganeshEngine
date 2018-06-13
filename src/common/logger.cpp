@@ -5,12 +5,12 @@
 namespace rep
 {
 
-void ConsoleLogger::vLog(LOG_LEVEL lvl, const char *file, int line, std::string &message)
+void ConsoleLogger::vLog(LogLevelFlag lvl, const char *file, int line, std::string &message)
 {
     if (lvl >= mLogLevel)
     {
         fprintf(stdout, "[%7s] %35s:%d\t%s\n",
-                LEVEL_NAMES[static_cast<int>(lvl)],
+                LOG_LEVEL_NAMES[static_cast<int>(lvl)],
                 file,
                 line,
                 message.c_str());
@@ -36,7 +36,7 @@ void FileLogger::vDestroy(void)
     writePendingLogsIntoFileAndSwap();
 }
 
-void FileLogger::vLog(LOG_LEVEL lvl, const char *file, int line, std::string &message)
+void FileLogger::vLog(LogLevelFlag lvl, const char *file, int line, std::string &message)
 {
     if (lvl >= mLogLevel)
     {
@@ -70,7 +70,7 @@ void FileLogger::writePendingLogsIntoFileAndSwap()
             fprintf(
                     fp,
                     "[%7s] %35s:%d\t%s\n",
-                    LEVEL_NAMES[lvl],
+                    LOG_LEVEL_NAMES[lvl],
                     (*iter)->file,
                     (*iter)->line,
                     (*iter)->message);
@@ -93,7 +93,7 @@ void FileLogger::writePendingLogsIntoFileAndSwap()
     currentAmount = 0;
 }
 
-void FileLogger::appendLogEntry(LOG_LEVEL lvl, const char *file, int line, std::string &message)
+void FileLogger::appendLogEntry(LogLevelFlag lvl, const char *file, int line, std::string &message)
 {
     logEntry_t *entry = pDBSAllocator->alloc<logEntry_t>();
     entry->lvl = lvl;
@@ -168,8 +168,8 @@ void LoggerManager::vDestroy()
 }
 
 void LoggerManager::logInto(ILogger *logger,
-                            LOG_LEVEL lvl,
-                            LOG_CHANNEL logChannel,
+                            LogLevelFlag lvl,
+                            LogChannelFlag logChannel,
                             const char *file,
                             int line,
                             std::string &message)
@@ -202,8 +202,8 @@ void LoggerManager::logInto(ILogger *logger,
 }
 
 
-void LoggerManager::log(LOG_LEVEL lvl,
-                        LOG_CHANNEL logChannel,
+void LoggerManager::log(LogLevelFlag lvl,
+                        LogChannelFlag logChannel,
                         const char *file,
                         int line,
                         std::string &message)

@@ -22,12 +22,21 @@
 namespace rep
 {
 
-using namespace std::chrono;
+using std::chrono::high_resolution_clock;
 
-/** Profiler class, its constructor will retrieve current time from the system
-*  and it's destructor will get current time again
-*
-*/
+// Profiler class, its constructor will retrieve current time from the system and it's destructor will get current
+// time again
+// Using this class implies the ProfilerManager is already started
+// Example:
+//      ...
+//      {
+//          AutoProfiler profiler("VulkanContextManager update");
+//          VulkanContextManager::get().vUpdate();
+//      }
+//      ...
+// Because AutoProfiler is a RAII class, once the execution leave the scope where the autoprofile was created, it will
+// be destroyed, but during its destruction the ProfilerManager will notified with the timing sample
+
 class AutoProfiler
 {
 private:
@@ -46,9 +55,7 @@ public:
 };
 
 
-/**
-*
-*/
+// Store a unique profiling sample
 struct ProfilerFrameEntry
 {
     uint16_t sampleAmount = 0;
@@ -61,9 +68,7 @@ struct ProfilerFrameEntry
 };
 
 
-/**
-*
-*/
+// Store the agregated timing sampled for a given named sampler
 struct ProfilerGlobalEntry
 {
     float minDurationMs;
@@ -81,35 +86,31 @@ struct ProfilerGlobalEntry
     double getAverageDurationMs() {
         return this->totalDurationMs / (double)this->samplesAmount;
     }
-
 };
 
 
+// ProfilerManagerInitializeArgs_t gathers all properties that could be giving to the ProfilerManager during its
+// initialization in order to customize its behavior
 struct ProfilerManagerInitializeArgs_t
 {
 };
 
 
-
-/**
- * Manager used to gather samples of profiled functions calls and
- * provides related datas for debugging purposes
- */
+// ProfilerManager is responsible for profiling samples
+//
+// It's a singleton manager and should be accessed via get method
+// Example:
+//      ProfilerManager::get().registerSample("Frame preparation", 256);
 class ProfilerManager :
         public SingletonManager<ProfilerManager, ProfilerManagerInitializeArgs_t>
 {
     friend SingletonManager<ProfilerManager, ProfilerManagerInitializeArgs_t>;
 
 private:
-    /**
-     * Samples registered since the beginning of the current frame
-     */
+    // Samples registered since the beginning of the current frame
     std::map<std::string, ProfilerFrameEntry> lastFrameSamplesMap;
 
-    /**
-     * All samples registered since the beginning of profiling, usually the
-     * beginning of the game's execution
-     */
+    // All samples registered since the beginning of profiling, usually the beginning of the game's execution
     std::map<std::string, ProfilerGlobalEntry> globalSamplesMap;
 
     ProfilerManager() = default;
@@ -118,23 +119,18 @@ private:
 
     ProfilerManager &operator=(const ProfilerManager &) = delete;
 
-    void vInit(ProfilerManagerInitializeArgs_t args) override;
+    void vInit(ProfilerManagerInitializeArgs_t args) override {}
 
     void vDestroy() override;
 
 public:
-    /**
-     * Update the manager, should be called every frames to register the samples
-     * gathered during the current frame into global datas. Compute from pikes and
-     * average for all sample category.
-     */
+    // Update the manager, should be called every frames to register the samples gathered during the current frame
+    // into global datas. Compute from pikes and average for all sample category.
     void vUpdate() override;
-    /**
-     * Register a sample
-     *
-     * @param name the name of the category the sample belongs to
-     * @param durationMs the duration recorded in millisecond
-     */
+
+    // Register a sample
+    // param name : the name of the category the sample belongs to
+    // param durationMs : the duration recorded in millisecond
     void registerSample(std::string &name, float durationMs);
 
 };

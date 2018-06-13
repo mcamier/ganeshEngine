@@ -1,35 +1,45 @@
 #include "clock.hpp"
 
 
-namespace rep {
+namespace rep
+{
 
-void Clock::update(uint32_t dtNanoSecond) {
-    if (!mIsPaused) {
+void Clock::update(uint32_t dtNanoSecond)
+{
+    if (!mIsPaused)
+    {
         mLastTimeAdded = mScale * dtNanoSecond;
         mTotalNanoSeconds += mLastTimeAdded;
-    } else {
+    }
+    else
+    {
         mLastTimeAdded = 0;
     }
 }
 
-bool Clock::isPaused() {
+bool Clock::isPaused()
+{
     return mIsPaused;
 }
 
-void Clock::setPause(bool value) {
+void Clock::setPause(bool value)
+{
     mIsPaused = value;
 }
 
-uint32_t Clock::getLastFrameElapsedTime() const {
+uint32_t Clock::getLastFrameElapsedTime() const
+{
     return mLastTimeAdded;
 }
 
-uint64_t Clock::getTotalTime() const {
+uint64_t Clock::getTotalTime() const
+{
     return mTotalNanoSeconds;
 }
 
-float Clock::getLastFrameElapsedTimeAsSecond() const {
-    return (float)(mLastTimeAdded)/1000000000.0f;
+float Clock::getLastFrameElapsedTimeAsSecond() const
+{
+    return (float) (mLastTimeAdded) / 1000000000.0f;
 }
 
 }

@@ -8,6 +8,7 @@
 namespace rep
 {
 
+//
 typedef enum inputMouseButton
 {
     INPUT_MOUSE_BUTTON_1 = 0,
@@ -26,6 +27,7 @@ typedef enum inputMouseButton
 } inputMouseButton;
 
 
+//
 typedef enum inputActionButton
 {
     INPUT_ACTION_NONE = -1,
@@ -35,6 +37,7 @@ typedef enum inputActionButton
 } inputActionButton;
 
 
+//
 typedef enum inputModifierBitsFlag
 {
     INPUT_MODIFIER_NONE = 0,
@@ -46,7 +49,6 @@ typedef enum inputModifierBitsFlag
 } inputModifierBitsFlag;
 typedef uint8_t inputModifierFlag;
 
-
-}
+} // namespace rep
 
 #endif //RENDERENGINEPLAYGROUND_INPUT_GLFW_HPP

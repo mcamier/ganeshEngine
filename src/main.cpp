@@ -11,7 +11,6 @@
 
 using namespace rep;
 
-
 class Demo :
         public Application
 {
@@ -51,7 +50,7 @@ protected:
         loadModelIntoBuffer();
         initPipeline();
         initUniformBuffer();
-        REP_DEBUG("application demo initialized", LOG_CHANNEL::DEFAULT)
+        REP_DEBUG("application demo initialized", LogChannelBitsFlag::DEFAULT)
     }
 
 
@@ -446,7 +445,7 @@ protected:
         vkDestroyBuffer(ctxt.device, this->buffer, nullptr);
         vkFreeMemory(ctxt.device, this->uboBufferMemory, nullptr);
         vkDestroyBuffer(ctxt.device, this->uboBuffer, nullptr);
-        REP_DEBUG("application demo destroyed", LOG_CHANNEL::DEFAULT)
+        REP_DEBUG("application demo destroyed", LogChannelBitsFlag::DEFAULT)
     }
 };
 

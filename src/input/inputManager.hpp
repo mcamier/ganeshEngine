@@ -14,25 +14,18 @@ typedef struct inputMousePosition
 } inputMousePosition ;
 
 
-/**
- *
- */
+//
 struct InputManagerInitializeArgs_t
 {
 };
 
 
-/**
- *
- */
+//
 class InputManager :
         public SingletonManager<InputManager, InputManagerInitializeArgs_t>
 {
 
 private:
-    /**
-     * Mouse
-     */
     inputMousePosition lastPosition;
     inputMousePosition lastEventPosition;
 
@@ -55,6 +48,5 @@ public:
 };
 
 }
-
 
 #endif //RENDERENGINEPLAYGROUND_INPUTMANAGER_HPP

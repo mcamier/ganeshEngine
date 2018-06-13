@@ -11,15 +11,16 @@ namespace rep
 void Application::run()
 {
     this->init();
-    this->vInit();
 
     while (!WindowManager::get().shouldClose())
     {
-        WindowManager::get().poolEvent();
+        WindowManager::get().vUpdate();
         ProfilerManager::get().vUpdate();
 
         this->vUpdate();
         VulkanContextManager::get().vUpdate();
+        // InputManager should be called last because it reset its state before the next frame
+        // Try to detect inputs after this call will never detect anything
         InputManager::get().vUpdate();
     }
 
@@ -48,8 +49,8 @@ void Application::init()
     loggerManagerInitArgs.fileLogBaseName = "log";
     loggerManagerInitArgs.fileLogFolder = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/cmake-build-debug";
     loggerManagerInitArgs.consoleLogEnabled = true;
-    loggerManagerInitArgs.logLevel = LOG_LEVEL::DEBUG;
-    loggerManagerInitArgs.logChannel = LOG_CHANNEL::DEFAULT | LOG_CHANNEL::RENDER;
+    loggerManagerInitArgs.logLevel = LogLevelBitsFlag::DEBUG;
+    loggerManagerInitArgs.logChannel = LogChannelBitsFlag::DEFAULT | LogChannelBitsFlag::RENDER;
 
     ProfilerManagerInitializeArgs_t profilerManagerInitArgs = {};
     InputManagerInitializeArgs_t inputManagerInitArgs = {};
@@ -62,6 +63,9 @@ void Application::init()
         InputManager::initialize(inputManagerInitArgs);
         VulkanContextManager::initialize(renderManagerInitArgs);
     END_PROFILING
+
+
+    this->vInit();
 }
 
 void Application::destroy()

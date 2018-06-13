@@ -38,12 +38,13 @@ void WindowManager::vInit(WindowManagerInitializeArgs_t initArgs)
     }
 
     this->initInputCallbacks();
-    REP_DEBUG("WindowManager initialized", LOG_CHANNEL::RENDER)
+    REP_DEBUG("WindowManager initialized", LogChannelBitsFlag::RENDER)
 }
 
 
 void WindowManager::vUpdate()
 {
+    glfwPollEvents();
 }
 
 
@@ -51,13 +52,7 @@ void WindowManager::vDestroy()
 {
     glfwDestroyWindow(this->pWindow);
     glfwTerminate();
-    REP_DEBUG("WindowManager destroyed", LOG_CHANNEL::RENDER)
-}
-
-
-void WindowManager::poolEvent()
-{
-    glfwPollEvents();
+    REP_DEBUG("WindowManager destroyed", LogChannelBitsFlag::RENDER)
 }
 
 
