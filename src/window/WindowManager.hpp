@@ -65,6 +65,9 @@ public:
     // Should not be used, except by the the VulkanContextManager which use it to create the rendering surface
     GLFWwindow* const getWindowHandle();
 
+    // the the cursor at the center of the screen
+    void setCursorAtCenter();
+
 };
 
 }

@@ -33,13 +33,12 @@ class InputManager :
 {
 
 private:
-    inputMousePosition lastPosition;
-    inputMousePosition lastEventPosition;
+    inputMousePosition lastPosition = {0, 0};
+    inputMousePosition lastEventPosition = {0, 0};
 
     inputMouseScroll lastEventScroll;
 
-    inputKeyboardState lastFrameKeyState[INPUT_KEY_COUNT];
-    inputKeyboardState currentFrameKeyState[INPUT_KEY_COUNT];
+    inputKeyboardState keyState[INPUT_KEY_COUNT];
 
 protected:
     void vInit(InputManagerInitializeArgs_t initStructArg);
@@ -53,11 +52,11 @@ public:
 
     void registerMouseScrollInput(double offsetX, double offsetY);
 
-    void registerKeyboardInput(inputKeyboardKey key, int scancode, inputActionButton action, inputModifierFlag mods);
+    void registerKeyboardInput(inputKeyboardKey key, inputActionButton action, inputModifierFlag mods);
 
     void registerMouseButtonInput(inputMouseButton button, inputActionButton action, inputModifierFlag mods);
 
-    bool isMouseMoved(double *xpos, double *ypos);
+    bool isMouseMoved(double *xpos, double *ypos, double *xDeltaLastPosition, double *yDeltaLastPosition);
 
     bool isMouseScrolled(double *offsetX, double *offsetY);
 

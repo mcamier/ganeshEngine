@@ -9,18 +9,26 @@
 namespace rep
 {
 
+
+//
+//
 struct ViewProjTransformation
 {
     glm::mat4 view;
     glm::mat4 proj;
 };
 
+
+//
+//
 struct ModelTransformation
 {
     glm::mat4 model;
 };
 
 
+//
+//
 struct VertexPosNormalColorTex
 {
     glm::vec3 position;
@@ -32,6 +40,8 @@ struct VertexPosNormalColorTex
 };
 
 
+//
+//
 struct vulkanContextInfos_t
 {
     const VkInstance &        vulkanInstance;
@@ -43,6 +53,28 @@ struct vulkanContextInfos_t
     const VkCommandPool &     graphicCommandPool;
     const VkRenderPass &      renderPass;
     const VkSwapchainKHR &    swapchain;
+};
+
+//
+//
+class Camera
+{
+    glm::vec3 position;
+    glm::vec3 front;
+    glm::vec3 up;
+    glm::mat4 view;
+
+    float cameraSpeed = 0.075f;
+    bool viewDirty = true;
+
+public:
+    Camera() {}
+
+    Camera(glm::vec3 position, glm::vec3 sightCenter);
+
+    void update();
+
+    glm::mat4& getLookAt();
 };
 
 }

@@ -62,6 +62,7 @@ bool WindowManager::shouldClose()
     return glfwWindowShouldClose(this->pWindow) != 0;
 }
 
+
 void WindowManager::initInputCallbacks()
 {
     glfwSetWindowCloseCallback(this->pWindow, [](GLFWwindow *window) {
@@ -69,7 +70,6 @@ void WindowManager::initInputCallbacks()
 
     glfwSetKeyCallback(this->pWindow, [](GLFWwindow *window, int key, int scancde, int action, int mods) {
         InputManager::get().registerKeyboardInput(convertGlfwInputKeyboardKey(key),
-                                                  scancde,
                                                   convertGlfwInputAction(action),
                                                   convertGlfwInputModifier(mods));
     });
@@ -89,9 +89,16 @@ void WindowManager::initInputCallbacks()
     });
 }
 
+
 GLFWwindow *const WindowManager::getWindowHandle()
 {
     return this->pWindow;
+}
+
+
+void WindowManager::setCursorAtCenter()
+{
+    glfwSetCursorPos(pWindow, windowWidth/2, windowHeight/2);
 }
 
 }

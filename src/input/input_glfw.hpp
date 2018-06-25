@@ -169,10 +169,10 @@ inputActionButton convertGlfwInputAction(int glfwInputAction)
 inputModifierFlag convertGlfwInputModifier(int glfwInputModifier)
 {
     inputModifierFlag modifier = INPUT_MODIFIER_NONE;
-    modifier &= ((glfwInputModifier & GLFW_MOD_SHIFT) == GLFW_MOD_SHIFT) ? INPUT_MODIFIER_SHIFT : modifier;
-    modifier &= ((glfwInputModifier & GLFW_MOD_CONTROL) == GLFW_MOD_CONTROL) ? INPUT_MODIFIER_CONTROL : modifier;
-    modifier &= ((glfwInputModifier & GLFW_MOD_ALT) == GLFW_MOD_ALT) ? INPUT_MODIFIER_ALT : modifier;
-    modifier &= ((glfwInputModifier & GLFW_MOD_SUPER) == GLFW_MOD_SUPER) ? INPUT_MODIFIER_SUPER : modifier;
+    modifier |= ((glfwInputModifier & GLFW_MOD_SHIFT) == GLFW_MOD_SHIFT) ? INPUT_MODIFIER_SHIFT : modifier;
+    modifier |= ((glfwInputModifier & GLFW_MOD_CONTROL) == GLFW_MOD_CONTROL) ? INPUT_MODIFIER_CONTROL : modifier;
+    modifier |= ((glfwInputModifier & GLFW_MOD_ALT) == GLFW_MOD_ALT) ? INPUT_MODIFIER_ALT : modifier;
+    modifier |= ((glfwInputModifier & GLFW_MOD_SUPER) == GLFW_MOD_SUPER) ? INPUT_MODIFIER_SUPER : modifier;
     return modifier;
 }
 

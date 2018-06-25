@@ -4,7 +4,6 @@
 #include "window/WindowManager.hpp"
 #include "render/VulkanContextManager.hpp"
 #include "input/InputManager.hpp"
-#include "common/clock.hpp"
 
 namespace rep
 {
@@ -15,9 +14,6 @@ namespace rep
 // game.
 class Application
 {
-
-private:
-    Clock clock;
 
 public:
     Application() = default;
