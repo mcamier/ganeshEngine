@@ -1,7 +1,7 @@
 #include "clock.hpp"
 
 
-namespace rep
+namespace ge
 {
 
 void Clock::update(uint32_t dtNanoSecond)

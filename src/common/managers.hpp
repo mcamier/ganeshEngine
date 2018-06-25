@@ -1,5 +1,5 @@
-#ifndef RENDERENGINEPLAYGROUND_SERVICE_INIT_HPP
-#define RENDERENGINEPLAYGROUND_SERVICE_INIT_HPP
+#ifndef GE_SERVICE_INIT_HPP
+#define GE_SERVICE_INIT_HPP
 
 #include <type_traits>
 #include <utility>
@@ -7,7 +7,7 @@
 
 #include "common.hpp"
 
-namespace rep
+namespace ge
 {
 
 // Enumerate the different status a manager could have
@@ -108,6 +108,6 @@ public:
     }
 };
 
-} // namespace rep
+} // namespace ge
 
-#endif //RENDERENGINEPLAYGROUND_SERVICE_INIT_HPP
+#endif //GE_SERVICE_INIT_HPP

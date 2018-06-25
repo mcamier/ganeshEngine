@@ -1,11 +1,11 @@
-#ifndef RENDERENGINEPLAYGROUND_MEMORY_H
-#define RENDERENGINEPLAYGROUND_MEMORY_H
+#ifndef GE_MEMORY_H
+#define GE_MEMORY_H
 
 #include <iostream>
 #include <cstdint>
 #include <cstddef>
 
-namespace rep {
+namespace ge {
 
 
 class StackAllocator {
@@ -118,4 +118,4 @@ public:
 
 }
 
-#endif //RENDERENGINEPLAYGROUND_MEMORY_H
+#endif //GE_MEMORY_H

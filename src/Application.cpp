@@ -3,10 +3,21 @@
 #include <chrono>
 
 #include "common/profiler.hpp"
+#include "vulkan/memory/manager.hpp"
 
 using namespace std::chrono;
 
-namespace rep
+using ge::vulkan::VulkanContextManager;
+using ge::input::InputManager;
+using ge::input::InputManagerInitializeArgs_t;
+using ge::window::WindowManager;
+using ge::window::WindowManagerInitializeArgs_t;
+using ge::vulkan::VulkanContextManagerInitializeArgs_t;
+using ge::vulkan::memory::VulkanMemoryManager;
+using ge::vulkan::memory::VulkanMemoryManagerInitializeArgs_t;
+using ge::vulkan::helper::getRequiredExtensions;
+
+namespace ge
 {
 
 void Application::run()

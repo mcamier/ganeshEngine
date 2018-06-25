@@ -1,17 +1,17 @@
-#ifndef RENDERENGINEPLAYGROUND_INITIALIZERS_HPP
-#define RENDERENGINEPLAYGROUND_INITIALIZERS_HPP
+#ifndef GE_INITIALIZERS_HPP
+#define GE_INITIALIZERS_HPP
 
 #include <vector>
 
 #include <vulkan/vulkan.h>
 
 
-namespace rep
+namespace ge
 {
-
-namespace initializer
+namespace vulkan
 {
-
+namespace helper
+{
 
 class DescriptorSetLayoutInfo
 {
@@ -182,9 +182,9 @@ public:
     }
 };
 
-} // namespace initializer
+} // namespace helper
+} // namespace vulkan
+} // namespace ge
 
-} // namespace rep
 
-
-#endif //RENDERENGINEPLAYGROUND_INITIALIZERS_HPP
+#endif //GE_INITIALIZERS_HPP

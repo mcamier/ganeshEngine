@@ -1,10 +1,10 @@
-#ifndef RENDERENGINEPLAYGROUND_LOG_UTILS_H
-#define RENDERENGINEPLAYGROUND_LOG_UTILS_H
+#ifndef GE_LOG_UTILS_H
+#define GE_LOG_UTILS_H
 
 #include <type_traits>
 #include <string>
 
-namespace rep
+namespace ge
 {
 
 // Log criticity level
@@ -80,6 +80,6 @@ struct logEntry_t
     char message[512];
 };
 
-} //namespace rep
+} //namespace ge
 
-#endif //RENDERENGINEPLAYGROUND_LOG_UTILS_H
+#endif //GE_LOG_UTILS_H

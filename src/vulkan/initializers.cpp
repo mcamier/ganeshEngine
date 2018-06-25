@@ -1,9 +1,10 @@
 #include "initializers.hpp"
 
-namespace rep
+namespace ge
 {
-
-namespace initializer
+namespace vulkan
+{
+namespace helper
 {
 
 ShaderStageCreateInfo::ShaderStageCreateInfo()
@@ -122,6 +123,6 @@ DescriptorSetLayoutInfo &DescriptorSetLayoutInfo::addBinding(VkDescriptorType ty
     return this->addBinding(type, shader, bindingIndex, 1);
 }
 
-} // namespace initializer
-
-} // namespace rep
+} // namespace helper
+} // namespace vulkan
+} // namespace ge

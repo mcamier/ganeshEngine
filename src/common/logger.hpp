@@ -1,5 +1,5 @@
-#ifndef RENDERENGINEPLAYGROUND_LOGGER_H
-#define RENDERENGINEPLAYGROUND_LOGGER_H
+#ifndef GE_LOGGER_H
+#define GE_LOGGER_H
 
 #include "managers.hpp"
 #include "memory.hpp"
@@ -55,7 +55,7 @@
 #endif
 
 
-namespace rep
+namespace ge
 {
 
 
@@ -312,4 +312,4 @@ private:
 }
 
 
-#endif //RENDERENGINEPLAYGROUND_LOGGER_H
+#endif //GE_LOGGER_H

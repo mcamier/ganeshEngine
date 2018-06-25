@@ -1,16 +1,15 @@
-#ifndef RENDERENGINEPLAYGROUND_INPUT_HPP
-#define RENDERENGINEPLAYGROUND_INPUT_HPP
+#ifndef GE_INPUT_HPP
+#define GE_INPUT_HPP
 
 #include <cstdint>
 
 #include <GLFW/glfw3.h>
 
-namespace rep
-{
+namespace ge {
+namespace input {
 
 
-typedef enum inputKeyboardKey
-{
+typedef enum inputKeyboardKey {
     INPUT_KEY_UNKNOWN = 0,
     INPUT_KEY_SPACE = 1,
     INPUT_KEY_APOSTROPHE = 2,
@@ -133,13 +132,12 @@ typedef enum inputKeyboardKey
     INPUT_KEY_RIGHT_SUPER = 120,
     INPUT_KEY_MENU = 121,
     INPUT_KEY_LAST = INPUT_KEY_MENU,
-    INPUT_KEY_COUNT = INPUT_KEY_LAST+1
+    INPUT_KEY_COUNT = INPUT_KEY_LAST + 1
 } inputKeyboardKey;
 
 
 //
-typedef enum inputMouseButton
-{
+typedef enum inputMouseButton {
     INPUT_MOUSE_BUTTON_1 = 0,
     INPUT_MOUSE_BUTTON_2 = 1,
     INPUT_MOUSE_BUTTON_3 = 2,
@@ -157,8 +155,7 @@ typedef enum inputMouseButton
 
 
 //
-typedef enum inputActionButton
-{
+typedef enum inputActionButton {
     INPUT_ACTION_NONE = -1,
     INPUT_ACTION_PRESS = 0,
     INPUT_ACTION_RELEASE = 1,
@@ -168,8 +165,7 @@ typedef enum inputActionButton
 
 
 //
-typedef enum inputModifierBitsFlag
-{
+typedef enum inputModifierBitsFlag {
     INPUT_MODIFIER_NONE = 0,
     INPUT_MODIFIER_SHIFT = 1 << 0,
     INPUT_MODIFIER_CONTROL = 1 << 1,
@@ -179,6 +175,7 @@ typedef enum inputModifierBitsFlag
 } inputModifierBitsFlag;
 typedef uint8_t inputModifierFlag;
 
-} // namespace rep
+} // namespace input
+} // namespace ge
 
-#endif //RENDERENGINEPLAYGROUND_INPUT_GLFW_HPP
+#endif //GE_INPUT_GLFW_HPP

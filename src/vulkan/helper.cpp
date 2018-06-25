@@ -6,16 +6,19 @@
 #include <GLFW/glfw3.h>
 #include <tiny_obj_loader.h>
 
-#include "vulkan_helpers.hpp"
-#include "geometry.hpp"
+#include "helper.hpp"
 
-namespace rep
+namespace ge
+{
+namespace vulkan
+{
+namespace helper
 {
 
 template<>
 void loadModel<VertexPosNormalColorTex>(std::string &modelPath,
-               std::vector<VertexPosNormalColorTex> &vertices,
-               std::vector<uint32_t> &indices)
+                                        std::vector<VertexPosNormalColorTex> &vertices,
+                                        std::vector<uint32_t> &indices)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -65,7 +68,6 @@ void loadModel<VertexPosNormalColorTex>(std::string &modelPath,
     REP_DEBUG("mesh loaded [" << vertices.size() << " vertices] [" << indices.size() << " indices]",
               LogChannelBitsFlag::RENDER)
 }
-
 
 
 std::vector<const char *> getRequiredExtensions()
@@ -851,8 +853,6 @@ void copyBuffer(VkDevice device,
 }
 
 
-
-
 VkResult createDebugReportCallbackEXT(VkInstance instance,
                                       const VkDebugReportCallbackCreateInfoEXT *pCreateInfo,
                                       const VkAllocationCallbacks *pAllocator,
@@ -887,4 +887,6 @@ void destroyDebugReportCallbackEXT(VkInstance instance,
     }
 }
 
+}
+}
 }

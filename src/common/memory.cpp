@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <cassert>
 
-namespace rep
+namespace ge
 {
 bool StackAllocator::initialize() {
     mpFirstAddr = malloc(mByteSize);

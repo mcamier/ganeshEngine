@@ -1,5 +1,5 @@
-#ifndef RENDERENGINEPLAYGROUND_PROFILER_HPP
-#define RENDERENGINEPLAYGROUND_PROFILER_HPP
+#ifndef GE_PROFILER_HPP
+#define GE_PROFILER_HPP
 
 #include <map>
 #include <chrono>
@@ -19,7 +19,7 @@
 #define END_PROFILING
 #endif
 
-namespace rep
+namespace ge
 {
 
 using std::chrono::high_resolution_clock;
@@ -137,4 +137,4 @@ public:
 
 }
 
-#endif //RENDERENGINEPLAYGROUND_PROFILER_HPP
+#endif //GE_PROFILER_HPP

@@ -1,10 +1,12 @@
-#ifndef RENDERENGINEPLAYGROUND_INPUTMANAGER_HPP
-#define RENDERENGINEPLAYGROUND_INPUTMANAGER_HPP
+#ifndef GE_INPUTMANAGER_HPP
+#define GE_INPUTMANAGER_HPP
 
 #include "../common/managers.hpp"
 #include "../input/input.hpp"
 
-namespace rep
+namespace ge
+{
+namespace input
 {
 
 typedef struct inputKeyboardState
@@ -65,5 +67,6 @@ public:
 };
 
 }
+}
 
-#endif //RENDERENGINEPLAYGROUND_INPUTMANAGER_HPP
+#endif //GE_INPUTMANAGER_HPP

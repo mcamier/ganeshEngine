@@ -1,9 +1,9 @@
-#ifndef RENDERENGINEPLAYGROUND_CLOCK_H
-#define RENDERENGINEPLAYGROUND_CLOCK_H
+#ifndef GE_CLOCK_H
+#define GE_CLOCK_H
 
 #include <cstdint>
 
-namespace rep
+namespace ge
 {
 
 class Clock
@@ -69,6 +69,6 @@ public:
     uint64_t getTotalTime() const;
 };
 
-} // namespace rep
+} // namespace ge
 
-#endif //RENDERENGINEPLAYGROUND_CLOCK_H
+#endif //GE_CLOCK_H

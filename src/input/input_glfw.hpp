@@ -1,5 +1,5 @@
-#ifndef RENDERENGINEPLAYGROUND_INPUT_GLFW_HPP
-#define RENDERENGINEPLAYGROUND_INPUT_GLFW_HPP
+#ifndef GE_INPUT_GLFW_HPP
+#define GE_INPUT_GLFW_HPP
 
 #include <cstdint>
 
@@ -7,7 +7,9 @@
 
 #include "input.hpp"
 
-namespace rep
+namespace ge
+{
+namespace input
 {
 
 //
@@ -25,6 +27,7 @@ inputMouseButton convertGlfwInputMouseButton(int glfwMouseButton)
     if (GLFW_MOUSE_BUTTON_RIGHT == glfwMouseButton) return INPUT_MOUSE_BUTTON_RIGHT;
     if (GLFW_MOUSE_BUTTON_MIDDLE == glfwMouseButton) return INPUT_MOUSE_BUTTON_MIDDLE;
     if (GLFW_MOUSE_BUTTON_LAST == glfwMouseButton) return INPUT_MOUSE_BUTTON_LAST;
+    return INPUT_MOUSE_BUTTON_1;
 }
 
 
@@ -152,6 +155,7 @@ inputKeyboardKey convertGlfwInputKeyboardKey(int glfwKeyboardKey)
     if (GLFW_KEY_RIGHT_SUPER == glfwKeyboardKey) return INPUT_KEY_RIGHT_SUPER;
     if (GLFW_KEY_MENU == glfwKeyboardKey) return INPUT_KEY_MENU;
     if (GLFW_KEY_LAST == glfwKeyboardKey) return INPUT_KEY_LAST;
+    return INPUT_KEY_SPACE;
 }
 
 
@@ -176,6 +180,7 @@ inputModifierFlag convertGlfwInputModifier(int glfwInputModifier)
     return modifier;
 }
 
-} // namespace rep
+} // namespace input
+} // namespace ge
 
-#endif //RENDERENGINEPLAYGROUND_INPUT_GLFW_HPP
+#endif //GE_INPUT_GLFW_HPP

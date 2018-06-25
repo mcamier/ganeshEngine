@@ -1,8 +1,10 @@
 #include "logger.hpp"
 
+#include <string>
 #include <ctime>
+#include <cstring>
 
-namespace rep
+namespace ge
 {
 
 void ConsoleLogger::vLog(LogLevelFlag lvl, const char *file, int line, std::string &message)
@@ -98,8 +100,8 @@ void FileLogger::appendLogEntry(LogLevelFlag lvl, const char *file, int line, st
     logEntry_t *entry = pDBSAllocator->alloc<logEntry_t>();
     entry->lvl = lvl;
     entry->line = line;
-    strcpy_s(entry->file, file);
-    strcpy_s(entry->message, message.c_str());
+    strcpy(entry->file, file);
+    strcpy(entry->message, message.c_str());
     currentEntries.push_back(entry);
     currentAmount++;
 }

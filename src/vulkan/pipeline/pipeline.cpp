@@ -1,7 +1,11 @@
 #include <array>
 #include "pipeline.hpp"
 
-namespace rep
+using ge::vulkan::helper::createShaderModule;
+
+namespace ge
+{
+namespace vulkan
 {
 
 void Pipeline::release()
@@ -254,4 +258,5 @@ Pipeline Pipeline::Builder::build()
     return pipeline;
 }
 
-} // namespace rep
+} // namespace vulkan
+} // namespace ge

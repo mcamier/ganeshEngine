@@ -3,13 +3,18 @@
 #include <array>
 
 #include "Application.hpp"
+#include "vulkan/memory/common.hpp"
+#include "vulkan/memory/manager.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
 #include <glm/gtc/matrix_transform.hpp>
 
-using namespace rep;
+using namespace ge;
+using namespace ge::vulkan;
+using namespace ge::vulkan::helper;
+using namespace ge::vulkan::memory;
 
 class Demo :
         public Application
@@ -25,8 +30,8 @@ private:
     const char *NORM_VISUALIZER_SHADER_GEOM = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/normal_visualizer/geom.spv";
     const char *NORM_VISUALIZER_SHADER_FRAG = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/normal_visualizer/frag.spv";
 
-    std::string mesh = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/models/sphere.obj";
     std::vector<VertexPosNormalColorTex> vertices;
+    std::string mesh = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/models/sphere.obj";
     std::vector<uint32_t> indices;
 
     VkBuffer uboBuffer = VK_NULL_HANDLE;
@@ -40,7 +45,8 @@ private:
     VkSemaphore imageAcquiredSemaphore;
     VkSemaphore renderReadySemaphore;
 
-    VkClearColorValue clearColorValue = {0.08f, 0.05f, 0.38f, 0.0f};
+   // VkClearColorValue clearColorValue = {0.08f, 0.05f, 0.38f, 0.0f};
+    VkClearColorValue clearColorValue;
 
     memoryAllocId meshMemoryId;
 

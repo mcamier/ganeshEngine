@@ -4,7 +4,7 @@
 #include "log_utils.hpp"
 #include "logger.hpp"
 
-namespace rep
+namespace ge
 {
 AutoProfiler::AutoProfiler(const char *name)
 {

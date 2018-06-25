@@ -1,11 +1,13 @@
-#ifndef RENDERENGINEPLAYGROUND_COMMON_HPP
-#define RENDERENGINEPLAYGROUND_COMMON_HPP
+#ifndef GE_COMMON_HPP
+#define GE_COMMON_HPP
 
+#include <string>
+#include <vector>
 
 #ifdef _DEBUG
 
 #include <stdio.h>
-#include <string.h>
+#include <string>
 
 #ifdef _WIN32
 //#include <intrin.h>
@@ -32,13 +34,12 @@
 #define BREAK()
 #endif
 
-#include <vector>
 
-namespace rep
+namespace ge
 {
 
 std::vector<char> readFile(const std::string &filename);
 
 }
 
-#endif //RENDERENGINEPLAYGROUND_COMMON_HPP
+#endif //GE_COMMON_HPP

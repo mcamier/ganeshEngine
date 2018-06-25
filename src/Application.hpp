@@ -1,13 +1,12 @@
-#ifndef RENDERENGINEPLAYGROUND_APPLICATION_HPP
-#define RENDERENGINEPLAYGROUND_APPLICATION_HPP
+#ifndef GE_APPLICATION_HPP
+#define GE_APPLICATION_HPP
 
-#include "window/WindowManager.hpp"
-#include "render/VulkanContextManager.hpp"
+#include "window/manager.hpp"
+#include "vulkan/manager.hpp"
 #include "input/InputManager.hpp"
 
-namespace rep
+namespace ge
 {
-
 
 // Application class is meant to be derived by another new class to implement a game application
 // In order to start the application just have to call the run method, it will start the lifecycle of the
@@ -48,4 +47,4 @@ protected:
 };
 
 }
-#endif //RENDERENGINEPLAYGROUND_APPLICATION_HPP
+#endif //GE_APPLICATION_HPP
