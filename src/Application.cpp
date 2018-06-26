@@ -57,7 +57,7 @@ void Application::init()
     renderManagerInitArgs.ppDeviceExtensions = requiredExtension.data();
     renderManagerInitArgs.validationLayerCount = static_cast<uint32_t>(validationLayers.size());
     renderManagerInitArgs.ppValidationLayersCount = validationLayers.data();
-    renderManagerInitArgs.validationLayerEnabled = true;
+    renderManagerInitArgs.validationLayerEnabled = false;
 
     LoggerManagerInitializeArgs_t loggerManagerInitArgs = {};
     loggerManagerInitArgs.fileLogEnabled = true;
