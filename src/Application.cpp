@@ -55,16 +55,6 @@ void Application::init()
     windowManagerInitArgs.windowWidth = 800;
     windowManagerInitArgs.windowHeight = 600;
 
-    auto requiredExtension = getRequiredExtensions();
-    std::array<const char *, 1> validationLayers = {"VK_LAYER_LUNARG_standard_validation"};
-
-    VulkanContextManagerInitializeArgs_t renderManagerInitArgs = {};
-    renderManagerInitArgs.deviceExtensionCount = static_cast<uint32_t>(requiredExtension.size());
-    renderManagerInitArgs.ppDeviceExtensions = requiredExtension.data();
-    renderManagerInitArgs.validationLayerCount = static_cast<uint32_t>(validationLayers.size());
-    renderManagerInitArgs.ppValidationLayersCount = validationLayers.data();
-    renderManagerInitArgs.validationLayerEnabled = false;
-
     LoggerManagerInitializeArgs_t loggerManagerInitArgs = {};
     loggerManagerInitArgs.fileLogEnabled = true;
     loggerManagerInitArgs.fileLogBaseName = "log";
@@ -85,6 +75,17 @@ void Application::init()
 
     BEGIN_PROFILING("All Managers Init")
         WindowManager::initialize(windowManagerInitArgs);
+
+        // glfw must be initialized before calling getRequiredExtensions()
+        auto requiredExtension = getRequiredExtensions();
+        std::array<const char *, 1> validationLayers = {"VK_LAYER_LUNARG_standard_validation"};
+        VulkanContextManagerInitializeArgs_t renderManagerInitArgs = {};
+        renderManagerInitArgs.deviceExtensionCount = static_cast<uint32_t>(requiredExtension.size());
+        renderManagerInitArgs.ppDeviceExtensions = requiredExtension.data();
+        renderManagerInitArgs.validationLayerCount = static_cast<uint32_t>(validationLayers.size());
+        renderManagerInitArgs.ppValidationLayersCount = validationLayers.data();
+        renderManagerInitArgs.validationLayerEnabled = true;
+
         InputManager::initialize(inputManagerInitArgs);
         VulkanContextManager::initialize(renderManagerInitArgs);
         VulkanMemoryManager::initialize(vkMemManagerInitializeArgs);

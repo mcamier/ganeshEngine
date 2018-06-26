@@ -69,20 +69,20 @@ std::vector<const char *> getRequiredExtensions() {
     std::vector<const char *> extensions;
     uint32_t glfwExtensionCount = 0;
     const char **glfwExtensions;
-/*
+
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
     for (uint32_t i = 0; i < glfwExtensionCount; i++)
     {
         extensions.push_back(glfwExtensions[i]);
-    }*/
-    // TODO glfwGetRequiredInstanceExtensions doest not return the two values below
-    extensions.push_back("VK_KHR_surface");
-    extensions.push_back("VK_KHR_win32_surface");
+    }
 
-#ifdef _DEBUG
     extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-#endif
+
+    //#ifdef _DEBUG
+    //    extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+    //#endif
+
 
     return extensions;
 }

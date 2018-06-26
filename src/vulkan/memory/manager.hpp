@@ -25,6 +25,48 @@ struct VulkanMemoryManagerInitializeArgs_t {
 };
 
 
+template<typename PTR, typename SIZE>
+void _fillMemory(VkDeviceMemory memory, uint64_t offset, PTR ptr, SIZE size) {
+    void *pLocalMem;
+    vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
+
+    vkMapMemory(ctxt.device, memory, offset, size, 0, &pLocalMem);
+    memcpy(pLocalMem, ptr, size);
+    vkUnmapMemory(ctxt.device, memory);
+
+    return;
+}
+
+template<typename PTR, typename SIZE, typename... Args>
+void _fillMemory(VkDeviceMemory memory, uint64_t offset, PTR ptr, SIZE size, Args... args) {
+    void *pLocalMem;
+    vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
+
+    vkMapMemory(ctxt.device, memory, offset, size, 0, &pLocalMem);
+    memcpy(pLocalMem, ptr, size);
+    vkUnmapMemory(ctxt.device, memory);
+
+    uint64_t nextOffset = offset + size;
+
+    // recursive call of the method until paramater pack is not empty
+    _fillMemory(memory, nextOffset, args...);
+
+    return;
+}
+
+
+template<typename PTR, typename SIZE>
+uint64_t _sumRequiredSize(PTR ptr, SIZE size) {
+    return size;
+}
+
+template<typename PTR, typename SIZE, typename... Args>
+uint64_t _sumRequiredSize(PTR ptr, SIZE size, Args... args) {
+    return size + _sumRequiredSize(args...);
+}
+
+
+
 // Responsible of managing eagerly allocated memory chunks for vulkan resources in order to avoid multiple
 // vkDeviceMemory creation
 class VulkanMemoryManager :
@@ -49,7 +91,7 @@ protected:
 
     void vDestroy() override;
 
-    public:
+public:
     VulkanMemoryManager(const VulkanMemoryManager &) = delete;
 
     VulkanMemoryManager &operator=(const VulkanMemoryManager &) = delete;
@@ -66,7 +108,18 @@ protected:
     template<typename... Args>
     memoryAllocId allocateBuffer(uint64_t size, VkBufferUsageFlags usage, void *ptr, uint64_t dataSize, Args... args) {
         memoryAllocId allocId = this->allocateWithPolicy<BufferAllocatorPolicy>(size, usage);
-        fill(allocId, ptr, dataSize, args...);
+
+        memoryAlloc_t *memoryAlloc = nullptr;
+        VkDeviceMemory memory;
+        getMemoryAllocation(allocId, &memoryAlloc, &memory);
+        uint64_t memOffset = memoryAlloc->memoryChunkOffset + memoryAlloc->alignmentOffset;
+
+        uint64_t requiredSize = _sumRequiredSize(ptr, dataSize, args...);
+        if (requiredSize > memoryAlloc->getDataSize()) {
+            REP_FATAL("memory allocation is too small", ge::utils::LogChannelBitsFlag::DEFAULT)
+        }
+
+        _fillMemory(memory, memOffset, ptr, size, args...);
 
         return allocId;
     }
@@ -79,22 +132,8 @@ protected:
 
     VkBuffer getBuffer(memoryAllocId allocId);
 
-    template<typename... Args>
-    void fill(memoryAllocId allocId, void *ptr, uint64_t size, Args... args) {
-
-        memoryAlloc_t *memoryAlloc = nullptr;
-        VkDeviceMemory memory;
-        getMemoryAllocation(allocId, &memoryAlloc, &memory);
-        uint64_t memOffset = memoryAlloc->memoryChunkOffset + memoryAlloc->alignmentOffset;
-
-        uint64_t requiredSize = 0;
-        //uint64_t requiredSize = sumSize(ptr, size, args...);
-        if (requiredSize > memoryAlloc->getDataSize()) {
-            REP_FATAL("memory allocation is too small", ge::utils::LogChannelBitsFlag::DEFAULT)
-        }
-
-        //fillWithOffset<Args...>(allocId, memOffset, ptr, size, args...);
-    }
+    // display the memory status in the log
+    void dump();
 
 private:
     // Allocate memory within the vulkanMemoryManager with a specific allocator
@@ -107,63 +146,11 @@ private:
         return findAvailableMemory(size, alignment, buffer);
     }
 
-    /*template<typename... Args>
-    void fillWithOffset(memoryAllocId allocId, uint64_t offset, void *ptr, uint64_t size, Args... args) {
-        void *pLocalMem;
-        vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
-        memoryAlloc_t *memoryAlloc = nullptr;
-        VkDeviceMemory memory;
-        getMemoryAllocation(allocId, &memoryAlloc, &memory);
-
-        vkMapMemory(ctxt.device, memory, offset, size, 0, &pLocalMem);
-        memcpy(pLocalMem, ptr, size);
-        vkUnmapMemory(ctxt.device, memory);
-
-        uint64_t nextOffset = offset + size;
-
-        // recursive call of the method until paramater pack is not empty
-        fillWithOffset(allocId, nextOffset, args...);
-    }
-
-
-    // sum up the provided data's size in the parameter pack
-    template<typename... Args>
-    uint64_t sumSize(void *ptr, uint64_t size, Args... args) {
-        return size + sumSize(args...);
-    }*/
-
-    // end call for the recursion of the parameter pack for the sum up
-
-
     void getMemoryAllocation(memoryAllocId allocId, memoryAlloc_t **memoryAlloc, VkDeviceMemory *memory);
 
     memoryAllocId findAvailableMemory(VkDeviceSize size, VkDeviceSize alignment, VkBuffer &buffer);
-
-    // display the memory status in the log
-    void dump();
 };
 
-/*
-
-template<>
-void VulkanMemoryManager::fillWithOffset(memoryAllocId allocId, uint64_t offset, void *ptr, uint64_t size)
-{
-    void *pLocalMem;
-    vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
-    memoryAlloc_t *memoryAlloc = nullptr;
-    VkDeviceMemory memory;
-    getMemoryAllocation(allocId, &memoryAlloc, &memory);
-
-    vkMapMemory(ctxt.device, memory, offset, size, 0, &pLocalMem);
-    memcpy(pLocalMem, ptr, size);
-    vkUnmapMemory(ctxt.device, memory);
-}
-
-template<>
-uint64_t VulkanMemoryManager::sumSize(void *ptr, uint64_t size)
-{
-    return size;
-}*/
 
 }
 }

@@ -2,6 +2,9 @@
 #include <functional>
 #include <array>
 
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
 #include "Application.hpp"
 #include "vulkan/memory/common.hpp"
 #include "vulkan/memory/manager.hpp"
@@ -139,6 +142,8 @@ protected:
                                                  VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                                  this->vertices.data(), verticesSize,
                                                  this->indices.data(), indicesSize);
+
+        ///memManager.dump();
     }
 
 
