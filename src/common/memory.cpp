@@ -1,10 +1,10 @@
 #include "memory.hpp"
 
-#include <cstdlib>
 #include <cassert>
 
-namespace ge
-{
+namespace ge {
+namespace utils {
+
 bool StackAllocator::initialize() {
     mpFirstAddr = malloc(mByteSize);
     if (!mpFirstAddr) return false;
@@ -60,8 +60,7 @@ bool PoolAllocator::v_initialize() {
 
         if (i == mBlockAmount - 1) {
             *ppp = 0;
-        }
-        else {
+        } else {
             *ppp = nextPtrAddr + sizeof(uintptr_t);
         }
     }
@@ -127,4 +126,5 @@ void DoubleBufferedStackAllocator::destroy() {
     mBufferTwo.destroy();
 }
 
+}
 }

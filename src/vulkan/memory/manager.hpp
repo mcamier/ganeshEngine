@@ -90,7 +90,7 @@ protected:
         uint64_t requiredSize = 0;
         //uint64_t requiredSize = sumSize(ptr, size, args...);
         if (requiredSize > memoryAlloc->getDataSize()) {
-            REP_FATAL("memory allocation is too small", LogChannelBitsFlag::DEFAULT)
+            REP_FATAL("memory allocation is too small", ge::utils::LogChannelBitsFlag::DEFAULT)
         }
 
         //fillWithOffset<Args...>(allocId, memOffset, ptr, size, args...);

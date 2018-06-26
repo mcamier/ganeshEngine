@@ -2,16 +2,15 @@
 #include "pipeline.hpp"
 
 using ge::vulkan::helper::createShaderModule;
+using ge::utils::readFile;
 
-namespace ge
-{
-namespace vulkan
-{
 
-void Pipeline::release()
-{
-    for (auto &descriptorSetLayout: descriptorSetLayouts)
-    {
+
+namespace ge {
+namespace vulkan {
+
+void Pipeline::release() {
+    for (auto &descriptorSetLayout: descriptorSetLayouts) {
         vkDestroyDescriptorSetLayout(this->device, descriptorSetLayout, nullptr);
     }
     vkDestroyDescriptorPool(this->device, this->descriptorPool, nullptr);
@@ -19,94 +18,78 @@ void Pipeline::release()
     vkDestroyPipeline(this->device, this->pipeline, nullptr);
 }
 
-Pipeline::Builder &Pipeline::Builder::setDevice(VkDevice device)
-{
+Pipeline::Builder &Pipeline::Builder::setDevice(VkDevice device) {
     this->device = device;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setVertexShader(const char *filename)
-{
+Pipeline::Builder &Pipeline::Builder::setVertexShader(const char *filename) {
     this->vertexShaderFilename = filename;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setFragmentShader(const char *filename)
-{
+Pipeline::Builder &Pipeline::Builder::setFragmentShader(const char *filename) {
     this->fragmentShaderFilename = filename;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setGeometryShader(const char *filename)
-{
+Pipeline::Builder &Pipeline::Builder::setGeometryShader(const char *filename) {
     this->geometryShaderFilename = filename;
     this->useGeometryShader = true;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setInputAssembly(InputAssemblyStateCreateInfo createInfo)
-{
+Pipeline::Builder &Pipeline::Builder::setInputAssembly(InputAssemblyStateCreateInfo createInfo) {
     this->inputAssemblyStateCreateInfo = createInfo;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setViewport(ViewportStateCreateInfo createInfo)
-{
+Pipeline::Builder &Pipeline::Builder::setViewport(ViewportStateCreateInfo createInfo) {
     this->viewportStateCreateInfo = createInfo;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setRasterization(RasterizationStateCreateInfo createInfo)
-{
+Pipeline::Builder &Pipeline::Builder::setRasterization(RasterizationStateCreateInfo createInfo) {
     this->rasterizationStateCreateInfo = createInfo;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setMultisample(MultisampleStateCreateInfo createInfo)
-{
+Pipeline::Builder &Pipeline::Builder::setMultisample(MultisampleStateCreateInfo createInfo) {
     this->multisampleStateCreateInfo = createInfo;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setColorBlend(ColorBlendStateCreateInfo createInfo)
-{
+Pipeline::Builder &Pipeline::Builder::setColorBlend(ColorBlendStateCreateInfo createInfo) {
     this->colorBlendStateCreateInfo = createInfo;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setRenderPass(VkRenderPass renderPass)
-{
+Pipeline::Builder &Pipeline::Builder::setRenderPass(VkRenderPass renderPass) {
     this->renderPass = renderPass;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::setVertexInputBinding(VertexInputInfo createInfo)
-{
+Pipeline::Builder &Pipeline::Builder::setVertexInputBinding(VertexInputInfo createInfo) {
     this->vertexInputInfo = createInfo;
     return *this;
 }
 
-Pipeline::Builder &Pipeline::Builder::addDescriptorSet(DescriptorSetLayoutInfo createInfo)
-{
+Pipeline::Builder &Pipeline::Builder::addDescriptorSet(DescriptorSetLayoutInfo createInfo) {
     this->hasDescriptorSetLayout = true;
     this->descriptorSetLayoutsInfo.push_back(createInfo);
     return *this;
 }
 
-Pipeline Pipeline::Builder::build()
-{
+Pipeline Pipeline::Builder::build() {
     VkResult result;
     Pipeline pipeline;
-    if (this->device == VK_NULL_HANDLE)
-    {
+    if (this->device == VK_NULL_HANDLE) {
         throw std::runtime_error("call Pipeline::Builder::setDevice prior to Pipeline::Builder::build");
     }
-    if (this->vertexShaderFilename == nullptr)
-    {
+    if (this->vertexShaderFilename == nullptr) {
         throw std::runtime_error("call Pipeline::Builder::setVertexShader prior to Pipeline::Builder::build");
     }
-    if (this->fragmentShaderFilename == nullptr)
-    {
+    if (this->fragmentShaderFilename == nullptr) {
         throw std::runtime_error("call Pipeline::Builder::setFragmentShader prior to Pipeline::Builder::build");
     }
 
@@ -124,15 +107,13 @@ Pipeline Pipeline::Builder::build()
     createShaderModule(this->device, readFile(this->fragmentShaderFilename), &fragmentShaderModule);
     shaderStagesCreateInfo[1] = ShaderStageCreateInfo().asFragmentShader().withShaderModule(fragmentShaderModule);
 
-    if (this->useGeometryShader)
-    {
+    if (this->useGeometryShader) {
         createShaderModule(this->device, readFile(this->geometryShaderFilename), &geometryShaderModule);
         shaderStagesCreateInfo[2] = ShaderStageCreateInfo().asGeometryShader().withShaderModule(geometryShaderModule);
     }
 
     std::vector<VkPipelineShaderStageCreateInfo> stagesCreateInfo(shaderStageCount);
-    for (int i = 0; i < shaderStagesCreateInfo.size(); i++)
-    {
+    for (int i = 0; i < shaderStagesCreateInfo.size(); i++) {
         stagesCreateInfo[i] = shaderStagesCreateInfo[i].get();
     }
 
@@ -145,11 +126,9 @@ Pipeline Pipeline::Builder::build()
     /**
      * descriptor set layout
      */
-    if (this->hasDescriptorSetLayout)
-    {
+    if (this->hasDescriptorSetLayout) {
         pipeline.descriptorSetLayouts.resize(this->descriptorSetLayoutsInfo.size());
-        for (int i = 0; i < this->descriptorSetLayoutsInfo.size(); i++)
-        {
+        for (int i = 0; i < this->descriptorSetLayoutsInfo.size(); i++) {
             DescriptorSetLayoutInfo &descriptorSetLayoutInfo = this->descriptorSetLayoutsInfo[i];
             auto bindings = descriptorSetLayoutInfo.get();
 
@@ -197,13 +176,10 @@ Pipeline Pipeline::Builder::build()
      */
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
     pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    if (this->hasDescriptorSetLayout)
-    {
+    if (this->hasDescriptorSetLayout) {
         pipelineLayoutCreateInfo.setLayoutCount = pipeline.descriptorSetLayouts.size();
         pipelineLayoutCreateInfo.pSetLayouts = pipeline.descriptorSetLayouts.data();
-    }
-    else
-    {
+    } else {
         pipelineLayoutCreateInfo.setLayoutCount = 0;
         pipelineLayoutCreateInfo.pSetLayouts = nullptr;
     }
@@ -250,8 +226,7 @@ Pipeline Pipeline::Builder::build()
 
     vkDestroyShaderModule(this->device, vertexShaderModule, nullptr);
     vkDestroyShaderModule(this->device, fragmentShaderModule, nullptr);
-    if (this->useGeometryShader)
-    {
+    if (this->useGeometryShader) {
         vkDestroyShaderModule(this->device, geometryShaderModule, nullptr);
     }
 

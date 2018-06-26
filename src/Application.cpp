@@ -16,6 +16,12 @@ using ge::vulkan::VulkanContextManagerInitializeArgs_t;
 using ge::vulkan::memory::VulkanMemoryManager;
 using ge::vulkan::memory::VulkanMemoryManagerInitializeArgs_t;
 using ge::vulkan::helper::getRequiredExtensions;
+using ge::utils::ProfilerManager;
+using ge::utils::ProfilerManagerInitializeArgs_t;
+using ge::utils::LoggerManager;
+using ge::utils::LoggerManagerInitializeArgs_t;
+using ge::utils::LogLevelBitsFlag;
+using ge::utils::LogChannelBitsFlag;
 
 namespace ge
 {

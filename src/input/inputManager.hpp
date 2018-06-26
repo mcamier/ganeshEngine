@@ -4,35 +4,31 @@
 #include "../common/managers.hpp"
 #include "../input/input.hpp"
 
-namespace ge
-{
-namespace input
-{
+using ge::utils::SingletonManager;
 
-typedef struct inputKeyboardState
-{
+namespace ge {
+namespace input {
+
+typedef struct inputKeyboardState {
     inputActionButton action;
     inputModifierFlag modifier;
 } inputKeyboardState;
 
-typedef struct inputMousePosition
-{
+typedef struct inputMousePosition {
     double x;
     double y;
-} inputMousePosition ;
+} inputMousePosition;
 typedef inputMousePosition inputMouseScroll;
 
 
 //
-struct InputManagerInitializeArgs_t
-{
+struct InputManagerInitializeArgs_t {
 };
 
 
 //
 class InputManager :
-        public SingletonManager<InputManager, InputManagerInitializeArgs_t>
-{
+        public SingletonManager<InputManager, InputManagerInitializeArgs_t> {
 
 private:
     inputMousePosition lastPosition = {0, 0};

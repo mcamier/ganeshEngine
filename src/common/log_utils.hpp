@@ -6,6 +6,8 @@
 
 namespace ge
 {
+namespace utils
+{
 
 // Log criticity level
 typedef enum LogLevelBitsFlag
@@ -80,6 +82,7 @@ struct logEntry_t
     char message[512];
 };
 
+} //namespace utils
 } //namespace ge
 
 #endif //GE_LOG_UTILS_H

@@ -35,11 +35,12 @@
 #endif
 
 
-namespace ge
-{
+namespace ge {
+namespace utils {
 
 std::vector<char> readFile(const std::string &filename);
 
+}
 }
 
 #endif //GE_COMMON_HPP

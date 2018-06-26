@@ -3,11 +3,10 @@
 
 #include <cstdint>
 
-namespace ge
-{
+namespace ge {
+namespace utils {
 
-class Clock
-{
+class Clock {
 private:
 
     // Total nanoseconds elapsed
@@ -29,25 +28,21 @@ public:
             mTotalNanoSeconds(baseTimeNanoSeconds),
             mLastTimeAdded(0),
             mScale(1.0f),
-            mIsPaused(true)
-    {}
+            mIsPaused(true) {}
 
     explicit Clock(uint64_t baseTimeNanoSeconds, float scale) :
             mTotalNanoSeconds(baseTimeNanoSeconds),
             mLastTimeAdded(0),
             mScale(scale),
-            mIsPaused(true)
-    {}
+            mIsPaused(true) {}
 
     explicit Clock(uint64_t baseTimeNanoSeconds, float scale, bool paused) :
             mTotalNanoSeconds(baseTimeNanoSeconds),
             mLastTimeAdded(0),
             mScale(scale),
-            mIsPaused(paused)
-    {}
+            mIsPaused(paused) {}
 
-    ~Clock()
-    {}
+    ~Clock() {}
 
     // One tick update
     // @note will have no effect if the clock is paused
@@ -69,6 +64,7 @@ public:
     uint64_t getTotalTime() const;
 };
 
+} // namespace utils
 } // namespace ge
 
 #endif //GE_CLOCK_H

@@ -2,15 +2,13 @@
 
 #include <fstream>
 
-namespace ge
-{
+namespace ge {
+namespace utils {
 
-std::vector<char> readFile(const std::string &filename)
-{
+std::vector<char> readFile(const std::string &filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         throw std::runtime_error("failed to open file : " + filename);
     }
 
@@ -21,5 +19,7 @@ std::vector<char> readFile(const std::string &filename)
     file.close();
 
     return buffer;
+}
+
 }
 }

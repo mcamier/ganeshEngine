@@ -3,8 +3,10 @@
 #include <array>
 
 #include "../../window/manager.hpp"
+#include "../../common/log_utils.hpp"
 
 using ge::vulkan::helper::createBuffer;
+using ge::utils::LogChannelBitsFlag;
 
 namespace ge {
 namespace vulkan {

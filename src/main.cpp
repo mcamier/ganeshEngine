@@ -64,7 +64,7 @@ protected:
 
         this->camera = Camera(glm::vec3(0.0f, 0.0f, -8.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
-        REP_DEBUG("application demo initialized", LogChannelBitsFlag::DEFAULT)
+        REP_DEBUG("application demo initialized", ge::utils::LogChannelBitsFlag::DEFAULT)
     }
 
 
@@ -458,7 +458,7 @@ protected:
         this->normalVisualizerPipeline.release();
         vkFreeMemory(ctxt.device, this->uboBufferMemory, nullptr);
         vkDestroyBuffer(ctxt.device, this->uboBuffer, nullptr);
-        REP_DEBUG("application demo destroyed", LogChannelBitsFlag::DEFAULT)
+        REP_DEBUG("application demo destroyed", ge::utils::LogChannelBitsFlag::DEFAULT)
     }
 };
 

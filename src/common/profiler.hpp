@@ -11,7 +11,7 @@
 #ifdef PROFILING_ENABLED
 #define BEGIN_PROFILING(name) \
         {\
-            AutoProfiler profiler(name);
+            ge::utils::AutoProfiler profiler(name);
 #define END_PROFILING \
     }
 #else
@@ -19,8 +19,8 @@
 #define END_PROFILING
 #endif
 
-namespace ge
-{
+namespace ge {
+namespace utils {
 
 using std::chrono::high_resolution_clock;
 
@@ -37,15 +37,14 @@ using std::chrono::high_resolution_clock;
 // Because AutoProfiler is a RAII class, once the execution leave the scope where the autoprofile was created, it will
 // be destroyed, but during its destruction the ProfilerManager will notified with the timing sample
 
-class AutoProfiler
-{
+class AutoProfiler {
 private:
     std::string mName;
     high_resolution_clock::time_point begin;
     high_resolution_clock::duration dt{0};
 
 public:
-    AutoProfiler(const char *name);
+    explicit AutoProfiler(const char *name);
 
     AutoProfiler(const AutoProfiler &) = delete;
 
@@ -56,21 +55,18 @@ public:
 
 
 // Store a unique profiling sample
-struct ProfilerFrameEntry
-{
+struct ProfilerFrameEntry {
     uint16_t sampleAmount = 0;
     float durationMs = 0;
 
-    ProfilerFrameEntry(float durationMs) :
+    explicit ProfilerFrameEntry(float durationMs) :
             sampleAmount(1),
-            durationMs(durationMs)
-    {}
+            durationMs(durationMs) {}
 };
 
 
 // Store the agregated timing sampled for a given named sampler
-struct ProfilerGlobalEntry
-{
+struct ProfilerGlobalEntry {
     float minDurationMs;
     float maxDurationMs;
     uint32_t samplesAmount;
@@ -80,19 +76,17 @@ struct ProfilerGlobalEntry
             minDurationMs(.0f),
             maxDurationMs(.0f),
             totalDurationMs(.0f),
-            samplesAmount(0)
-    {}
+            samplesAmount(0) {}
 
     double getAverageDurationMs() {
-        return this->totalDurationMs / (double)this->samplesAmount;
+        return this->totalDurationMs / (double) this->samplesAmount;
     }
 };
 
 
 // ProfilerManagerInitializeArgs_t gathers all properties that could be giving to the ProfilerManager during its
 // initialization in order to customize its behavior
-struct ProfilerManagerInitializeArgs_t
-{
+struct ProfilerManagerInitializeArgs_t {
 };
 
 
@@ -102,8 +96,7 @@ struct ProfilerManagerInitializeArgs_t
 // Example:
 //      ProfilerManager::get().registerSample("Frame preparation", 256);
 class ProfilerManager :
-        public SingletonManager<ProfilerManager, ProfilerManagerInitializeArgs_t>
-{
+        public SingletonManager<ProfilerManager, ProfilerManagerInitializeArgs_t> {
     friend SingletonManager<ProfilerManager, ProfilerManagerInitializeArgs_t>;
 
 private:
@@ -115,15 +108,15 @@ private:
 
     ProfilerManager() = default;
 
-    ProfilerManager(const ProfilerManager &) = delete;
-
-    ProfilerManager &operator=(const ProfilerManager &) = delete;
-
     void vInit(ProfilerManagerInitializeArgs_t args) override {}
 
     void vDestroy() override;
 
 public:
+    ProfilerManager(const ProfilerManager &) = delete;
+
+    ProfilerManager &operator=(const ProfilerManager &) = delete;
+
     // Update the manager, should be called every frames to register the samples gathered during the current frame
     // into global datas. Compute from pikes and average for all sample category.
     void vUpdate() override;
@@ -135,6 +128,7 @@ public:
 
 };
 
+}
 }
 
 #endif //GE_PROFILER_HPP

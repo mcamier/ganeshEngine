@@ -9,14 +9,13 @@
 #include "helper.hpp"
 #include "geometry.hpp"
 
-namespace ge
-{
-namespace vulkan
-{
+using ge::utils::SingletonManager;
+
+namespace ge {
+namespace vulkan {
 
 // Stores values required for the VulkanContextManager's initialization
-struct VulkanContextManagerInitializeArgs_t
-{
+struct VulkanContextManagerInitializeArgs_t {
     uint32_t validationLayerCount;
     const char **ppValidationLayersCount;
     uint32_t deviceExtensionCount;
@@ -35,44 +34,44 @@ struct VulkanContextManagerInitializeArgs_t
 //  presentation queue and graphics queue creation
 //  a graphics command pool creation
 class VulkanContextManager :
-        public SingletonManager<VulkanContextManager, VulkanContextManagerInitializeArgs_t>
-{
+        public SingletonManager<VulkanContextManager, VulkanContextManagerInitializeArgs_t> {
+
     friend SingletonManager<VulkanContextManager, VulkanContextManagerInitializeArgs_t>;
 
 private:
     // Synchronisation related members
-    const int                   MAX_CONCURRENT_FRAMES = 2;
-    size_t                      currentFrame = 0;
-    std::vector<VkSemaphore>    imageAvailableSemaphores;
-    std::vector<VkSemaphore>    renderFinishedSemaphores;
-    std::vector<VkFence>        inFligtFences;
+    const int MAX_CONCURRENT_FRAMES = 2;
+    size_t currentFrame = 0;
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFligtFences;
 
     // instance and device related members
-    VkInstance                  vulkanInstance          = VK_NULL_HANDLE;
-    VkDebugReportCallbackEXT    debugReportCallback     = VK_NULL_HANDLE;
-    VkSurfaceKHR                surface                 = VK_NULL_HANDLE;
-    VkPhysicalDevice            physicalDevice          = VK_NULL_HANDLE;
-    VkDevice                    device                  = VK_NULL_HANDLE;
+    VkInstance vulkanInstance = VK_NULL_HANDLE;
+    VkDebugReportCallbackEXT debugReportCallback = VK_NULL_HANDLE;
+    VkSurfaceKHR surface = VK_NULL_HANDLE;
+    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    VkDevice device = VK_NULL_HANDLE;
 
-    VkQueue                     graphicQueue            = VK_NULL_HANDLE;
-    VkQueue                     presentQueue            = VK_NULL_HANDLE;
-    VkCommandPool               graphicCommandPool      = VK_NULL_HANDLE;
+    VkQueue graphicQueue = VK_NULL_HANDLE;
+    VkQueue presentQueue = VK_NULL_HANDLE;
+    VkCommandPool graphicCommandPool = VK_NULL_HANDLE;
 
     // swapchain related member
-    VkSwapchainKHR              swapchain               = VK_NULL_HANDLE;
-    VkExtent2D                  swapchainExtent         = {};
-    VkFormat                    swapchainImageFormat    = {};
-    std::vector<VkImage>        swapchainImages;
-    std::vector<VkImageView>    swapchainImageViews;
-    std::vector<VkFramebuffer>  swapChainFramebuffers;
+    VkSwapchainKHR swapchain = VK_NULL_HANDLE;
+    VkExtent2D swapchainExtent = {};
+    VkFormat swapchainImageFormat = {};
+    std::vector<VkImage> swapchainImages;
+    std::vector<VkImageView> swapchainImageViews;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
 
     // depth test related members
-    VkImage                     depthImage              = VK_NULL_HANDLE;
-    VkDeviceMemory              depthImageMemory        = VK_NULL_HANDLE;
-    VkImageView                 depthImageView          = VK_NULL_HANDLE;
+    VkImage depthImage = VK_NULL_HANDLE;
+    VkDeviceMemory depthImageMemory = VK_NULL_HANDLE;
+    VkImageView depthImageView = VK_NULL_HANDLE;
 
     // graphic chain related members
-    VkRenderPass                renderPass              = VK_NULL_HANDLE;
+    VkRenderPass renderPass = VK_NULL_HANDLE;
 
 
 protected:

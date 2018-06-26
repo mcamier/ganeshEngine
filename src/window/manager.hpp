@@ -2,26 +2,25 @@
 #define GE_WINDOWMANAGER_HPP
 
 #define GLFW_INCLUDE_VULKAN
+
 #include <GLFW/glfw3.h>
 #include <cstdint>
 #include <string>
 
 #include "../common/managers.hpp"
 
+using ge::utils::SingletonManager;
 
-namespace ge
-{
-namespace window
-{
+namespace ge {
+namespace window {
 
 // WindowManagerInitializeArgs_t gathers all properties that could be giving to the WindowManager during its
 // initialization in order to customize its behavior
-struct WindowManagerInitializeArgs_t
-{
-    const char *    windowName;
-    uint16_t        windowWidth;
-    uint16_t        windowHeight;
-    bool            windowFullscreen;
+struct WindowManagerInitializeArgs_t {
+    const char *windowName;
+    uint16_t windowWidth;
+    uint16_t windowHeight;
+    bool windowFullscreen;
 };
 
 
@@ -31,15 +30,14 @@ struct WindowManagerInitializeArgs_t
 // Example:
 //      WindowManager::get().vupdate();
 class WindowManager :
-        public SingletonManager<WindowManager, WindowManagerInitializeArgs_t>
-{
+        public SingletonManager<WindowManager, WindowManagerInitializeArgs_t> {
     friend SingletonManager<WindowManager, WindowManagerInitializeArgs_t>;
 
 private:
-    GLFWwindow *    pWindow = nullptr;
-    std::string     windowName;
-    uint16_t        windowWidth = 0;
-    uint16_t        windowHeight = 0;
+    GLFWwindow *pWindow = nullptr;
+    std::string windowName;
+    uint16_t windowWidth = 0;
+    uint16_t windowHeight = 0;
 
 protected:
     WindowManager() = default;
@@ -65,7 +63,7 @@ public:
 
     // Return an handler on the GLFW window
     // Should not be used, except by the the VulkanContextManager which use it to create the rendering surface
-    GLFWwindow* const getWindowHandle();
+    GLFWwindow *const getWindowHandle();
 
     // the the cursor at the center of the screen
     void setCursorAtCenter();

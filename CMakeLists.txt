@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 project(ganeshEngine VERSION 1.0.0 LANGUAGES CXX)
 
+add_definitions(
+        -DLOGGING_ENABLED
+        -DPROFILING_ENABLED)
+
 ########################################################################################################################
 # dependencies
 find_package(Vulkan REQUIRED)
@@ -58,7 +62,9 @@ target_include_directories(GEDemo
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_compile_options(GEDemo PRIVATE -Werror)
+# uncompatible with VS
+#target_compile_options(GEDemo PRIVATE -Werror)
+
 target_compile_features(GEDemo PRIVATE cxx_std_14)
 
 target_link_libraries(GEDemo

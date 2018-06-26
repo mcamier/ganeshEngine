@@ -30,6 +30,7 @@ using ge::vulkan::helper::transitionImageLayout;
 using ge::vulkan::helper::querySwapChainSupport;
 using ge::vulkan::helper::findDepthFormat;
 using ge::vulkan::helper::debugCallback;
+using ge::utils::LogChannelBitsFlag;
 
 namespace ge
 {

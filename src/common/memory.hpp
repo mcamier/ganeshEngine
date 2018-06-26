@@ -6,7 +6,7 @@
 #include <cstddef>
 
 namespace ge {
-
+namespace utils {
 
 class StackAllocator {
     friend class DoubleBufferedStackAllocator;
@@ -116,6 +116,7 @@ public:
     }
 };
 
+}
 }
 
 #endif //GE_MEMORY_H

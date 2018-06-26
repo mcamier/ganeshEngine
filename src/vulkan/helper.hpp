@@ -9,27 +9,23 @@
 #include "geometry.hpp"
 #include "pipeline/pipeline.hpp"
 
-namespace ge
-{
-namespace vulkan
-{
-namespace helper
-{
+using ge::utils::LoggerManager;
 
-struct QueueFamilyIndices
-{
+namespace ge {
+namespace vulkan {
+namespace helper {
+
+struct QueueFamilyIndices {
     uint32_t graphicsFamily = std::numeric_limits<uint32_t>::max();
     uint32_t presentFamily = std::numeric_limits<uint32_t>::max();
 
-    bool isComplete()
-    {
+    bool isComplete() {
         return graphicsFamily != std::numeric_limits<uint32_t>::max() &&
                presentFamily != std::numeric_limits<uint32_t>::max();
     }
 };
 
-struct SwapChainSupportDetails
-{
+struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
@@ -175,16 +171,15 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags,
                                                     int32_t code,
                                                     const char *layerPrefix,
                                                     const char *msg,
-                                                    void *userData)
-{
-    REP_ERROR(msg, LogChannelBitsFlag::RENDER)
+                                                    void *userData) {
+    REP_ERROR(msg, ge::utils::LogChannelBitsFlag::RENDER)
     //We do want to loose log entries if vulkan crash the application after this error
     LoggerManager::get().flush();
     return VK_FALSE;
 }
 
-}
-}
-}
+} // namespace helper
+} // namespace vulkan
+} // namespace ge
 
 #endif

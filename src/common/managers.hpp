@@ -7,34 +7,30 @@
 
 #include "common.hpp"
 
-namespace ge
-{
+namespace ge {
+namespace utils {
 
 // Enumerate the different status a manager could have
-enum ManagerState
-{
-    UNINITIALIZED   = 0x01,
-    INITIALIZED     = 0x02,
-    DESTROYED       = 0x04
+enum ManagerState {
+    UNINITIALIZED = 0x01,
+    INITIALIZED = 0x02,
+    DESTROYED = 0x04
 };
 
 
 template<typename T>
-class Singleton
-{
+class Singleton {
 protected:
     // Internal getter of the reference of the static instance pointer
     // Return a reference to the static instance pointer
-    static T *&_instance()
-    {
+    static T *&_instance() {
         static T *instance = nullptr;
         return instance;
     }
 
     // Internal getter of the reference of the static state
     // Return a reference to the static state
-    static ManagerState &_state()
-    {
+    static ManagerState &_state() {
         static ManagerState state = UNINITIALIZED;
         return state;
     }
@@ -46,8 +42,7 @@ public:
     // instance pointer points to nullptr or the system state is not INITIALIZED.
     //
     // Return a reference to the specific system instance
-    static T &get()
-    {
+    static T &get() {
         ASSERT(_instance() != nullptr);
         ASSERT_FLAG(_state(), INITIALIZED);
         return *_instance();
@@ -56,8 +51,7 @@ public:
 
 
 template<typename T, typename INIT_T>
-class Manager
-{
+class Manager {
 
 protected:
     virtual void vInit(INIT_T initStructArg) = 0;
@@ -79,15 +73,12 @@ public:
 template<typename T, typename INIT_T>
 class SingletonManager :
         public Singleton<T>,
-        public virtual Manager<T, INIT_T>
-{
+        public virtual Manager<T, INIT_T> {
 public:
-    static void initialize(INIT_T initStructArg)
-    {
+    static void initialize(INIT_T initStructArg) {
         static_assert(std::is_base_of<SingletonManager, T>::value, "Type T must be derivated from Manager");
 
-        if ((Singleton<T>::_state() & UNINITIALIZED) == UNINITIALIZED)
-        {
+        if ((Singleton<T>::_state() & UNINITIALIZED) == UNINITIALIZED) {
             ASSERT(Singleton<T>::_instance() == nullptr);
 
             Singleton<T>::_instance() = new T();
@@ -97,8 +88,7 @@ public:
     }
 
 
-    static void destroy()
-    {
+    static void destroy() {
         ASSERT_FLAG(Singleton<T>::_state(), INITIALIZED);
 
         ((SingletonManager *) Singleton<T>::_instance())->vDestroy();
@@ -108,6 +98,7 @@ public:
     }
 };
 
+} // namespace utils
 } // namespace ge
 
 #endif //GE_SERVICE_INIT_HPP

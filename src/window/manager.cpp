@@ -16,6 +16,7 @@ using ge::input::convertGlfwInputMouseButton;
 using ge::input::convertGlfwInputKeyboardKey;
 using ge::input::convertGlfwInputModifier;
 using ge::input::convertGlfwInputAction;
+using ge::utils::LogChannelBitsFlag;
 
 namespace ge {
 namespace window {
