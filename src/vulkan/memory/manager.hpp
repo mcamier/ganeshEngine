@@ -72,11 +72,11 @@ public:
     // No device memory allocation occurs during this call, a new buffer is created and bound to a specific
     // memory location (memory allocation occurs during initialization of the manager)
     template<typename... Args>
-    memoryAllocId allocateBuffer(VkBufferUsageFlags usage, void *ptr, uint64_t dataSize, Args... args) {
+    memoryAllocId allocateBuffer(VkBufferUsageFlags usage, void *dataPtr, uint64_t dataSize, Args... otherDatas) {
         vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
         memoryAlloc_t *memoryAlloc = nullptr;
 
-        uint64_t allocationSize = defaultMemoryStrategy.getSize(ptr, dataSize, args...);
+        uint64_t allocationSize = defaultMemoryStrategy.getSize(dataPtr, dataSize, otherDatas...);
         VkBuffer buffer = defaultMemoryStrategy.createBuffer(ctxt.device, allocationSize, usage);
         VkDeviceSize alignment = defaultMemoryStrategy.getAlignmentRequirement(ctxt.device, ctxt.physicalDevice,
                                                                                buffer);
@@ -86,9 +86,9 @@ public:
 
         defaultMemoryStrategy.fillMemory(deviceMemory,
                                          memoryAlloc->getDataBeginPosition(),
-                                         ptr,
-                                         allocationSize,
-                                         args...);
+                                         dataPtr,
+                                         dataSize,
+                                         otherDatas...);
 
         return memoryAlloc->id;
     }

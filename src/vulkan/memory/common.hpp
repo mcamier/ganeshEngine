@@ -136,8 +136,8 @@ struct DefaultMemorySizePredictorPolicy {
     //       data
     // Note: This size doesn't include the pre-pedded padding bytes required to get date in good memory alignement
     template<typename... Args>
-    static VkDeviceSize getSize(void *ptr, uint64_t dataSize, Args... args) {
-        return _sumRequiredSize(ptr, dataSize, args...);
+    static VkDeviceSize getSize(void *dataPtr, uint64_t dataSize, Args... otherDatas) {
+        return _sumRequiredSize(dataPtr, dataSize, otherDatas...);
     }
 };
 
@@ -154,7 +154,7 @@ struct UniformBufferMemorySizePredictorPolicy {
     //       data
     // Note: This size doesn't include the pre-pedded padding bytes required to get date in good memory alignement
     template<typename... Args>
-    static VkDeviceSize getSize(void *ptr, uint64_t dataSize, Args... args) {
+    static VkDeviceSize getSize(void *dataPtr, uint64_t dataSize, Args... args) {
         // TODO implement me
         // VkPhysicalDeviceProperties deviceProperties;
         // vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
@@ -165,28 +165,28 @@ struct UniformBufferMemorySizePredictorPolicy {
 
 
 template<typename PTR, typename SIZE>
-void _fillMemory(VkDeviceMemory memory, uint64_t offset, PTR ptr, SIZE size) {
+void _fillMemory(VkDeviceMemory memory, uint64_t offset, PTR dataPtr, SIZE dataSize) {
     void *pLocalMem;
     vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
 
-    vkMapMemory(ctxt.device, memory, offset, size, 0, &pLocalMem);
-    memcpy(pLocalMem, ptr, size);
+    vkMapMemory(ctxt.device, memory, offset, dataSize, 0, &pLocalMem);
+    memcpy(pLocalMem, dataPtr, dataSize);
     vkUnmapMemory(ctxt.device, memory);
 }
 
 template<typename PTR, typename SIZE, typename... Args>
-void _fillMemory(VkDeviceMemory memory, uint64_t offset, PTR ptr, SIZE size, Args... args) {
+void _fillMemory(VkDeviceMemory memory, uint64_t offset, PTR dataPtr, SIZE dataSize, Args... otherDatas) {
     void *pLocalMem;
     vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
 
-    vkMapMemory(ctxt.device, memory, offset, size, 0, &pLocalMem);
-    memcpy(pLocalMem, ptr, size);
+    vkMapMemory(ctxt.device, memory, offset, dataSize, 0, &pLocalMem);
+    memcpy(pLocalMem, dataPtr, dataSize);
     vkUnmapMemory(ctxt.device, memory);
 
-    uint64_t nextOffset = offset + size;
+    uint64_t nextOffset = offset + dataSize;
 
     // recursive call of the method until paramater pack is not empty
-    _fillMemory(memory, nextOffset, args...);
+    _fillMemory(memory, nextOffset, otherDatas...);
 }
 
 
@@ -194,8 +194,8 @@ void _fillMemory(VkDeviceMemory memory, uint64_t offset, PTR ptr, SIZE size, Arg
 //
 struct DefaultMemoryFillerPolicy {
     template<typename PTR, typename SIZE, typename... Args>
-    static void fillMemory(VkDeviceMemory memory, uint64_t offset, PTR ptr, SIZE size, Args... args) {
-        _fillMemory(memory, offset, ptr, size, args...);
+    static void fillMemory(VkDeviceMemory memory, uint64_t offset, PTR dataPtr, SIZE dataSize, Args... otherDatas) {
+        _fillMemory(memory, offset, dataPtr, dataSize, otherDatas...);
     }
 };
 
@@ -204,7 +204,7 @@ struct DefaultMemoryFillerPolicy {
 //
 struct UniformBufferMemoryFillerPolicy {
     template<typename PTR, typename SIZE, typename... Args>
-    static void fillMemory(VkDeviceMemory memory, uint64_t offset, PTR ptr, SIZE size, Args... args) {
+    static void fillMemory(VkDeviceMemory memory, uint64_t offset, PTR dataPtr, SIZE dataSize, Args... otherDatas) {
         // TODO implement me
         return;
     }
