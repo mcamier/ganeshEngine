@@ -1,8 +1,8 @@
 #include <iostream>
 #include <functional>
-#include <array>
 
 #define GLFW_INCLUDE_VULKAN
+
 #include <GLFW/glfw3.h>
 
 #include "Application.hpp"
@@ -20,14 +20,13 @@ using namespace ge::vulkan::helper;
 using namespace ge::vulkan::memory;
 
 class Demo :
-        public Application
-{
+        public Application {
 private:
     const char *PHONG_SHADER_VERT = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/phong/vert.spv";
     const char *PHONG_SHADER_FRAG = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/phong/frag.spv";
 
-    const char *GOURAUD_SHADER_VERT = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/phong/vert.spv";
-    const char *GOURAUD_SHADER_FRAG = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/phong/frag.spv";
+    const char *GOURAUD_SHADER_VERT = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/gouraud/vert.spv";
+    const char *GOURAUD_SHADER_FRAG = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/gouraud/frag.spv";
 
     const char *NORM_VISUALIZER_SHADER_VERT = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/normal_visualizer/vert.spv";
     const char *NORM_VISUALIZER_SHADER_GEOM = "C:/Users/Mickael/Documents/workspace/renderEnginePlayground/shaders/compiled/normal_visualizer/geom.spv";
@@ -48,7 +47,7 @@ private:
     VkSemaphore imageAcquiredSemaphore;
     VkSemaphore renderReadySemaphore;
 
-   // VkClearColorValue clearColorValue = {0.08f, 0.05f, 0.38f, 0.0f};
+    // VkClearColorValue clearColorValue = {0.08f, 0.05f, 0.38f, 0.0f};
     VkClearColorValue clearColorValue;
 
     memoryAllocId meshMemoryId;
@@ -57,22 +56,20 @@ private:
 
 protected:
 
-    void vInit() override
-    {
+    void vInit() override {
         initSyncObjects();
         loadModel(mesh, this->vertices, this->indices);
         loadModelIntoBuffer();
         initPipeline();
         initUniformBuffer();
 
-        this->camera = Camera(glm::vec3(0.0f, 0.0f, -8.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+        this->camera = Camera(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
         REP_DEBUG("application demo initialized", ge::utils::LogChannelBitsFlag::DEFAULT)
     }
 
 
-    void initSyncObjects()
-    {
+    void initSyncObjects() {
         vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
 
         VkSemaphoreCreateInfo imageAcquiredSemaphoreInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
@@ -86,8 +83,7 @@ protected:
     }
 
 
-    void initPipeline()
-    {
+    void initPipeline() {
         vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
 
         this->defaultPipeline = Pipeline::Builder()
@@ -132,28 +128,24 @@ protected:
     }
 
 
-    void loadModelIntoBuffer()
-    {
+    void loadModelIntoBuffer() {
         VulkanMemoryManager &memManager = VulkanMemoryManager::get();
         uint32_t verticesSize = this->vertices.size() * sizeof(VertexPosNormalColorTex);
         uint32_t indicesSize = this->indices.size() * sizeof(uint32_t);
 
-        meshMemoryId = memManager.allocateBuffer(verticesSize + indicesSize,
-                                                 VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        meshMemoryId = memManager.allocateBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                                  this->vertices.data(), verticesSize,
                                                  this->indices.data(), indicesSize);
-
-        ///memManager.dump();
+        memManager.dump();
     }
 
 
-    void initUniformBuffer()
-    {
+    void initUniformBuffer() {
         vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
         VulkanMemoryManager &memManager = VulkanMemoryManager::get();
 
         VkDeviceSize allocationSize = sizeof(ModelTransformation) + sizeof(ViewProjTransformation);
-        memoryAllocId uboMemId = memManager.allocateUniform(allocationSize);
+        //memoryAllocId uboMemId = memManager.allocateUniform(allocationSize);
 
 
         VkPhysicalDeviceProperties deviceProperties;
@@ -162,12 +154,9 @@ protected:
         uint32_t sizeModel = sizeof(ModelTransformation);
         uint32_t sizeViewProj = sizeof(ViewProjTransformation);
 
-        if (sizeModel < minOffset)
-        {
+        if (sizeModel < minOffset) {
             uboOffset = minOffset;
-        }
-        else
-        {
+        } else {
             uboOffset = (uint64_t) ceil((double) sizeModel / (double) minOffset);
         }
         allocationSize = uboOffset + sizeof(ViewProjTransformation);
@@ -245,8 +234,7 @@ protected:
     }
 
 
-    void vUpdate() override
-    {
+    void vUpdate() override {
         vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
         uint64_t timeout = std::numeric_limits<uint64_t>::max();
         uint32_t imageAcquired;
@@ -301,8 +289,7 @@ protected:
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = &this->renderReadySemaphore;
 
-        if (VK_SUCCESS != vkQueueSubmit(ctxt.graphicQueue, 1, &submitInfo, VK_NULL_HANDLE))
-        {
+        if (VK_SUCCESS != vkQueueSubmit(ctxt.graphicQueue, 1, &submitInfo, VK_NULL_HANDLE)) {
             throw std::runtime_error("failed to submit render commandbuffer for drawing");
         }
 
@@ -328,8 +315,7 @@ protected:
     }
 
 
-    void updateUniformBuffer()
-    {
+    void updateUniformBuffer() {
         auto ctxt = VulkanContextManager::get().getContextInfos();
         auto extent = VulkanContextManager::get().getCurrentExtent();
         static float time = .0000001f;
@@ -369,8 +355,7 @@ protected:
     }
 
 
-    void recordDrawCommand(VkFramebuffer framebuffer)
-    {
+    void recordDrawCommand(VkFramebuffer framebuffer) {
         VkResult result;
         std::array<VkClearValue, 2> clearValues;
         clearValues[0].color = clearColorValue;
@@ -407,7 +392,7 @@ protected:
         vkCmdBindPipeline(this->drawCommands, VK_PIPELINE_BIND_POINT_GRAPHICS, defaultPipeline.getPipeline());
 
 
-        VkBuffer buffer = VulkanMemoryManager::get().getBuffer(meshMemoryId);
+        AllocationInfo allocInfo = VulkanMemoryManager::get().getAllocationInfo(meshMemoryId);
 
         vkCmdBindDescriptorSets(this->drawCommands,
                                 VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -419,8 +404,8 @@ protected:
                                 nullptr);
 
         VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(this->drawCommands, 0, 1, &buffer, offsets);
-        vkCmdBindIndexBuffer(this->drawCommands, buffer, offset, VK_INDEX_TYPE_UINT32);
+        vkCmdBindVertexBuffers(this->drawCommands, 0, 1, &allocInfo.buffer, offsets);
+        vkCmdBindIndexBuffer(this->drawCommands, allocInfo.buffer, offset, VK_INDEX_TYPE_UINT32);
 
         vkCmdDrawIndexed(this->drawCommands, this->indices.size(), 1, 0, 0, 0);
 
@@ -439,8 +424,8 @@ protected:
                                 0,
                                 nullptr);
 
-        vkCmdBindVertexBuffers(this->drawCommands, 0, 1, &buffer, offsets);
-        vkCmdBindIndexBuffer(this->drawCommands, buffer, offset, VK_INDEX_TYPE_UINT32);
+        vkCmdBindVertexBuffers(this->drawCommands, 0, 1, &allocInfo.buffer, offsets);
+        vkCmdBindIndexBuffer(this->drawCommands, allocInfo.buffer, offset, VK_INDEX_TYPE_UINT32);
 
         vkCmdDrawIndexed(this->drawCommands, this->indices.size(), 1, 0, 0, 0);
 
@@ -450,8 +435,7 @@ protected:
     }
 
 
-    void vDestroy() override
-    {
+    void vDestroy() override {
         vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
 
         // TODO this make the application crash
@@ -468,15 +452,12 @@ protected:
 };
 
 
-int main()
-{
+int main() {
     Demo demo;
-    try
-    {
+    try {
         demo.run();
     }
-    catch (const std::runtime_error &e)
-    {
+    catch (const std::runtime_error &e) {
         std::cout << e.what() << std::endl;
         return EXIT_FAILURE;
     }

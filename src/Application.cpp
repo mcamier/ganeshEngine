@@ -8,20 +8,20 @@
 using namespace std::chrono;
 
 using ge::vulkan::VulkanContextManager;
+using ge::vulkan::VulkanContextManagerInitializeArgs_t;
 using ge::input::InputManager;
 using ge::input::InputManagerInitializeArgs_t;
 using ge::window::WindowManager;
 using ge::window::WindowManagerInitializeArgs_t;
-using ge::vulkan::VulkanContextManagerInitializeArgs_t;
 using ge::vulkan::memory::VulkanMemoryManager;
 using ge::vulkan::memory::VulkanMemoryManagerInitializeArgs_t;
-using ge::vulkan::helper::getRequiredExtensions;
 using ge::utils::ProfilerManager;
 using ge::utils::ProfilerManagerInitializeArgs_t;
 using ge::utils::LoggerManager;
 using ge::utils::LoggerManagerInitializeArgs_t;
 using ge::utils::LogLevelBitsFlag;
 using ge::utils::LogChannelBitsFlag;
+using ge::vulkan::helper::getRequiredExtensions;
 
 namespace ge
 {
