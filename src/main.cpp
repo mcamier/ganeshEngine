@@ -133,9 +133,9 @@ protected:
         uint32_t verticesSize = this->vertices.size() * sizeof(VertexPosNormalColorTex);
         uint32_t indicesSize = this->indices.size() * sizeof(uint32_t);
 
-        meshMemoryId = memManager.allocateBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                                                 this->vertices.data(), verticesSize,
-                                                 this->indices.data(), indicesSize);
+        meshMemoryId = memManager.allocate(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                           this->vertices.data(), verticesSize,
+                                           this->indices.data(), indicesSize);
         memManager.dump();
     }
 

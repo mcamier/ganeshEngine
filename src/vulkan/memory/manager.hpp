@@ -68,23 +68,36 @@ public:
 
     void vUpdate() override {}
 
-    // This method will search into its memory pool a place to sub allocate memory for the required size
-    // No device memory allocation occurs during this call, a new buffer is created and bound to a specific
-    // memory location (memory allocation occurs during initialization of the manager)
+
     template<typename... Args>
-    memoryAllocId allocateBuffer(VkBufferUsageFlags usage, void *dataPtr, uint64_t dataSize, Args... otherDatas) {
+    memoryAllocId allocate(VkBufferUsageFlags usage, void *dataPtr, uint64_t dataSize, Args... otherDatas) {
+        return allocate(defaultMemoryStrategy, usage, dataPtr, dataSize, otherDatas...);
+    }
+
+
+    template<typename... Args>
+    memoryAllocId allocateUniformBuffer(VkBufferUsageFlags usage, void *dataPtr, uint64_t dataSize, Args... otherDatas) {
+        return allocate(uniformBufferMemoryStrategy, usage, dataPtr, dataSize, otherDatas...);
+    }
+
+
+    template<
+            typename MemoryStrategy,
+            typename... Args
+    >
+    memoryAllocId allocate(MemoryStrategy strategy, VkBufferUsageFlags usage, void *dataPtr, uint64_t dataSize, Args... otherDatas) {
         vulkanContextInfos_t ctxt = VulkanContextManager::get().getContextInfos();
         memoryAlloc_t *memoryAlloc = nullptr;
 
-        uint64_t allocationSize = defaultMemoryStrategy.getSize(dataPtr, dataSize, otherDatas...);
-        VkBuffer buffer = defaultMemoryStrategy.createBuffer(ctxt.device, allocationSize, usage);
-        VkDeviceSize alignment = defaultMemoryStrategy.getAlignmentRequirement(ctxt.device, ctxt.physicalDevice,
+        uint64_t allocationSize = strategy.getSize(dataPtr, dataSize, otherDatas...);
+        VkBuffer buffer = strategy.createBuffer(ctxt.device, allocationSize, usage);
+        VkDeviceSize alignment = strategy.getAlignmentRequirement(ctxt.device, ctxt.physicalDevice,
                                                                                buffer);
 
         memoryAlloc = findAvailableMemory(allocationSize, alignment, buffer);
         VkDeviceMemory deviceMemory = memoryPool[memoryAlloc->memoryChunkIndex].memory;
 
-        defaultMemoryStrategy.fillMemory(deviceMemory,
+        strategy.fillMemory(deviceMemory,
                                          memoryAlloc->getDataBeginPosition(),
                                          dataPtr,
                                          dataSize,
@@ -92,6 +105,7 @@ public:
 
         return memoryAlloc->id;
     }
+
 
     // Release a given sub allocation, it's release its bound buffer and make the space previously available for
     // later allocation request
